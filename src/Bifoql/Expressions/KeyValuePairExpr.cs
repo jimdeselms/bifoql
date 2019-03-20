@@ -1,0 +1,40 @@
+namespace Bifoql.Expressions
+{
+    using System;
+    using System.Threading.Tasks;
+    using System.Collections.Generic;
+    using Bifoql.Adapters;
+
+    internal class KeyValuePairExpr : Expr
+    {
+        public string Key { get; }
+        public Expr Value { get; }
+
+        public KeyValuePairExpr(Location location, string key, Expr value) : base(location)
+        {
+            Key = key;
+            Value = value;
+        }
+        protected override Task<IAsyncObject> DoApply(QueryContext context)
+        {
+            var dict = new Dictionary<string, Func<Task<IAsyncObject>>>()
+            {
+                [Key] = () => Value.Apply(context)
+            };
+
+            return Task.FromResult<IAsyncObject>(new AsyncMap(dict));
+        }
+
+       public override string ToString()
+       {
+           return $"{Key}: {Value.ToString()}]";
+       }
+
+        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IAsyncObject> variables)
+        {
+            return new KeyValuePairExpr(Location, Key, Value.Simplify(variables));
+        }
+
+       public override bool NeedsAsync(IReadOnlyDictionary<string, IAsyncObject> variables) => Value.NeedsAsync(variables);
+    }
+}
