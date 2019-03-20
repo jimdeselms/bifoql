@@ -9,10 +9,10 @@ using Bifoql.Extensions;
 
 namespace Bifoql.Adapters
 {
-    internal class AsyncArray : IAsyncArray
+    internal class AsyncArray : IBifoqlArray
     {
         private readonly BifoqlType _type;
-        private readonly IReadOnlyList<Func<Task<IAsyncObject>>> _getters;
+        private readonly IReadOnlyList<Func<Task<IBifoqlObject>>> _getters;
 
         public int Count => _getters.Count;
 
@@ -31,9 +31,9 @@ namespace Bifoql.Adapters
             return ArrayTypeInferer.InferArrayType(elementTypes);
         }
 
-        public Func<Task<IAsyncObject>> this[int key] => _getters[key];
+        public Func<Task<IBifoqlObject>> this[int key] => _getters[key];
 
-        public AsyncArray(IReadOnlyList<Func<Task<IAsyncObject>>> getters, BifoqlType type=null)
+        public AsyncArray(IReadOnlyList<Func<Task<IBifoqlObject>>> getters, BifoqlType type=null)
         {
             _getters = getters;
             _type = type;
@@ -44,17 +44,17 @@ namespace Bifoql.Adapters
             return Task.FromResult<object>(new AsyncError("This object has no indexes"));
         }
 
-        public IEnumerator<Func<Task<IAsyncObject>>> GetEnumerator() => _getters.GetEnumerator();
+        public IEnumerator<Func<Task<IBifoqlObject>>> GetEnumerator() => _getters.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
-        public async Task<bool> IsEqualTo(IAsyncObject other)
+        public async Task<bool> IsEqualTo(IBifoqlObject other)
         {
             if (this == other) return true;
             
-            var otherArray = other as IAsyncArray;
+            var otherArray = other as IBifoqlArray;
             if (otherArray == null) return false;
             if (otherArray.Count != this.Count) return false;
 

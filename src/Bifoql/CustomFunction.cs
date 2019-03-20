@@ -12,32 +12,32 @@ namespace Bifoql
     {
         internal abstract Expr ToExpr(Location location, string name, IReadOnlyList<Expr> arguments);
 
-        public static CustomFunction Create<T1>(Func<T1, Task<IAsyncObject>> func)
-            where T1 : IAsyncObject
+        public static CustomFunction Create<T1>(Func<T1, Task<IBifoqlObject>> func)
+            where T1 : IBifoqlObject
         {
             return new CustomFunction<T1>(func);
         }
-        public static CustomFunction Create<T1, T2>(Func<T1, T2, Task<IAsyncObject>> func)
-            where T1 : IAsyncObject
-            where T2 : IAsyncObject
+        public static CustomFunction Create<T1, T2>(Func<T1, T2, Task<IBifoqlObject>> func)
+            where T1 : IBifoqlObject
+            where T2 : IBifoqlObject
         {
             return new CustomFunction<T1, T2>(func);
         }
-        public static CustomFunction Create<T1, T2, T3>(Func<T1, T2, T3, Task<IAsyncObject>> func)
-            where T1 : IAsyncObject
-            where T2 : IAsyncObject
-            where T3 : IAsyncObject
+        public static CustomFunction Create<T1, T2, T3>(Func<T1, T2, T3, Task<IBifoqlObject>> func)
+            where T1 : IBifoqlObject
+            where T2 : IBifoqlObject
+            where T3 : IBifoqlObject
         {
             return new CustomFunction<T1, T2, T3>(func);
         }
     }
 
     internal class CustomFunction<T1> : CustomFunction 
-        where T1 : IAsyncObject
+        where T1 : IBifoqlObject
     {
-        private Func<Location, QueryContext, T1, Task<IAsyncObject>> _func;
+        private Func<Location, QueryContext, T1, Task<IBifoqlObject>> _func;
 
-        public CustomFunction(Func<T1, Task<IAsyncObject>> func)
+        public CustomFunction(Func<T1, Task<IBifoqlObject>> func)
         {
             _func = (l, c, a1) => func(a1);
         }
@@ -49,12 +49,12 @@ namespace Bifoql
     }
 
     internal class CustomFunction<T1, T2> : CustomFunction 
-        where T1 : IAsyncObject 
-        where T2 : IAsyncObject
+        where T1 : IBifoqlObject 
+        where T2 : IBifoqlObject
     {
-        private Func<Location, QueryContext, T1, T2, Task<IAsyncObject>> _func;
+        private Func<Location, QueryContext, T1, T2, Task<IBifoqlObject>> _func;
 
-        public CustomFunction(Func<T1, T2, Task<IAsyncObject>> func)
+        public CustomFunction(Func<T1, T2, Task<IBifoqlObject>> func)
         {
             _func = (l, c, a1, a2) => func(a1, a2);
         }
@@ -66,13 +66,13 @@ namespace Bifoql
     }
 
     internal class CustomFunction<T1, T2, T3> : CustomFunction 
-        where T1 : IAsyncObject 
-        where T2 : IAsyncObject
-        where T3 : IAsyncObject
+        where T1 : IBifoqlObject 
+        where T2 : IBifoqlObject
+        where T3 : IBifoqlObject
     {
-        private Func<Location, QueryContext, T1, T2, T3, Task<IAsyncObject>> _func;
+        private Func<Location, QueryContext, T1, T2, T3, Task<IBifoqlObject>> _func;
 
-        public CustomFunction(Func<T1, T2, T3, Task<IAsyncObject>> func)
+        public CustomFunction(Func<T1, T2, T3, Task<IBifoqlObject>> func)
         {
             _func = (l, c, a1, a2, a3) => func(a1, a2, a3);
         }

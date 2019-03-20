@@ -9,11 +9,11 @@ namespace Bifoql.Extensions
 
     public static class BifoqlExtensions
     {
-        public static IAsyncObject ToAsyncObject(this object o, BifoqlType schema=null)
+        public static IBifoqlObject ToAsyncObject(this object o, BifoqlType schema=null)
         {
             if (o == null) return AsyncNull.Instance;
 
-            if (o is IAsyncObject) return (IAsyncObject)o;
+            if (o is IBifoqlObject) return (IBifoqlObject)o;
 
             if (o is DynamicDict) return ConvertDynamicDict((DynamicDict)o, schema);
 
@@ -31,15 +31,15 @@ namespace Bifoql.Extensions
             return PropertyAdapter.Create(o, o.GetType());
         }
 
-        private static IAsyncObject ConvertList(object o, BifoqlType schema)
+        private static IBifoqlObject ConvertList(object o, BifoqlType schema)
         {
-            var list = new List<Func<Task<IAsyncObject>>>();
+            var list = new List<Func<Task<IBifoqlObject>>>();
 
             int i = 0;
 
-            if (o is IList<Func<IAsyncObject>>)
+            if (o is IList<Func<IBifoqlObject>>)
             {
-                foreach (var item in ((IList<Func<IAsyncObject>>)o))
+                foreach (var item in ((IList<Func<IBifoqlObject>>)o))
                 {
                     list.Add(() => Task.FromResult(item()));
                 }
@@ -56,22 +56,22 @@ namespace Bifoql.Extensions
             return new AsyncArray(list, schema);
         }
 
-        private static IAsyncObject ConvertDictionary(object o, BifoqlType schema)
+        private static IBifoqlObject ConvertDictionary(object o, BifoqlType schema)
         {
-            var dict = new Dictionary<string, Func<Task<IAsyncObject>>>();
+            var dict = new Dictionary<string, Func<Task<IBifoqlObject>>>();
 
-            if (o is IDictionary<string, Task<IAsyncObject>>)
+            if (o is IDictionary<string, Task<IBifoqlObject>>)
             {
-                foreach (var pair in ((IDictionary<string, Task<IAsyncObject>>)o))
+                foreach (var pair in ((IDictionary<string, Task<IBifoqlObject>>)o))
                 {
                     dict[pair.Key] = () => pair.Value;
                 }
                 return new AsyncMap(dict);
             }
 
-            if (o is IDictionary<string, Func<IAsyncObject>>)
+            if (o is IDictionary<string, Func<IBifoqlObject>>)
             {
-                foreach (var pair in ((IDictionary<string, Func<IAsyncObject>>)o))
+                foreach (var pair in ((IDictionary<string, Func<IBifoqlObject>>)o))
                 {
                     dict[pair.Key] = () => Task.FromResult(pair.Value());
                 }
@@ -97,9 +97,9 @@ namespace Bifoql.Extensions
             return new AsyncMap(dict, schema);
         }
 
-        private static IAsyncObject ConvertDynamicDict(DynamicDict dict, BifoqlType schema)
+        private static IBifoqlObject ConvertDynamicDict(DynamicDict dict, BifoqlType schema)
         {
-            var map = new Dictionary<string, Func<Task<IAsyncObject>>>();
+            var map = new Dictionary<string, Func<Task<IBifoqlObject>>>();
 
             foreach (var pair in dict)
             {

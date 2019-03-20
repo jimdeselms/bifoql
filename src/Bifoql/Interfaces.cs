@@ -5,55 +5,55 @@ namespace Bifoql
     using System;
     using Bifoql.Types;
 
-    public interface IAsyncObject
+    public interface IBifoqlObject
     {
-        Task<bool> IsEqualTo(IAsyncObject o);
+        Task<bool> IsEqualTo(IBifoqlObject o);
         Task<BifoqlType> GetSchema();
     }
 
-    public interface IAsyncMap : IAsyncObject, IReadOnlyDictionary<string, Func<Task<IAsyncObject>>>
+    public interface IBifoqlMap : IBifoqlObject, IReadOnlyDictionary<string, Func<Task<IBifoqlObject>>>
     {
     }
 
-    public interface IAsyncArray : IAsyncObject, IReadOnlyList<Func<Task<IAsyncObject>>>
+    public interface IBifoqlArray : IBifoqlObject, IReadOnlyList<Func<Task<IBifoqlObject>>>
     {
     }
 
-    public interface IAsyncDeferredQuery : IAsyncObject
+    public interface IBifoqlDeferredQuery : IBifoqlObject
     {
-        Task<IAsyncObject> EvaluateQuery(string query);
+        Task<IBifoqlObject> EvaluateQuery(string query);
     }
 
-    public interface IAsyncExpression : IAsyncObject
+    public interface IBifoqlExpression : IBifoqlObject
     {
-        Task<IAsyncObject> Evaluate(QueryContext context);
+        Task<IBifoqlObject> Evaluate(QueryContext context);
     }
 
-    public interface IAsyncIndex : IAsyncObject
+    public interface IBifoqlIndex : IBifoqlObject
     {
         Task<object> Lookup(IndexArgumentList elements);
     }
 
-    public interface IAsyncNull : IAsyncObject
+    public interface IBifoqlNull : IBifoqlObject
     {
     }
 
-    public interface IAsyncString : IAsyncObject
+    public interface IBifoqlString : IBifoqlObject
     {
         Task<string> Value { get; }
     }
 
-    public interface IAsyncNumber : IAsyncObject
+    public interface IBifoqlNumber : IBifoqlObject
     {
         Task<double> Value { get; }
     }
 
-    public interface IAsyncBoolean : IAsyncObject
+    public interface IBifoqlBoolean : IBifoqlObject
     {
         Task<bool> Value { get; }
     }
 
-    public interface IAsyncError : IAsyncObject
+    public interface IBifoqlError : IBifoqlObject
     {
         string Message { get; }
     }

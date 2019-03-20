@@ -18,18 +18,18 @@ namespace Bifoql.Expressions
             _exprs = exprs;
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IAsyncObject> variables)
+        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
         {
             return new ArrayExpr(Location, _exprs.Select(e => e.Simplify(variables)).ToList());
         }
 
-        protected override async Task<IAsyncObject> DoApply(QueryContext context)
+        protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
             var tasks = _exprs.Select(e => new { spread= e is SpreadExpr, task = e.Apply(context)}).ToList();
 
             var resolvedExprs = await Task.WhenAll(tasks.Select(t => t.task));
 
-            var result = new List<Func<Task<IAsyncObject>>>();
+            var result = new List<Func<Task<IBifoqlObject>>>();
 
             var types = new List<BifoqlType>();
 
@@ -40,7 +40,7 @@ namespace Bifoql.Expressions
 
                 if (tasks[i].spread)
                 {
-                    var spreadList = resolvedExprs[i] as IAsyncArray;
+                    var spreadList = resolvedExprs[i] as IBifoqlArray;
                     if (spreadList == null) return new AsyncError(this.Location, "In an array, spread expression must resolve to an array");
                     foreach (var item in spreadList)
                     {
@@ -61,6 +61,6 @@ namespace Bifoql.Expressions
             return $"[{string.Join(",", _exprs.Select(e => e.ToString()))}]";
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IAsyncObject> variables) => _exprs.Any(a => a.NeedsAsync(variables));
+        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => _exprs.Any(a => a.NeedsAsync(variables));
     }
 }

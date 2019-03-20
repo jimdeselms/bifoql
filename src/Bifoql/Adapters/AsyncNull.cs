@@ -3,16 +3,16 @@ using Bifoql.Types;
 
 namespace Bifoql.Adapters
 {
-    internal class AsyncNull : AsyncObjectBase, IAsyncNull
+    internal class AsyncNull : AsyncObjectBase, IBifoqlNull
     {
-        public Task<bool> IsEqualTo(IAsyncObject other)
+        public Task<bool> IsEqualTo(IBifoqlObject other)
         {
-            return Task.FromResult(other is IAsyncNull || other == null);
+            return Task.FromResult(other is IBifoqlNull || other == null);
         }
 
         public override bool Equals(object other)
         {
-            return other is IAsyncNull || other == null;
+            return other is IBifoqlNull || other == null;
         }
 
         public override int GetHashCode()

@@ -19,9 +19,9 @@ namespace Bifoql.Tests
         {
             RunTest(new [] { "Ted" }, "@(name: ('T' + 'e' + 'd') ).name", "Ted", "Fred");
         }
-        private class NamesAndLetterCount : IAsyncIndex
+        private class NamesAndLetterCount : IBifoqlIndex
         {
-            public Func<Task<IAsyncObject>> this[int index] => throw new NotImplementedException();
+            public Func<Task<IBifoqlObject>> this[int index] => throw new NotImplementedException();
 
             private HashSet<string> _names;
 
@@ -52,7 +52,7 @@ namespace Bifoql.Tests
                 return new AsyncError("Not found");
             }
 
-            public Task<bool> IsEqualTo(IAsyncObject o)
+            public Task<bool> IsEqualTo(IBifoqlObject o)
             {
                 throw new NotImplementedException();
             }

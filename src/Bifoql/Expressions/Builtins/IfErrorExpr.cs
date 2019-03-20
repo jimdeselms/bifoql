@@ -20,7 +20,7 @@ namespace Bifoql.Expressions.Builtins
             _ifIsError = arguments[1];
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IAsyncObject> variables)
+        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
         {
            return new IfErrorExpr(Location, new[] 
             { 
@@ -29,13 +29,13 @@ namespace Bifoql.Expressions.Builtins
             });
         }
 
-        protected override async Task<IAsyncObject> DoApply(QueryContext context)
+        protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
             // Since this function essentialy works as a "catch", then we want to handle any unexpected errors as well.
             try
             {
                 var obj = await _obj.Apply(context);
-                if (!(obj is IAsyncError)) return obj;
+                if (!(obj is IBifoqlError)) return obj;
             }
             catch
             {

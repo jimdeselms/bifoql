@@ -14,9 +14,9 @@ namespace Bifoql.Expressions
             _message = message;
         }
 
-        protected override Task<IAsyncObject> DoApply(QueryContext context)
+        protected override Task<IBifoqlObject> DoApply(QueryContext context)
         {
-            return Task.FromResult<IAsyncObject>(new AsyncError(this.Location, _message));
+            return Task.FromResult<IBifoqlObject>(new AsyncError(this.Location, _message));
         }
 
 
@@ -32,6 +32,6 @@ namespace Bifoql.Expressions
             }
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IAsyncObject> variables) => false;
+        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => false;
     }
 }

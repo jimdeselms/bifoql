@@ -15,7 +15,7 @@ namespace Bifoql.Tests
         public async Task Int()
         {
             var obj = 5.ToAsyncObject();
-            var actualValue = await ((IAsyncNumber)obj).Value;
+            var actualValue = await ((IBifoqlNumber)obj).Value;
             Assert.Equal(5, actualValue);
         }
 
@@ -23,7 +23,7 @@ namespace Bifoql.Tests
         public async Task String()
         {
             var obj = "Hello".ToAsyncObject();
-            var actualValue = await ((IAsyncString)obj).Value;
+            var actualValue = await ((IBifoqlString)obj).Value;
             Assert.Equal("Hello", actualValue);
         }
 
@@ -31,7 +31,7 @@ namespace Bifoql.Tests
         public async Task Boolean()
         {
             var obj = true.ToAsyncObject();
-            var actualValue = await ((IAsyncBoolean)obj).Value;
+            var actualValue = await ((IBifoqlBoolean)obj).Value;
             Assert.Equal(true, actualValue);
         }
 
@@ -39,12 +39,12 @@ namespace Bifoql.Tests
         public async Task Array()
         {
             var obj = (new [] { 1, 2, 3 }).ToAsyncObject();
-            var list = (IAsyncArray)obj;
+            var list = (IBifoqlArray)obj;
 
             Assert.Equal(3, list.Count);
 
             var second = await list[1]();
-            Assert.Equal(2, await ((IAsyncNumber)second).Value);
+            Assert.Equal(2, await ((IBifoqlNumber)second).Value);
         }
 
         [Fact]
@@ -53,12 +53,12 @@ namespace Bifoql.Tests
             var num = 5.ToAsyncObject();
             var arr = new object[]{ num };
 
-            var obj = (IAsyncArray)arr.ToAsyncObject();
+            var obj = (IBifoqlArray)arr.ToAsyncObject();
 
             Assert.Equal(1, obj.Count);
 
             var first = await obj[0]();
-            Assert.Equal(5, await ((IAsyncNumber)first).Value);
+            Assert.Equal(5, await ((IBifoqlNumber)first).Value);
         }
 
         [Fact]
@@ -66,7 +66,7 @@ namespace Bifoql.Tests
         {
             var dict = new AsyncDictThatBlowsUp();
             var arr = new object[] { dict };
-            var obj = (IAsyncArray)arr.ToAsyncObject();
+            var obj = (IBifoqlArray)arr.ToAsyncObject();
 
             Assert.Equal(1, obj.Count);
 
@@ -79,7 +79,7 @@ namespace Bifoql.Tests
         {
             var dict = new AsyncDictThatBlowsUp();
             var arr = new Dictionary<string, object> { ["dict"] = dict };
-            var obj = (IAsyncMap)arr.ToAsyncObject();
+            var obj = (IBifoqlMap)arr.ToAsyncObject();
 
             Assert.Equal(1, obj.Count);
 
@@ -95,9 +95,9 @@ namespace Bifoql.Tests
                 foo = new { bar = dict }
             };
 
-            var obj = (IAsyncMap)anon.ToAsyncObject();
+            var obj = (IBifoqlMap)anon.ToAsyncObject();
 
-            var foo = (IAsyncMap)(await obj["foo"]());
+            var foo = (IBifoqlMap)(await obj["foo"]());
             var bar = await foo["bar"]();
 
             Assert.Same(dict, bar);
@@ -113,9 +113,9 @@ namespace Bifoql.Tests
                 ["foo"] = (new Dictionary<string, object> { ["bar"] = dict })
             };
 
-            var obj = (IAsyncMap)anon.ToAsyncObject();
+            var obj = (IBifoqlMap)anon.ToAsyncObject();
 
-            var foo = (IAsyncMap)(await obj["foo"]());
+            var foo = (IBifoqlMap)(await obj["foo"]());
             var bar = await foo["bar"]();
 
             Assert.Same(dict, bar);
@@ -126,7 +126,7 @@ namespace Bifoql.Tests
         {
             var dict = new AsyncDictThatBlowsUp();
             var arr = new { dict = dict };
-            var obj = (IAsyncMap)arr.ToAsyncObject();
+            var obj = (IBifoqlMap)arr.ToAsyncObject();
 
             Assert.Equal(1, obj.Count);
 
@@ -134,13 +134,13 @@ namespace Bifoql.Tests
             Assert.Same(dict, first);
         }
 
-        private class AsyncDictThatBlowsUp : IAsyncMap
+        private class AsyncDictThatBlowsUp : IBifoqlMap
         {
-            public Func<Task<IAsyncObject>> this[string key] => throw new NotImplementedException();
+            public Func<Task<IBifoqlObject>> this[string key] => throw new NotImplementedException();
 
             public IEnumerable<string> Keys => throw new NotImplementedException();
 
-            public IEnumerable<Func<Task<IAsyncObject>>> Values => throw new NotImplementedException();
+            public IEnumerable<Func<Task<IBifoqlObject>>> Values => throw new NotImplementedException();
 
             public int Count => throw new NotImplementedException();
 
@@ -151,17 +151,17 @@ namespace Bifoql.Tests
                 throw new NotImplementedException();
             }
 
-            public IEnumerator<KeyValuePair<string, Func<Task<IAsyncObject>>>> GetEnumerator()
+            public IEnumerator<KeyValuePair<string, Func<Task<IBifoqlObject>>>> GetEnumerator()
             {
                 throw new NotImplementedException();
             }
 
-            public Task<bool> IsEqualTo(IAsyncObject o)
+            public Task<bool> IsEqualTo(IBifoqlObject o)
             {
                 throw new NotImplementedException();
             }
 
-            public bool TryGetValue(string key, out Func<Task<IAsyncObject>> value)
+            public bool TryGetValue(string key, out Func<Task<IBifoqlObject>> value)
             {
                 throw new NotImplementedException();
             }

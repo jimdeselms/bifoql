@@ -9,7 +9,7 @@ namespace Bifoql.Expressions
         {
         }
 
-        protected override Task<IAsyncObject> DoApply(QueryContext context)
+        protected override Task<IBifoqlObject> DoApply(QueryContext context)
         {
             return Task.FromResult(context.QueryTarget);
         }
@@ -19,12 +19,12 @@ namespace Bifoql.Expressions
             return "@";
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IAsyncObject> variables)
+        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
         {
             // This can't be simplified.
             return this;
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IAsyncObject> variables) => true;
+        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => true;
     }
 }

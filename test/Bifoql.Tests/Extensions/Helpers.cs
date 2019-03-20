@@ -4,27 +4,27 @@ namespace Bifoql.Tests.Extensions
 {
     public static class Helpers
     {
-        public static string TryGetString(this IAsyncObject o)
+        public static string TryGetString(this IBifoqlObject o)
         {
-            return ((IAsyncString)o).Value.Result;
+            return ((IBifoqlString)o).Value.Result;
         }
 
-        public static double TryGetNumber(this IAsyncObject o)
+        public static double TryGetNumber(this IBifoqlObject o)
         {
-            return ((IAsyncNumber)o).Value.Result;
+            return ((IBifoqlNumber)o).Value.Result;
         }
 
-        public static IAsyncObject TryGetValue(this IAsyncObject o, string key)
+        public static IBifoqlObject TryGetValue(this IBifoqlObject o, string key)
         {
-            return ((IAsyncMap)o)[key]().Result;
+            return ((IBifoqlMap)o)[key]().Result;
         }
 
-        public static string TryGetValueAsString(this IAsyncObject o, string key)
+        public static string TryGetValueAsString(this IBifoqlObject o, string key)
         {
             return o.TryGetValue(key).TryGetString();
         }
 
-        public static object TryGetValueAsNumber(this IAsyncObject o, string key)
+        public static object TryGetValueAsNumber(this IBifoqlObject o, string key)
         {
             return o.TryGetValue(key).TryGetNumber();
         }

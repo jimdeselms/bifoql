@@ -3,7 +3,7 @@ using Bifoql.Types;
 
 namespace Bifoql.Adapters
 {
-    internal class AsyncNumber : AsyncObjectBase, IAsyncNumber
+    internal class AsyncNumber : AsyncObjectBase, IBifoqlNumber
     {
         public Task<double> Value { get; }
         private BifoqlType _schema;
@@ -14,11 +14,11 @@ namespace Bifoql.Adapters
             _schema = schema ?? BifoqlType.Number;
         }
 
-        public async Task<bool> IsEqualTo(IAsyncObject other)
+        public async Task<bool> IsEqualTo(IBifoqlObject other)
         {
             if (this == other) return true;
             
-            var o = other as IAsyncNumber;
+            var o = other as IBifoqlNumber;
             if (o == null) return false;
 
             return (await o.Value) == await Value;

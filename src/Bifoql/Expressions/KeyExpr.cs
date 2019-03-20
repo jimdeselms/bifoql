@@ -15,12 +15,12 @@ namespace Bifoql.Expressions
             Key = key;
         }
 
-        protected override async Task<IAsyncObject> DoApply(QueryContext context)
+        protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
-            var lookup = context.QueryTarget as IAsyncMap;
+            var lookup = context.QueryTarget as IBifoqlMap;
             if (lookup != null)
             {
-                Func<Task<IAsyncObject>> value;
+                Func<Task<IBifoqlObject>> value;
                 if (lookup.TryGetValue(Key, out value))
                 {
                     return await value();
@@ -31,10 +31,10 @@ namespace Bifoql.Expressions
                 }
             }
 
-            var array = context.QueryTarget as IAsyncArray;
+            var array = context.QueryTarget as IBifoqlArray;
             if (array != null)
             {
-                var result = new List<Func<Task<IAsyncObject>>>();
+                var result = new List<Func<Task<IBifoqlObject>>>();
 
                 foreach (var item in array)
                 {
@@ -47,7 +47,7 @@ namespace Bifoql.Expressions
                 return new AsyncArray(result);
             }
 
-            if (context.QueryTarget is IAsyncNull)
+            if (context.QueryTarget is IBifoqlNull)
             {
                 return AsyncNull.Instance;
             }
@@ -63,13 +63,13 @@ namespace Bifoql.Expressions
             return isEscaped ? $"[\"{key}\"]" : key;
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IAsyncObject> variables)
+        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
         {
             // this can't be simplified.
             return this;
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IAsyncObject> variables) => true;
+        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => true;
         public override bool NeedsAsyncByItself => true;
     }
 }

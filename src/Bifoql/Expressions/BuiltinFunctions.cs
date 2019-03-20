@@ -9,19 +9,19 @@ namespace Bifoql.Expressions
 
     internal class BuiltinFunctions
     {
-        public static async Task<IAsyncObject> Abs(Location location, QueryContext context, IAsyncNumber number)
+        public static async Task<IBifoqlObject> Abs(Location location, QueryContext context, IBifoqlNumber number)
         {
             var value = await number.Value;
             return new AsyncNumber(Math.Abs(value));
         }
 
-        public static async Task<IAsyncObject> Avg(Location location, QueryContext context, IAsyncArray list)
+        public static async Task<IBifoqlObject> Avg(Location location, QueryContext context, IBifoqlArray list)
         {
             double average = 0.0;
 
             foreach (var item in list)
             {
-                var num = (await item()) as IAsyncNumber;
+                var num = (await item()) as IBifoqlNumber;
                 if (num == null) return new AsyncError(location, "To take an average, all itmes in a list must be a number");
 
                 average += (await num.Value) / (double)list.Count;
@@ -30,15 +30,15 @@ namespace Bifoql.Expressions
             return new AsyncNumber(average);
         }
 
-        public static async Task<IAsyncObject> Ceil(Location location, QueryContext context, IAsyncNumber number)
+        public static async Task<IBifoqlObject> Ceil(Location location, QueryContext context, IBifoqlNumber number)
         {
             var value = await number.Value;
             return new AsyncNumber(Math.Ceiling(value));
         }
 
-        public static async Task<IAsyncObject> Distinct(Location location, QueryContext context, IAsyncArray list)
+        public static async Task<IBifoqlObject> Distinct(Location location, QueryContext context, IBifoqlArray list)
         {
-            var distinctObjects = new List<IAsyncObject>();
+            var distinctObjects = new List<IBifoqlObject>();
 
             // This is TOTALLY the wrong way to do this, it's O(n^2), and it might just cause objects to be evaluted multiple times
             //
@@ -63,22 +63,22 @@ namespace Bifoql.Expressions
                 }
             }
 
-            return new AsyncArray(distinctObjects.Select(o => (Func<Task<IAsyncObject>>)(() => Task.FromResult(o))).ToList());
+            return new AsyncArray(distinctObjects.Select(o => (Func<Task<IBifoqlObject>>)(() => Task.FromResult(o))).ToList());
         }
 
-        public static async Task<IAsyncObject> Eval(Location location, QueryContext context, IAsyncExpression expr)
+        public static async Task<IBifoqlObject> Eval(Location location, QueryContext context, IBifoqlExpression expr)
         {
             return await expr.Evaluate(context);
         }
 
-        public static async Task<IAsyncObject> Flatten(Location location, QueryContext context, IAsyncArray list)
+        public static async Task<IBifoqlObject> Flatten(Location location, QueryContext context, IBifoqlArray list)
         {
-            var flattenedList = new List<Func<Task<IAsyncObject>>>();
+            var flattenedList = new List<Func<Task<IBifoqlObject>>>();
 
             foreach (var item in list)
             {
                 var currItem = await item();
-                var currList = currItem as IAsyncArray;
+                var currList = currItem as IBifoqlArray;
                 if (currList != null)
                 {
                     foreach (var subitem in currList)
@@ -95,18 +95,18 @@ namespace Bifoql.Expressions
             return new AsyncArray(flattenedList);
         }
 
-        public static async Task<IAsyncObject> Floor(Location location, QueryContext context, IAsyncNumber number)
+        public static async Task<IBifoqlObject> Floor(Location location, QueryContext context, IBifoqlNumber number)
         {
             var value = await number.Value;
             return new AsyncNumber(Math.Floor(value));
         }
 
-        public static async Task<IAsyncObject> Join(Location location, QueryContext context, IAsyncString glue, IAsyncArray stringList)
+        public static async Task<IBifoqlObject> Join(Location location, QueryContext context, IBifoqlString glue, IBifoqlArray stringList)
         {
             var strings = new List<string>();
             foreach (var s in stringList)
             {
-                var str = await s() as IAsyncString;
+                var str = await s() as IBifoqlString;
                 if (str == null) return new AsyncError(location, "Each member of join's string list must be a string");
 
                 strings.Add(await str.Value);
@@ -116,27 +116,27 @@ namespace Bifoql.Expressions
             return new AsyncString(string.Join(glueStr, strings));
         }
 
-        public static Task<IAsyncObject> Keys(Location location, QueryContext context, IAsyncMap map)
+        public static Task<IBifoqlObject> Keys(Location location, QueryContext context, IBifoqlMap map)
         {
-            var keys = new List<Func<Task<IAsyncObject>>>();
+            var keys = new List<Func<Task<IBifoqlObject>>>();
 
             foreach (var pair in map)
             {
-                keys.Add(() => Task.FromResult((IAsyncObject)new AsyncString(pair.Key)));
+                keys.Add(() => Task.FromResult((IBifoqlObject)new AsyncString(pair.Key)));
             }
 
-            return Task.FromResult<IAsyncObject>(new AsyncArray(keys));
+            return Task.FromResult<IBifoqlObject>(new AsyncArray(keys));
         }
 
-        public static async Task<IAsyncObject> Length(Location location, QueryContext context, IAsyncObject value)
+        public static async Task<IBifoqlObject> Length(Location location, QueryContext context, IBifoqlObject value)
         {
-            var str = value as IAsyncString;
+            var str = value as IBifoqlString;
             if (str != null)
             {
                 return new AsyncNumber((await str.Value).Length);
             }
 
-            var arr = value as IAsyncArray;
+            var arr = value as IBifoqlArray;
             if (arr != null)
             {
                 return new AsyncNumber(arr.Count);
@@ -145,29 +145,29 @@ namespace Bifoql.Expressions
             return new AsyncError(location, "length accepts a number or string argument");
         }
 
-        public static Task<IAsyncObject> MaxBy(Location location, QueryContext context, IAsyncArray list, IAsyncExpression keyExpr)
+        public static Task<IBifoqlObject> MaxBy(Location location, QueryContext context, IBifoqlArray list, IBifoqlExpression keyExpr)
         {
             return MaxMin(location, context, list, keyExpr, max: true);
         }
 
-        public static Task<IAsyncObject> Max(Location location, QueryContext context, IAsyncArray list)
+        public static Task<IBifoqlObject> Max(Location location, QueryContext context, IBifoqlArray list)
         {
             return MaxMin(location, context, list, null, max: true);
         }
 
-        public static Task<IAsyncObject> MinBy(Location location, QueryContext context, IAsyncArray list, IAsyncExpression keyExpr)
+        public static Task<IBifoqlObject> MinBy(Location location, QueryContext context, IBifoqlArray list, IBifoqlExpression keyExpr)
         {
             return MaxMin(location, context, list, keyExpr, max: false);
         }
 
-        public static Task<IAsyncObject> Min(Location location, QueryContext context, IAsyncArray list)
+        public static Task<IBifoqlObject> Min(Location location, QueryContext context, IBifoqlArray list)
         {
             return MaxMin(location, context, list, null, max: false);
         }
 
-        private static async Task<IAsyncObject> MaxMin(Location location, QueryContext context, IAsyncArray list, IAsyncExpression keyQuery, bool max)
+        private static async Task<IBifoqlObject> MaxMin(Location location, QueryContext context, IBifoqlArray list, IBifoqlExpression keyQuery, bool max)
         {
-            var pairs = new List<KeyValuePair<IAsyncObject, IAsyncObject>>();
+            var pairs = new List<KeyValuePair<IBifoqlObject, IBifoqlObject>>();
             foreach (var value in list)
             {
                 var val = await value();
@@ -175,14 +175,14 @@ namespace Bifoql.Expressions
 
                 var key = keyQuery == null ? val : await keyQuery.Evaluate(newContext);
 
-                pairs.Add(new KeyValuePair<IAsyncObject, IAsyncObject>(key, val));
+                pairs.Add(new KeyValuePair<IBifoqlObject, IBifoqlObject>(key, val));
             }
 
             var resultNum = max ? double.MinValue : double.MaxValue;
             string resultStr = null;
             bool first = true;
             bool isNum = false;
-            IAsyncObject result = null;
+            IBifoqlObject result = null;
 
             foreach (var val in pairs)
             {
@@ -190,12 +190,12 @@ namespace Bifoql.Expressions
                 if (first)
                 {
                     first = false;
-                    isNum = curr is IAsyncNumber;
+                    isNum = curr is IBifoqlNumber;
                 }
 
                 if (isNum)
                 {
-                    var currNumObj = curr as IAsyncNumber;
+                    var currNumObj = curr as IBifoqlNumber;
                     if (currNumObj == null)
                     {
                         return new AsyncError(location, "To take max, all members of the list must be a number or string");
@@ -210,7 +210,7 @@ namespace Bifoql.Expressions
                 }
                 else
                 {
-                    var currStrObj = curr as IAsyncString;
+                    var currStrObj = curr as IBifoqlString;
                     if (currStrObj == null)
                     {
                         return new AsyncError(location, "To take max, all members of the list must be a number or string");
@@ -228,20 +228,20 @@ namespace Bifoql.Expressions
             return result;
         }
 
-        public static Task<IAsyncObject> Reverse(Location location, QueryContext context, IAsyncArray array)
+        public static Task<IBifoqlObject> Reverse(Location location, QueryContext context, IBifoqlArray array)
         {
-            return Task.FromResult<IAsyncObject>(new AsyncArray(array.Reverse().ToList()));
+            return Task.FromResult<IBifoqlObject>(new AsyncArray(array.Reverse().ToList()));
         }
 
-        public static Task<IAsyncObject> Sort(Location location, QueryContext context, IAsyncArray array)
+        public static Task<IBifoqlObject> Sort(Location location, QueryContext context, IBifoqlArray array)
         {
             return SortBy(location, context, array, null);
         }
 
-        public static async Task<IAsyncObject> SortBy(Location location, QueryContext context, IAsyncArray array, IAsyncExpression keyExpr)
+        public static async Task<IBifoqlObject> SortBy(Location location, QueryContext context, IBifoqlArray array, IBifoqlExpression keyExpr)
         {
-            var pairs = new List<Tuple<IAsyncObject, IAsyncObject>>();
-            var values = new List<IAsyncObject>();
+            var pairs = new List<Tuple<IBifoqlObject, IBifoqlObject>>();
+            var values = new List<IBifoqlObject>();
             foreach (var obj in array)
             {
                 var currObj = await obj();
@@ -252,21 +252,21 @@ namespace Bifoql.Expressions
                 pairs.Add(Tuple.Create(keyObj, currObj));
             }
 
-            if (pairs.All(p => p.Item1 is IAsyncString))
+            if (pairs.All(p => p.Item1 is IBifoqlString))
             {
-                var pairsByString = new List<Tuple<string, IAsyncObject>>();
+                var pairsByString = new List<Tuple<string, IBifoqlObject>>();
                 foreach (var item in pairs)
                 {
-                    pairsByString.Add(Tuple.Create(await ((IAsyncString)item.Item1).Value, item.Item2));
+                    pairsByString.Add(Tuple.Create(await ((IBifoqlString)item.Item1).Value, item.Item2));
                 }
                 return pairsByString.OrderBy(p => p.Item1).Select(p => p.Item2).ToList().ToAsyncObject();
             }
-            else if (pairs.All(p => p.Item1 is IAsyncNumber))
+            else if (pairs.All(p => p.Item1 is IBifoqlNumber))
             {
-                var pairsByNumber = new List<Tuple<double, IAsyncObject>>();
+                var pairsByNumber = new List<Tuple<double, IBifoqlObject>>();
                 foreach (var item in pairs)
                 {
-                    pairsByNumber.Add(Tuple.Create(await ((IAsyncNumber)item.Item1).Value, item.Item2));
+                    pairsByNumber.Add(Tuple.Create(await ((IBifoqlNumber)item.Item1).Value, item.Item2));
                 }
                 return pairsByNumber.OrderBy(p => p.Item1).Select(p => p.Item2).ToList().ToAsyncObject();
             }
@@ -276,13 +276,13 @@ namespace Bifoql.Expressions
             }
         }
 
-        public static async Task<IAsyncObject> Sum(Location location, QueryContext context, IAsyncArray numbers)
+        public static async Task<IBifoqlObject> Sum(Location location, QueryContext context, IBifoqlArray numbers)
         {
             double sum = 0.0;
 
             foreach (var item in numbers)
             {
-                var num = (await item()) as IAsyncNumber;
+                var num = (await item()) as IBifoqlNumber;
                 if (num == null) return new AsyncError(location, "To take an average, all itmes in a list must be a number");
 
                 sum += await num.Value;
@@ -291,16 +291,16 @@ namespace Bifoql.Expressions
             return new AsyncNumber(sum);
         }
 
-        public static async Task<IAsyncObject> ToMap(Location location, QueryContext context, IAsyncArray list, IAsyncExpression keyExpr, IAsyncExpression valueExpr)
+        public static async Task<IBifoqlObject> ToMap(Location location, QueryContext context, IBifoqlArray list, IBifoqlExpression keyExpr, IBifoqlExpression valueExpr)
         {
-            var dict = new Dictionary<string, IAsyncObject>();
+            var dict = new Dictionary<string, IBifoqlObject>();
 
             foreach (var item in list)
             {
                 var target = await item();
 
                 var currContext = context.ReplaceTarget(target);
-                var key = await keyExpr.Evaluate(currContext) as IAsyncString;
+                var key = await keyExpr.Evaluate(currContext) as IBifoqlString;
                 if (key == null) return new AsyncError(location, "Result of to_map's key expression must be a string");
 
                 var value = await valueExpr.Evaluate(currContext);
@@ -311,7 +311,7 @@ namespace Bifoql.Expressions
             return dict.ToAsyncObject();
         }
 
-        public static async Task<IAsyncObject> ToNumber(Location location, QueryContext context, IAsyncString str)
+        public static async Task<IBifoqlObject> ToNumber(Location location, QueryContext context, IBifoqlString str)
         {
             double dbl;
             if (double.TryParse(await str.Value, out dbl))
@@ -324,46 +324,46 @@ namespace Bifoql.Expressions
             }
         }
 
-        public static Task<IAsyncObject> Unzip(Location location, QueryContext context, IAsyncMap map)
+        public static Task<IBifoqlObject> Unzip(Location location, QueryContext context, IBifoqlMap map)
         {
-            var keys = new List<Func<Task<IAsyncObject>>>();
-            var values = new List<Func<Task<IAsyncObject>>>();
+            var keys = new List<Func<Task<IBifoqlObject>>>();
+            var values = new List<Func<Task<IBifoqlObject>>>();
 
             foreach (var pair in map)
             {
-                keys.Add(() => Task.FromResult((IAsyncObject)new AsyncString(pair.Key)));
+                keys.Add(() => Task.FromResult((IBifoqlObject)new AsyncString(pair.Key)));
                 values.Add(pair.Value);
             }
 
-            var resultDict = new List<Func<Task<IAsyncObject>>>
+            var resultDict = new List<Func<Task<IBifoqlObject>>>
             {
-                () => Task.FromResult((IAsyncObject)new AsyncArray(keys)),
-                () => Task.FromResult((IAsyncObject)new AsyncArray(values))
+                () => Task.FromResult((IBifoqlObject)new AsyncArray(keys)),
+                () => Task.FromResult((IBifoqlObject)new AsyncArray(values))
             };
 
-            return Task.FromResult<IAsyncObject>(new AsyncArray(resultDict));
+            return Task.FromResult<IBifoqlObject>(new AsyncArray(resultDict));
         }
 
-        public static Task<IAsyncObject> Values(Location location, QueryContext context, IAsyncMap map)
+        public static Task<IBifoqlObject> Values(Location location, QueryContext context, IBifoqlMap map)
         {
-            var values = new List<Func<Task<IAsyncObject>>>();
+            var values = new List<Func<Task<IBifoqlObject>>>();
 
             foreach (var pair in map)
             {
                 values.Add(pair.Value);
             }
 
-            return Task.FromResult<IAsyncObject>(new AsyncArray(values));
+            return Task.FromResult<IBifoqlObject>(new AsyncArray(values));
         }
 
-        public static async Task<IAsyncObject> Zip(Location location, QueryContext context, IAsyncArray keyList, IAsyncArray valueList)
+        public static async Task<IBifoqlObject> Zip(Location location, QueryContext context, IBifoqlArray keyList, IBifoqlArray valueList)
         {
             if (keyList.Count != valueList.Count) return new AsyncError(location, "lists passed to zip must be the same length");
-            var resultDict = new Dictionary<string, Func<Task<IAsyncObject>>>();
+            var resultDict = new Dictionary<string, Func<Task<IBifoqlObject>>>();
             
             for (int i = 0; i < valueList.Count; i++)
             {
-                var key = await (await keyList[i]() as IAsyncString).Value;
+                var key = await (await keyList[i]() as IBifoqlString).Value;
                 if (key == null) return new AsyncError(location, "each element in zip's key list must be a string");
 
                 resultDict[key] = valueList[i];

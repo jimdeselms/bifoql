@@ -15,19 +15,19 @@ namespace Bifoql.Expressions
             Location = location ?? new Location(0, 0);
         }
 
-        public virtual async Task<IAsyncObject> Apply(QueryContext context)
+        public virtual async Task<IBifoqlObject> Apply(QueryContext context)
         {
             if (context.QueryTarget is ErrorExpr)
             {
                 return context.QueryTarget;
             }
 
-            if (context.QueryTarget is IAsyncDeferredQuery)
+            if (context.QueryTarget is IBifoqlDeferredQuery)
             {
                 // A deferred query is a query that won't actually be evaluated here, but by some other
                 // service. For example, let's say that I have another REST service that provides a BifoQL
                 // endpoint. I can take this query and pass it along to that endpoint and get the result back.
-                var deferred = ((IAsyncDeferredQuery)context.QueryTarget);
+                var deferred = ((IBifoqlDeferredQuery)context.QueryTarget);
                 var query = this.ToString();
 
                 // Super cheesy.
@@ -51,13 +51,13 @@ namespace Bifoql.Expressions
             return await DoApply(context);
         }
 
-        protected abstract Task<IAsyncObject> DoApply(QueryContext context);
+        protected abstract Task<IBifoqlObject> DoApply(QueryContext context);
 
         // True if it can be simplified synchronously without having a context applied to it.
-        public abstract bool NeedsAsync(IReadOnlyDictionary<string, IAsyncObject> variables);
+        public abstract bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables);
         public virtual bool NeedsAsyncByItself => false;
         public virtual bool IsConstant => false;
-        public virtual Expr Simplify(IReadOnlyDictionary<string, IAsyncObject> variables)
+        public virtual Expr Simplify(IReadOnlyDictionary<string, IBifoqlObject> variables)
         {
             if (NeedsAsync(variables))
             {
@@ -72,7 +72,7 @@ namespace Bifoql.Expressions
 
         // Derived classes that need a context to be evaluated
         // must override this method to return a new expression that has the simplified versions of their children.
-        protected virtual Expr SimplifyChildren(IReadOnlyDictionary<string, IAsyncObject> variables)
+        protected virtual Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
         {
             if (NeedsAsync(variables))
             {

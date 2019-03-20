@@ -15,7 +15,7 @@ namespace Bifoql.Expressions
             _message = arguments[0];
         }
 
-        protected override async Task<IAsyncObject> DoApply(QueryContext context)
+        protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
             var message = await _message.Apply(context);
             var messageObj = await message.ToSimpleObject();
@@ -23,7 +23,7 @@ namespace Bifoql.Expressions
             return new AsyncError(this.Location, messageObj.ToString());
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IAsyncObject> variables)
+        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
         {
             return new ErrorFunctionExpr(Location, new Expr[] { _message.Simplify(variables) } );
         }
@@ -33,6 +33,6 @@ namespace Bifoql.Expressions
             return $"<error: {_message}>";
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IAsyncObject> variables) => _message.NeedsAsync(variables);
+        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => _message.NeedsAsync(variables);
     }
 }

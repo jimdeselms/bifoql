@@ -6,14 +6,14 @@ namespace Bifoql.Expressions
     
     internal class LiteralExpr : Expr
     {
-        public IAsyncObject Literal { get; }
+        public IBifoqlObject Literal { get; }
 
-        public LiteralExpr(Location location, IAsyncObject literal) : base(location)
+        public LiteralExpr(Location location, IBifoqlObject literal) : base(location)
         {
             Literal = literal;
         }
 
-        protected override Task<IAsyncObject> DoApply(QueryContext context)
+        protected override Task<IBifoqlObject> DoApply(QueryContext context)
         {
             return Task.FromResult(Literal);
         }
@@ -22,26 +22,26 @@ namespace Bifoql.Expressions
 
         public override string ToString()
         {
-            if (Literal is IAsyncBoolean)
+            if (Literal is IBifoqlBoolean)
             {
-                var val = ((IAsyncBoolean)Literal).Value.Result;
+                var val = ((IBifoqlBoolean)Literal).Value.Result;
                 return val.ToString();
             }
-            else if (Literal is IAsyncNumber)
+            else if (Literal is IBifoqlNumber)
             {
-                var val = ((IAsyncNumber)Literal).Value.Result;
+                var val = ((IBifoqlNumber)Literal).Value.Result;
                 return val.ToString();
             }
-            else if (Literal is IAsyncString)
+            else if (Literal is IBifoqlString)
             {
-                var val = ((IAsyncString)Literal).Value.Result;
+                var val = ((IBifoqlString)Literal).Value.Result;
                 return "\"" + val + "\"";
             }
-            else if (Literal is IAsyncError)
+            else if (Literal is IBifoqlError)
             {
-                return $"<error: {((IAsyncError)Literal).Message}>";
+                return $"<error: {((IBifoqlError)Literal).Message}>";
             }
-            else if (Literal is IAsyncNull)
+            else if (Literal is IBifoqlNull)
             {
                 return "null";
             }
@@ -51,6 +51,6 @@ namespace Bifoql.Expressions
             }
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IAsyncObject> variables) => false;
+        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => false;
     }
 }

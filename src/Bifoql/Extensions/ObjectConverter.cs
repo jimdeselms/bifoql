@@ -9,33 +9,33 @@ namespace Bifoql.Extensions
 {
     public static class ObjectConverter
     {
-        public static Task<object> ToSimpleObject(this IAsyncObject o, BifoqlType expectedSchema=null)
+        public static Task<object> ToSimpleObject(this IBifoqlObject o, BifoqlType expectedSchema=null)
         {
-            var lookup = o as IAsyncMap;
+            var lookup = o as IBifoqlMap;
             if (lookup != null) return ToSimpleObject(lookup, expectedSchema);
 
-            var arr = o as IAsyncArray;
+            var arr = o as IBifoqlArray;
             if (arr != null) return ToSimpleObject(arr, expectedSchema);
 
-            var str = o as IAsyncString;
+            var str = o as IBifoqlString;
             if (str != null) return ToSimpleObject(str, expectedSchema);
 
-            var num = o as IAsyncNumber;
+            var num = o as IBifoqlNumber;
             if (num != null) return ToSimpleObject(num, expectedSchema);
 
-            var boolean = o as IAsyncBoolean;
+            var boolean = o as IBifoqlBoolean;
             if (boolean != null) return ToSimpleObject(boolean, expectedSchema);
 
-            var deferred = o as IAsyncDeferredQuery;
+            var deferred = o as IBifoqlDeferredQuery;
             if (deferred != null) return ToSimpleObject(deferred, expectedSchema);
 
-            var err = o as IAsyncError;
+            var err = o as IBifoqlError;
             if (err != null) return ToSimpleObject(err, expectedSchema);
 
             return Task.FromResult<object>(null);
         }
 
-        private static async Task<object> ToSimpleObject(IAsyncMap lookup, BifoqlType expectedSchema)
+        private static async Task<object> ToSimpleObject(IBifoqlMap lookup, BifoqlType expectedSchema)
         {
             await AssertSchema(lookup, expectedSchema);
 
@@ -54,7 +54,7 @@ namespace Bifoql.Extensions
             return new DynamicDict(values);
         }
 
-        private static async Task<object> ToSimpleObject(IAsyncArray list, BifoqlType expectedSchema)
+        private static async Task<object> ToSimpleObject(IBifoqlArray list, BifoqlType expectedSchema)
         {
             var tasks = new Task<object>[list.Count];
             for (int i = 0; i < list.Count; i++)
@@ -66,19 +66,19 @@ namespace Bifoql.Extensions
             return await Task.WhenAll(tasks);
         }
 
-        private static async Task<object> ConvertListEntryToSimpleObject(Func<Task<IAsyncObject>> obj, BifoqlType expectedType)
+        private static async Task<object> ConvertListEntryToSimpleObject(Func<Task<IBifoqlObject>> obj, BifoqlType expectedType)
         {
             var asyncObj = await obj();
             return await asyncObj.ToSimpleObject(expectedType);
         }
 
-        private static async Task<object> ToSimpleObject(IAsyncString str, BifoqlType expectedSchema)
+        private static async Task<object> ToSimpleObject(IBifoqlString str, BifoqlType expectedSchema)
         {
             AssertSchema(BifoqlType.String, expectedSchema);
             return await str.Value;
         }
 
-        private static async Task<object> ToSimpleObject(IAsyncNumber num, BifoqlType expectedSchema)
+        private static async Task<object> ToSimpleObject(IBifoqlNumber num, BifoqlType expectedSchema)
         {
             AssertSchema(BifoqlType.Number, expectedSchema);
             var value = await num.Value;
@@ -92,26 +92,26 @@ namespace Bifoql.Extensions
             }
         }
 
-        private static async Task<object> ToSimpleObject(IAsyncBoolean boolean, BifoqlType expectedSchema)
+        private static async Task<object> ToSimpleObject(IBifoqlBoolean boolean, BifoqlType expectedSchema)
         {
             AssertSchema(BifoqlType.Boolean, expectedSchema);
             return await boolean.Value;
         }
         
-        private static async Task<object> ToSimpleObject(IAsyncDeferredQuery deferred, BifoqlType expectedSchema)
+        private static async Task<object> ToSimpleObject(IBifoqlDeferredQuery deferred, BifoqlType expectedSchema)
         {
             var obj = await deferred.EvaluateQuery("@");
             await AssertSchema(obj, expectedSchema);
             return await obj.ToSimpleObject(expectedSchema);
         }
         
-        private static Task<object> ToSimpleObject(IAsyncError error, BifoqlType expectedSchema)
+        private static Task<object> ToSimpleObject(IBifoqlError error, BifoqlType expectedSchema)
         {
             AssertSchema(BifoqlType.Error, expectedSchema);
             return Task.FromResult<object>($"<error: {error.Message}>");
         }
 
-        private static async Task AssertSchema(IAsyncObject asyncObject, BifoqlType expectedSchema)
+        private static async Task AssertSchema(IBifoqlObject asyncObject, BifoqlType expectedSchema)
         {
             // No expected schema? Then no assertion.
             if (expectedSchema == null) return;
@@ -123,7 +123,7 @@ namespace Bifoql.Extensions
             }
         }
 
-        private static async Task AssertSchema(IAsyncMap asyncMap, BifoqlType expectedSchema)
+        private static async Task AssertSchema(IBifoqlMap asyncMap, BifoqlType expectedSchema)
         {
             // No expected schema? Then no assertion.
             if (expectedSchema == null) return;
@@ -165,7 +165,7 @@ namespace Bifoql.Extensions
             }
         }
 
-        private static async Task AssertSchema(IAsyncArray asyncArray, BifoqlType expectedSchema)
+        private static async Task AssertSchema(IBifoqlArray asyncArray, BifoqlType expectedSchema)
         {
             // No expected schema? Then no assertion.
             if (expectedSchema == null) return;

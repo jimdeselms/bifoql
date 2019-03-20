@@ -13,7 +13,7 @@ namespace Bifoql.Expressions
         {
             SpreadObject = spreadObject;
         }
-        protected override async Task<IAsyncObject> DoApply(QueryContext context)
+        protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
             // It's up to the caller to take this resolved object and apply it to the list or array.
             return await SpreadObject.Apply(context);
@@ -24,11 +24,11 @@ namespace Bifoql.Expressions
            return $"...{SpreadObject.ToString()}";
        }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IAsyncObject> variables)
+        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
         {
             return new SpreadExpr(Location, SpreadObject.Simplify(variables));
         }
 
-       public override bool NeedsAsync(IReadOnlyDictionary<string, IAsyncObject> variables) => SpreadObject.NeedsAsync(variables);
+       public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => SpreadObject.NeedsAsync(variables);
     }
 }

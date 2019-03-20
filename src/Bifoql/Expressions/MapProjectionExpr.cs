@@ -17,21 +17,21 @@ namespace Bifoql.Expressions
             _projections = projections.ToList();
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IAsyncObject> variables)
+        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
         {
             return new MapProjectionExpr(Location, _projections.Select(p => p.Simplify(variables)));
         }
 
-        protected override async Task<IAsyncObject> DoApply(QueryContext context)
+        protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
             try
             {
-                var dict = new Dictionary<string, Func<Task<IAsyncObject>>>();
+                var dict = new Dictionary<string, Func<Task<IBifoqlObject>>>();
                 await Apply(context, dict);
 
                 // And now, just because, let's reverse these back to make the unit tests work.
                 // We can make the unit tests smarter later.
-                var newDict = new Dictionary<string, Func<Task<IAsyncObject>>>();
+                var newDict = new Dictionary<string, Func<Task<IBifoqlObject>>>();
 
                 foreach (var pair in dict.Reverse())
                 {
@@ -47,7 +47,7 @@ namespace Bifoql.Expressions
         }
 
 
-        private async Task Apply(QueryContext context, Dictionary<string, Func<Task<IAsyncObject>>> dict)
+        private async Task Apply(QueryContext context, Dictionary<string, Func<Task<IBifoqlObject>>> dict)
         {
             foreach (var projection in _projections.Reverse())
             {
@@ -56,7 +56,7 @@ namespace Bifoql.Expressions
                 {
                     if (!dict.ContainsKey(keyValuePair.Key))
                     {
-                        Func<Task<IAsyncObject>> value = () => keyValuePair.Value.Apply(context);
+                        Func<Task<IBifoqlObject>> value = () => keyValuePair.Value.Apply(context);
                         dict[keyValuePair.Key] = value;
                     }
                     continue;
@@ -69,7 +69,7 @@ namespace Bifoql.Expressions
                 else if (projection is LiteralExpr)
                 {
                     // This seems a little hinky, but it gets the job done.
-                    var lookup = ((LiteralExpr)projection).Literal as IAsyncMap;
+                    var lookup = ((LiteralExpr)projection).Literal as IBifoqlMap;
                     if (lookup == null)
                     {
                         throw new Exception("Only key value pairs or spreads are allowed in a map projection");
@@ -88,9 +88,9 @@ namespace Bifoql.Expressions
             }
         }
 
-        private async Task ApplySpread(SpreadExpr spread, QueryContext context, Dictionary<string, Func<Task<IAsyncObject>>> dictionary)
+        private async Task ApplySpread(SpreadExpr spread, QueryContext context, Dictionary<string, Func<Task<IBifoqlObject>>> dictionary)
         {
-            var thingToSpread = await spread.SpreadObject.Apply(context) as IAsyncMap;
+            var thingToSpread = await spread.SpreadObject.Apply(context) as IBifoqlMap;
             if (thingToSpread == null) throw new Exception("spread expression must evaluate to a map");
 
             foreach (var pair in thingToSpread)
@@ -108,7 +108,7 @@ namespace Bifoql.Expressions
             return "{" + projections + "}";
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IAsyncObject> variables) => _projections.Any(a => a.NeedsAsync(variables));
+        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => _projections.Any(a => a.NeedsAsync(variables));
         public override bool NeedsAsyncByItself => true;    
     }
 }

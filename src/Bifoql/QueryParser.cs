@@ -399,35 +399,35 @@ namespace Bifoql
 
             switch (functionNameToken.Text)
             {
-                case "abs": return new TypedFunctionCallExpr<IAsyncNumber>(location, "abs", arguments, BuiltinFunctions.Abs);
-                case "avg": return new TypedFunctionCallExpr<IAsyncArray>(location, "avg", arguments, BuiltinFunctions.Avg);
-                case "ceil": return new TypedFunctionCallExpr<IAsyncNumber>(location, "ceil", arguments, BuiltinFunctions.Ceil);
+                case "abs": return new TypedFunctionCallExpr<IBifoqlNumber>(location, "abs", arguments, BuiltinFunctions.Abs);
+                case "avg": return new TypedFunctionCallExpr<IBifoqlArray>(location, "avg", arguments, BuiltinFunctions.Avg);
+                case "ceil": return new TypedFunctionCallExpr<IBifoqlNumber>(location, "ceil", arguments, BuiltinFunctions.Ceil);
                 case "contains": return new BinaryExpr(arguments[0], "contains", arguments[1]);
-                case "distinct": return new TypedFunctionCallExpr<IAsyncArray>(location, "distinct", arguments, BuiltinFunctions.Distinct);
+                case "distinct": return new TypedFunctionCallExpr<IBifoqlArray>(location, "distinct", arguments, BuiltinFunctions.Distinct);
                 case "ends_with": return new BinaryExpr(arguments[0], "ends_with", arguments[1]);
                 case "error": return new ErrorFunctionExpr(location, arguments);
-                case "eval": return new TypedFunctionCallExpr<IAsyncExpression>(location, "eval", arguments, BuiltinFunctions.Eval);
-                case "flatten": return new TypedFunctionCallExpr<IAsyncArray>(location, "flatten", arguments, BuiltinFunctions.Flatten);
-                case "floor": return new TypedFunctionCallExpr<IAsyncNumber>(location, "floor", arguments, BuiltinFunctions.Floor);
+                case "eval": return new TypedFunctionCallExpr<IBifoqlExpression>(location, "eval", arguments, BuiltinFunctions.Eval);
+                case "flatten": return new TypedFunctionCallExpr<IBifoqlArray>(location, "flatten", arguments, BuiltinFunctions.Flatten);
+                case "floor": return new TypedFunctionCallExpr<IBifoqlNumber>(location, "floor", arguments, BuiltinFunctions.Floor);
                 case "if_error": return new IfErrorExpr(location, arguments);
-                case "join": return new TypedFunctionCallExpr<IAsyncString, IAsyncArray>(location, "join", arguments, BuiltinFunctions.Join);
-                case "keys": return new TypedFunctionCallExpr<IAsyncMap>(location, "keys", arguments, BuiltinFunctions.Keys);
-                case "length": return new TypedFunctionCallExpr<IAsyncObject>(location, "length", arguments, BuiltinFunctions.Length);
-                case "max": return new TypedFunctionCallExpr<IAsyncArray>(location, "max", arguments, BuiltinFunctions.Max);
-                case "max_by": return new TypedFunctionCallExpr<IAsyncArray, IAsyncExpression>(location, "max_by", arguments, BuiltinFunctions.MaxBy);
-                case "min": return new TypedFunctionCallExpr<IAsyncArray>(location, "min", arguments, BuiltinFunctions.Min);
-                case "min_by": return new TypedFunctionCallExpr<IAsyncArray, IAsyncExpression>(location, "min_by", arguments, BuiltinFunctions.MinBy);
-                case "reverse": return new TypedFunctionCallExpr<IAsyncArray>(location, "reverse", arguments, BuiltinFunctions.Reverse);
-                case "sort": return new TypedFunctionCallExpr<IAsyncArray>(location, "sort", arguments, BuiltinFunctions.Sort);
-                case "sort_by": return new TypedFunctionCallExpr<IAsyncArray, IAsyncExpression>(location, "sort_by", arguments, BuiltinFunctions.SortBy);
+                case "join": return new TypedFunctionCallExpr<IBifoqlString, IBifoqlArray>(location, "join", arguments, BuiltinFunctions.Join);
+                case "keys": return new TypedFunctionCallExpr<IBifoqlMap>(location, "keys", arguments, BuiltinFunctions.Keys);
+                case "length": return new TypedFunctionCallExpr<IBifoqlObject>(location, "length", arguments, BuiltinFunctions.Length);
+                case "max": return new TypedFunctionCallExpr<IBifoqlArray>(location, "max", arguments, BuiltinFunctions.Max);
+                case "max_by": return new TypedFunctionCallExpr<IBifoqlArray, IBifoqlExpression>(location, "max_by", arguments, BuiltinFunctions.MaxBy);
+                case "min": return new TypedFunctionCallExpr<IBifoqlArray>(location, "min", arguments, BuiltinFunctions.Min);
+                case "min_by": return new TypedFunctionCallExpr<IBifoqlArray, IBifoqlExpression>(location, "min_by", arguments, BuiltinFunctions.MinBy);
+                case "reverse": return new TypedFunctionCallExpr<IBifoqlArray>(location, "reverse", arguments, BuiltinFunctions.Reverse);
+                case "sort": return new TypedFunctionCallExpr<IBifoqlArray>(location, "sort", arguments, BuiltinFunctions.Sort);
+                case "sort_by": return new TypedFunctionCallExpr<IBifoqlArray, IBifoqlExpression>(location, "sort_by", arguments, BuiltinFunctions.SortBy);
                 case "starts_with": return new BinaryExpr(arguments[0], "starts_with", arguments[1]);
-                case "sum": return new TypedFunctionCallExpr<IAsyncArray>(location, "sum", arguments, BuiltinFunctions.Sum);
-                case "to_number": return new TypedFunctionCallExpr<IAsyncString>(location, "to_number", arguments, BuiltinFunctions.ToNumber);
-                case "to_map": return new TypedFunctionCallExpr<IAsyncArray, IAsyncExpression, IAsyncExpression>(location, "to_map", arguments, BuiltinFunctions.ToMap);
+                case "sum": return new TypedFunctionCallExpr<IBifoqlArray>(location, "sum", arguments, BuiltinFunctions.Sum);
+                case "to_number": return new TypedFunctionCallExpr<IBifoqlString>(location, "to_number", arguments, BuiltinFunctions.ToNumber);
+                case "to_map": return new TypedFunctionCallExpr<IBifoqlArray, IBifoqlExpression, IBifoqlExpression>(location, "to_map", arguments, BuiltinFunctions.ToMap);
                 case "type": return new TypeExpr(location, arguments);
-                case "unzip": return new TypedFunctionCallExpr<IAsyncMap>(location, "unzip", arguments, BuiltinFunctions.Unzip);
-                case "values": return new TypedFunctionCallExpr<IAsyncMap>(location, "values", arguments, BuiltinFunctions.Values);
-                case "zip": return new TypedFunctionCallExpr<IAsyncArray, IAsyncArray>(location, "zip", arguments, BuiltinFunctions.Zip);
+                case "unzip": return new TypedFunctionCallExpr<IBifoqlMap>(location, "unzip", arguments, BuiltinFunctions.Unzip);
+                case "values": return new TypedFunctionCallExpr<IBifoqlMap>(location, "values", arguments, BuiltinFunctions.Values);
+                case "zip": return new TypedFunctionCallExpr<IBifoqlArray, IBifoqlArray>(location, "zip", arguments, BuiltinFunctions.Zip);
                 default:
                     return new ErrorExpr(location, $"Unknown function name {functionNameToken.Text}");
             }
