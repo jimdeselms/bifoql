@@ -18,15 +18,15 @@ namespace Bifoql.Expressions
             _ifFalse = ifFalse;
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IAsyncObject> variables)
+        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
         {
             return new TernaryExpr(_condition.Simplify(variables), _ifTrue.Simplify(variables), _ifFalse.Simplify(variables));
         }
 
-        protected override async Task<IAsyncObject> DoApply(QueryContext context)
+        protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
             var condition = await _condition.Apply(context);
-            var boolExpr = condition as IAsyncBoolean;
+            var boolExpr = condition as IBifoqlBoolean;
             if (boolExpr == null) return new AsyncError(this.Location, "Ternary expression must have boolean condition");
 
             if (await boolExpr.Value)
@@ -44,7 +44,7 @@ namespace Bifoql.Expressions
             return $"{_condition.ToString()} ? {_ifTrue.ToString()} : {_ifFalse.ToString()}";
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IAsyncObject> variables)
+        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables)
         {
             return _condition.NeedsAsync(variables) || _ifFalse.NeedsAsync(variables) || _ifTrue.NeedsAsync(variables);
         }

@@ -66,7 +66,7 @@ namespace Bifoql
 
         public async Task<double[]> TryGetNumberArrayParameter(string key)
         {
-            var param = await TryGetParameter(key) as IAsyncArray;
+            var param = await TryGetParameter(key) as IBifoqlArray;
             if (param == null)
             {
                 return null;
@@ -84,7 +84,7 @@ namespace Bifoql
 
         public async Task<string[]> TryGetStringArrayParameter(string key)
         {
-            var param = await TryGetParameter(key) as IAsyncArray;
+            var param = await TryGetParameter(key) as IBifoqlArray;
             if (param == null)
             {
                 return null;
@@ -101,7 +101,7 @@ namespace Bifoql
             return result.ToArray();
         }
 
-        public async Task<IAsyncObject> TryGetParameter(string key)
+        public async Task<IBifoqlObject> TryGetParameter(string key)
         {
             Expr entry;
             if (_entries.TryGetValue(key, out entry))

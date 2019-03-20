@@ -12,12 +12,12 @@ namespace Bifoql.Adapters
         private static ConcurrentDictionary<Type, PropertyAdapterInstanceBuilder> _builders 
             = new ConcurrentDictionary<Type, PropertyAdapterInstanceBuilder>();
 
-        public static IAsyncObject Create<T>(T o)
+        public static IBifoqlObject Create<T>(T o)
         {
             return Create(o, typeof(T));
         }
         
-        public static IAsyncObject Create(object o, Type type)
+        public static IBifoqlObject Create(object o, Type type)
         {
             PropertyAdapterInstanceBuilder builder;
             if (!_builders.TryGetValue(type, out builder))
@@ -35,7 +35,7 @@ namespace Bifoql.Adapters
             public PropertyAdapterInstanceBuilder(Type type)
             {
                 // Get all the public getters on the object and map them to functions.
-                var getters = new Dictionary<string, Func<object, Task<IAsyncObject>>>();
+                var getters = new Dictionary<string, Func<object, Task<IBifoqlObject>>>();
 
                 foreach (var prop in type.GetProperties().Where(p => p.GetGetMethod() != null))
                 {
@@ -48,16 +48,16 @@ namespace Bifoql.Adapters
                 _getters = getters;
             }
 
-            private readonly IReadOnlyDictionary<string, Func<object, Task<IAsyncObject>>> _getters;
+            private readonly IReadOnlyDictionary<string, Func<object, Task<IBifoqlObject>>> _getters;
             private static readonly object[] NO_ARGUMENTS = new object[0];
 
             public IEnumerable<string> Keys => _getters.Keys;
 
-            public IAsyncObject Create(object @object)
+            public IBifoqlObject Create(object @object)
             {
                 var getters = _getters.ToDictionary(
                     p => p.Key,
-                    p => (Func<Task<IAsyncObject>>)(() => p.Value(@object)));
+                    p => (Func<Task<IBifoqlObject>>)(() => p.Value(@object)));
 
                 return new AsyncMap(getters);
             }

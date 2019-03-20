@@ -27,7 +27,7 @@ namespace Bifoql
         }
     }
 
-    public class AsyncError : IAsyncError
+    public class AsyncError : IBifoqlError
     {
         public string Message { get; }
 
@@ -49,7 +49,7 @@ namespace Bifoql
             }
         }
 
-        public Task<bool> IsEqualTo(IAsyncObject other)
+        public Task<bool> IsEqualTo(IBifoqlObject other)
         {
             if (this == other) 
             {

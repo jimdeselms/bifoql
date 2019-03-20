@@ -14,16 +14,16 @@ namespace Bifoql.Expressions
             Name = name;
         }
 
-        protected override Task<IAsyncObject> DoApply(QueryContext context)
+        protected override Task<IBifoqlObject> DoApply(QueryContext context)
         {
-            IAsyncObject value;
+            IBifoqlObject value;
             if (context.Variables.TryGetValue(Name, out value))
             {
                 return Task.FromResult(value);
             }
             else
             {
-                return Task.FromResult<IAsyncObject>(new AsyncError(this.Location, $"Variable '${Name}' not found"));
+                return Task.FromResult<IBifoqlObject>(new AsyncError(this.Location, $"Variable '${Name}' not found"));
             }
         }
 
@@ -32,9 +32,9 @@ namespace Bifoql.Expressions
             return "$" + Name;
         }
 
-        public override Expr Simplify(IReadOnlyDictionary<string, IAsyncObject> variables)
+        public override Expr Simplify(IReadOnlyDictionary<string, IBifoqlObject> variables)
         {
-            IAsyncObject result;
+            IBifoqlObject result;
             if (variables.TryGetValue(Name, out result))
             {
                 return new LiteralExpr(Location, result);
@@ -45,13 +45,13 @@ namespace Bifoql.Expressions
             }
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IAsyncObject> variables)
+        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
         {
             // this can't be simplified.
             return this;
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IAsyncObject> variables)
+        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables)
         {
             return !variables.ContainsKey(Name);
         }

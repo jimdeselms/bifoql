@@ -17,25 +17,25 @@ namespace Bifoql.Expressions
             _upperBound = upperBound ?? new LiteralExpr(location, AsyncNull.Instance);
         }
 
-        protected override async Task<IAsyncObject> DoApply(QueryContext context)
+        protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
-            var list = context.QueryTarget as IAsyncArray;
+            var list = context.QueryTarget as IBifoqlArray;
             if (list == null) return new AsyncError(this.Location, "Can't take slice of non-list");
 
-            var result = new List<Func<Task<IAsyncObject>>>();
+            var result = new List<Func<Task<IBifoqlObject>>>();
 
             var lowerBoundObj = await _lowerBound.Apply(context);
             int? lowerBound = null;
-            if (lowerBoundObj is IAsyncNumber)
+            if (lowerBoundObj is IBifoqlNumber)
             {
-                lowerBound = (int)await ((IAsyncNumber)lowerBoundObj).Value;
+                lowerBound = (int)await ((IBifoqlNumber)lowerBoundObj).Value;
             }
 
             var upperBoundObj = await _upperBound.Apply(context);
             int? upperBound = null;
-            if (upperBoundObj is IAsyncNumber)
+            if (upperBoundObj is IBifoqlNumber)
             {
-                upperBound = (int)await ((IAsyncNumber)upperBoundObj).Value;
+                upperBound = (int)await ((IBifoqlNumber)upperBoundObj).Value;
             }
 
             int i = 0;
@@ -75,12 +75,12 @@ namespace Bifoql.Expressions
            return $"[{lower}..{upper}]";
        }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IAsyncObject> variables)
+        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
         {
             // This can't be simplified
             return this;
         }
 
-       public override bool NeedsAsync(IReadOnlyDictionary<string, IAsyncObject> variables) => true;
+       public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => true;
     }
 }

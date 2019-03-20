@@ -21,6 +21,6 @@ namespace Bifoql.Expressions
             return $"{Name}({args})";
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IAsyncObject> variables) => Arguments.Any(a => a.NeedsAsync(variables));
+        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => Arguments.Any(a => a.NeedsAsync(variables));
     }
 }

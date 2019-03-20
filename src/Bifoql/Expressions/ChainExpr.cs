@@ -19,21 +19,21 @@ namespace Bifoql.Expressions
             _toMultiple = toMultiple;
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IAsyncObject> variables)
+        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
         {
             return new ChainExpr(_first?.Simplify(variables), _next?.Simplify(variables), _toMultiple);
         }
 
-        protected override async Task<IAsyncObject> DoApply(QueryContext context)
+        protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
             var result = await _first.Apply(context);
 
             if (_toMultiple)
             {
-                var array = result as IAsyncArray;
+                var array = result as IBifoqlArray;
                 if (array == null) return new AsyncError(this.Location, "pipe to multiple only works on an array");
 
-                var resultList = new List<Func<Task<IAsyncObject>>>();
+                var resultList = new List<Func<Task<IBifoqlObject>>>();
 
                 foreach (var entry in array)
                 {
@@ -72,7 +72,7 @@ namespace Bifoql.Expressions
             return result;
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IAsyncObject> variables) 
+        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) 
         {
             if (_first.NeedsAsync(variables)) return true;
 

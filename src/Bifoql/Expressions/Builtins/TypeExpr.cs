@@ -18,40 +18,40 @@ namespace Bifoql.Expressions.Builtins
             _obj = arguments[0];
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IAsyncObject> variables)
+        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
         {
            return new TypeExpr(Location, new[] { _obj.Simplify(variables) });
         }
 
-        protected override async Task<IAsyncObject> DoApply(QueryContext context)
+        protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
             var val = await _obj.Apply(context);
             string type = "undefined";
-            if (val == null || val is IAsyncNull)
+            if (val == null || val is IBifoqlNull)
             {
                 type = "null";
             }
-            else if (val is IAsyncBoolean)
+            else if (val is IBifoqlBoolean)
             {
                 type = "boolean";
             }
-            else if (val is IAsyncError)
+            else if (val is IBifoqlError)
             {
                 type = "error";
             }
-            else if (val is IAsyncArray)
+            else if (val is IBifoqlArray)
             {
                 type = "array";
             }
-            else if (val is IAsyncMap)
+            else if (val is IBifoqlMap)
             {
                 type = "object";
             }
-            else if (val is IAsyncString)
+            else if (val is IBifoqlString)
             {
                 type = "string";
             }
-            else if (val is IAsyncNumber)
+            else if (val is IBifoqlNumber)
             {
                 type = "number";
             }

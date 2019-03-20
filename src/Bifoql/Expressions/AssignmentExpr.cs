@@ -19,9 +19,9 @@ namespace Bifoql.Expressions
             _pipedInto = pipedInto;
         }
 
-        protected override async Task<IAsyncObject> DoApply(QueryContext context)
+        protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
-            IAsyncObject ignored;
+            IBifoqlObject ignored;
             if (context.Variables.TryGetValue(Name, out ignored))
             {
                 return new AsyncError(this.Location, $"Can't change value of variable '${Name}'");
@@ -43,7 +43,7 @@ namespace Bifoql.Expressions
             return $"${Name} = {_value.ToString()}; {_pipedInto.ToString()}";
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IAsyncObject> variables)
+        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
         {
             var simplifiedValue = _value.Simplify(variables);
             if (simplifiedValue is LiteralExpr)
@@ -66,6 +66,6 @@ namespace Bifoql.Expressions
             }
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IAsyncObject> variables) => true;
+        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => true;
     }
 }

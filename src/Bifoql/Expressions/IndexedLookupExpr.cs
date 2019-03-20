@@ -17,9 +17,9 @@ namespace Bifoql.Expressions
             _arguments = arguments;
         }
 
-        protected override async Task<IAsyncObject> DoApply(QueryContext context)
+        protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
-            var leftHandSide = await _leftHandSide.Apply(context) as IAsyncIndex;
+            var leftHandSide = await _leftHandSide.Apply(context) as IBifoqlIndex;
             if (leftHandSide == null) return new AsyncError(this.Location, "Can't do index lookup on something that isn't an index");
 
             var args = new IndexArgumentList(_arguments, context);
@@ -33,7 +33,7 @@ namespace Bifoql.Expressions
             return $"{_leftHandSide.ToString()}({string.Join(", ", entries)})";
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IAsyncObject> variables)
+        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
         {
             var newArgs = _arguments.ToDictionary(p => p.Key, p => p.Value.Simplify(variables));
             return new IndexedLookupExpr(
@@ -41,7 +41,7 @@ namespace Bifoql.Expressions
                 newArgs);
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IAsyncObject> variables) 
+        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) 
         {
             return _leftHandSide.NeedsAsync(variables) || _arguments.Any(p => p.Value.NeedsAsync(variables));
         }

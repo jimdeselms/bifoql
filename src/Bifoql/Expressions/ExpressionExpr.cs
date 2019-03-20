@@ -14,14 +14,14 @@ namespace Bifoql.Expressions
             InnerExpression = innerExpression;
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IAsyncObject> variables)
+        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
         {
             return new ExpressionExpr(InnerExpression.Simplify(variables));
         }
 
-        protected override Task<IAsyncObject> DoApply(QueryContext context)
+        protected override Task<IBifoqlObject> DoApply(QueryContext context)
         {
-            return Task.FromResult<IAsyncObject>(new AsyncExpression(InnerExpression));
+            return Task.FromResult<IBifoqlObject>(new AsyncExpression(InnerExpression));
         }
 
         public override string ToString()
@@ -29,6 +29,6 @@ namespace Bifoql.Expressions
             return $"({InnerExpression.ToString()})";
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IAsyncObject> variables) => InnerExpression.NeedsAsync(variables);
+        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => InnerExpression.NeedsAsync(variables);
     }
 }

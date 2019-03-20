@@ -16,17 +16,17 @@ namespace Bifoql.Expressions
             _innerExpression = innerExpression;
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IAsyncObject> variables)
+        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
         {
            return new UnaryExpr(Location, _operator, _innerExpression.Simplify(variables));
         }
 
-        protected override async Task<IAsyncObject> DoApply(QueryContext context)
+        protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
             var value = await _innerExpression.Apply(context);
             if (_operator == "-")
             {
-                var num = value as IAsyncNumber;
+                var num = value as IBifoqlNumber;
                 if (num != null)
                 {
                     var val = await num.Value;
@@ -46,6 +46,6 @@ namespace Bifoql.Expressions
             return $"{_operator}{_innerExpression.ToString()}";
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IAsyncObject> variables) => _innerExpression.NeedsAsync(variables);
+        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => _innerExpression.NeedsAsync(variables);
     }
 }

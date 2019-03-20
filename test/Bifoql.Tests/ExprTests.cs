@@ -199,7 +199,7 @@ namespace Bifoql.Tests
         public void ToMap()
         {
             RunTest(expected: ParseObj("{afoo: 'ax', bfoo: 'bx'}"), query: "to_map(['a', 'b'], &(@ + 'foo'), &(@ + 'x'))");
-            RunTest(expected: "<error: (1, 13) argument arg2: expected IAsyncExpression, got AsyncString instead.>", query: "to_map([1], 'a', 'b')");
+            RunTest(expected: "<error: (1, 13) argument arg2: expected IBifoqlExpression, got AsyncString instead.>", query: "to_map([1], 'a', 'b')");
         }
 
         [Fact]
@@ -732,10 +732,10 @@ namespace Bifoql.Tests
         [Fact]
         public void CustomFunctionTest()
         {
-            Func<IAsyncNumber, Task<IAsyncObject>> timesTwo = async (IAsyncNumber n) => (await n.Value * 2).ToAsyncObject();
+            Func<IBifoqlNumber, Task<IBifoqlObject>> timesTwo = async (IBifoqlNumber n) => (await n.Value * 2).ToAsyncObject();
             var functions = new Dictionary<string, CustomFunction>
             {
-                ["timestwo"] = CustomFunction.Create<IAsyncNumber>(timesTwo)
+                ["timestwo"] = CustomFunction.Create<IBifoqlNumber>(timesTwo)
             };
             RunTest(expected: 16, query: "timestwo(8)", customFunctions: functions);
         }

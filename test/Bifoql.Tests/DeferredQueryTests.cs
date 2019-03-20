@@ -57,22 +57,22 @@ namespace Bifoql.Tests
             Assert.Equal(expectedJson, actualJson);
         }
 
-        private static IAsyncObject TEST_OBJ = new[] {
+        private static IBifoqlObject TEST_OBJ = new[] {
                     new { name = "Fred", age = 35 },
                     new { name = "Wilma", age = 30 },
                     new { name = "Pebbles", age = 3 }
                 }.ToAsyncObject();
 
-        private class DeferredQueryObject : IAsyncDeferredQuery
+        private class DeferredQueryObject : IBifoqlDeferredQuery
         {
-            private IAsyncObject _remoteObject;
+            private IBifoqlObject _remoteObject;
 
             public DeferredQueryObject(object remoteObject)
             {
                 _remoteObject = remoteObject.ToAsyncObject();
             }
 
-            public async Task<IAsyncObject> EvaluateQuery(string query)
+            public async Task<IBifoqlObject> EvaluateQuery(string query)
             {
                 // We'll simulate a service call where we get a query and pass it along to a service where
                 // it gets compiled.
@@ -87,7 +87,7 @@ namespace Bifoql.Tests
                 throw new NotImplementedException();
             }
 
-            public Task<bool> IsEqualTo(IAsyncObject o)
+            public Task<bool> IsEqualTo(IBifoqlObject o)
             {
                 return Task.FromResult(o is DeferredQueryObject);
             }

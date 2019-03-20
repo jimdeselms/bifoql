@@ -10,12 +10,12 @@ namespace Bifoql.Adapters
     {
         /// <summary>
         /// Converts a function that takes one object and returns another, and fixes it so that
-        /// it becomes a function from an object to a Task<IAsyncObject>, which is the lingua franca
+        /// it becomes a function from an object to a Task<IBifoqlObject>, which is the lingua franca
         /// type used internally.
         /// </summary>
         /// <param name="func">The function (must be object -> object.)</param>
         /// <param name="funcType">The actual return type of the function.</param>
-        public static Func<object, Task<IAsyncObject>> Convert(Func<object, object> func, Type funcType)
+        public static Func<object, Task<IBifoqlObject>> Convert(Func<object, object> func, Type funcType)
         {
             if (funcType.IsGenericType)
             {
@@ -40,16 +40,16 @@ namespace Bifoql.Adapters
             return o => Task.FromResult(func(o).ToAsyncObject());
         }
 
-        private static Func<object, Task<IAsyncObject>> ConvertFunc(Func<object, object> func, Type funcType)
+        private static Func<object, Task<IBifoqlObject>> ConvertFunc(Func<object, object> func, Type funcType)
         {
-            if (funcType == typeof(Func<Task<IAsyncObject>>))
+            if (funcType == typeof(Func<Task<IBifoqlObject>>))
             {
-                return o => CoalesceTask(CoalesceFunc<Task<IAsyncObject>>(func(o))());
+                return o => CoalesceTask(CoalesceFunc<Task<IBifoqlObject>>(func(o))());
             }
 
-            if (funcType == typeof(Func<IAsyncObject>))
+            if (funcType == typeof(Func<IBifoqlObject>))
             {
-                return o => ToTask(CoalesceFunc<IAsyncObject>(func(o))());
+                return o => ToTask(CoalesceFunc<IBifoqlObject>(func(o))());
             }
 
             if (funcType == typeof(Func<Task<object>>))
@@ -62,21 +62,21 @@ namespace Bifoql.Adapters
                 return o => ToTask((CoalesceFunc<object>(func(o))()).ToAsyncObject());
             }
 
-            throw new Exception("Func return type must be either Func<object>, Func<IAsyncObject>, Func<Task<object>> or Func<Task<IAsyncObject>>");
+            throw new Exception("Func return type must be either Func<object>, Func<IBifoqlObject>, Func<Task<object>> or Func<Task<IBifoqlObject>>");
         }
 
-        private static Func<object, Task<IAsyncObject>> ConvertLazy(Func<object, object> func, Type funcType)
+        private static Func<object, Task<IBifoqlObject>> ConvertLazy(Func<object, object> func, Type funcType)
         {
-            if (funcType == typeof(Lazy<Task<IAsyncObject>>))
+            if (funcType == typeof(Lazy<Task<IBifoqlObject>>))
             {
                 return o => CoalesceTask(
-                    CoalesceLazy<Task<IAsyncObject>>(func(o)).Value);
+                    CoalesceLazy<Task<IBifoqlObject>>(func(o)).Value);
             }
 
-            if (funcType == typeof(Lazy<IAsyncObject>))
+            if (funcType == typeof(Lazy<IBifoqlObject>))
             {
                 return o => ToTask(
-                    CoalesceLazy<IAsyncObject>(func(o)).Value);
+                    CoalesceLazy<IBifoqlObject>(func(o)).Value);
             }
 
             if (funcType == typeof(Lazy<Task<object>>))
@@ -91,27 +91,27 @@ namespace Bifoql.Adapters
                     CoalesceLazy<object>(func(o)).Value.ToAsyncObject());
             }
 
-            throw new Exception("Lazy return type must be either Lazy<object>, Lazy<IAsyncObject>, Lazy<Task<object>> or Lazy<Task<IAsyncObject>>");
+            throw new Exception("Lazy return type must be either Lazy<object>, Lazy<IBifoqlObject>, Lazy<Task<object>> or Lazy<Task<IBifoqlObject>>");
         }
-        private static Func<object, Task<IAsyncObject>> ConvertTask(Func<object, object> func, Type funcType)
+        private static Func<object, Task<IBifoqlObject>> ConvertTask(Func<object, object> func, Type funcType)
         {
-            if (funcType == typeof(Task<object>) || funcType == typeof(Task<IAsyncObject>))
+            if (funcType == typeof(Task<object>) || funcType == typeof(Task<IBifoqlObject>))
             {
                 return o => CoalesceTask(func(o));
             }
 
-            throw new Exception("Task return type must be either Task<object> or Task<IAsyncObject>");
+            throw new Exception("Task return type must be either Task<object> or Task<IBifoqlObject>");
         }
 
-        private static async Task<IAsyncObject> CoalesceTask(object task)
+        private static async Task<IBifoqlObject> CoalesceTask(object task)
         {
             if (task == null)
             {
                 return new AsyncError("task is null");
             }
-            else if (task is Task<IAsyncObject>)
+            else if (task is Task<IBifoqlObject>)
             {
-                return await (Task<IAsyncObject>)task;
+                return await (Task<IBifoqlObject>)task;
             }
             else if (task is Task<object>)
             {
@@ -119,7 +119,7 @@ namespace Bifoql.Adapters
                 return obj.ToAsyncObject();
             }
 
-            throw new Exception($"Don't know how to convert {task.GetType().FullName} to Task<IAsyncObject>");
+            throw new Exception($"Don't know how to convert {task.GetType().FullName} to Task<IBifoqlObject>");
         }
 
         private static Func<TP> CoalesceFunc<TP>(object func)
@@ -132,7 +132,7 @@ namespace Bifoql.Adapters
             return lazy == null ? new Lazy<TP>(() => default(TP)) : (Lazy<TP>)lazy;
         }
 
-        private static Task<IAsyncObject> ToTask(IAsyncObject o)
+        private static Task<IBifoqlObject> ToTask(IBifoqlObject o)
         {
             return Task.FromResult(o);
         }

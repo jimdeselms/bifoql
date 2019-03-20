@@ -5,7 +5,7 @@ using Bifoql.Types;
 
 namespace Bifoql.Adapters
 {
-    internal class AsyncExpression : AsyncObjectBase, IAsyncExpression
+    internal class AsyncExpression : AsyncObjectBase, IBifoqlExpression
     {
         private readonly Expr _expr;
 
@@ -14,7 +14,7 @@ namespace Bifoql.Adapters
             _expr = expr;
         }
 
-        public Task<IAsyncObject> Evaluate(QueryContext context)
+        public Task<IBifoqlObject> Evaluate(QueryContext context)
         {
             return _expr.Apply(context);
         }
@@ -24,7 +24,7 @@ namespace Bifoql.Adapters
             return Task.FromResult<BifoqlType>(BifoqlType.Unknown);
         }
 
-        public Task<bool> IsEqualTo(IAsyncObject o)
+        public Task<bool> IsEqualTo(IBifoqlObject o)
         {
             var other = o as AsyncExpression;
             return Task.FromResult(other?._expr == this._expr);

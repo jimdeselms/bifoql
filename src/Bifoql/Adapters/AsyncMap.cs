@@ -9,21 +9,21 @@ using Bifoql.Extensions;
 
 namespace Bifoql.Adapters
 {
-    internal class AsyncMap : AsyncObjectBase, IAsyncMap
+    internal class AsyncMap : AsyncObjectBase, IBifoqlMap
     {
         private readonly BifoqlType _type;
 
-        private readonly IReadOnlyDictionary<string, Func<Task<IAsyncObject>>> _getters;
+        private readonly IReadOnlyDictionary<string, Func<Task<IBifoqlObject>>> _getters;
 
         public IEnumerable<string> Keys => _getters.Keys;
 
-        public IEnumerable<Func<Task<IAsyncObject>>> Values => _getters.Values;
+        public IEnumerable<Func<Task<IBifoqlObject>>> Values => _getters.Values;
 
         public int Count => _getters.Count;
 
-        public Func<Task<IAsyncObject>> this[string key] => _getters[key];
+        public Func<Task<IBifoqlObject>> this[string key] => _getters[key];
 
-        public AsyncMap(IReadOnlyDictionary<string, Func<Task<IAsyncObject>>> getters, BifoqlType type=null)
+        public AsyncMap(IReadOnlyDictionary<string, Func<Task<IBifoqlObject>>> getters, BifoqlType type=null)
         {
             _getters = getters;
             _type = type;
@@ -31,21 +31,21 @@ namespace Bifoql.Adapters
 
         public bool ContainsKey(string key) => _getters.ContainsKey(key);
 
-        public bool TryGetValue(string key, out Func<Task<IAsyncObject>> value) => _getters.TryGetValue(key, out value);
+        public bool TryGetValue(string key, out Func<Task<IBifoqlObject>> value) => _getters.TryGetValue(key, out value);
 
-        public IEnumerator<KeyValuePair<string, Func<Task<IAsyncObject>>>> GetEnumerator() => _getters.GetEnumerator();
+        public IEnumerator<KeyValuePair<string, Func<Task<IBifoqlObject>>>> GetEnumerator() => _getters.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
-        public async Task<bool> IsEqualTo(IAsyncObject other)
+        public async Task<bool> IsEqualTo(IBifoqlObject other)
         {
             if (this == other) return true;
             
             var otherDict
-             = other as IAsyncMap;
+             = other as IBifoqlMap;
             if (otherDict == null) return false;
             if (otherDict.Count != this.Count) return false;
 
@@ -53,7 +53,7 @@ namespace Bifoql.Adapters
             foreach (var key in this.Keys)
             {
                 var unresolvedThis = this[key];
-                Func<Task<IAsyncObject>> unresolvedThat;
+                Func<Task<IBifoqlObject>> unresolvedThat;
                 if (!otherDict.TryGetValue(key, out unresolvedThat)) return false;
 
                 if (unresolvedThis == unresolvedThat) continue;

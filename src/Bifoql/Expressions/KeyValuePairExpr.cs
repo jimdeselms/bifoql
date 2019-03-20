@@ -15,14 +15,14 @@ namespace Bifoql.Expressions
             Key = key;
             Value = value;
         }
-        protected override Task<IAsyncObject> DoApply(QueryContext context)
+        protected override Task<IBifoqlObject> DoApply(QueryContext context)
         {
-            var dict = new Dictionary<string, Func<Task<IAsyncObject>>>()
+            var dict = new Dictionary<string, Func<Task<IBifoqlObject>>>()
             {
                 [Key] = () => Value.Apply(context)
             };
 
-            return Task.FromResult<IAsyncObject>(new AsyncMap(dict));
+            return Task.FromResult<IBifoqlObject>(new AsyncMap(dict));
         }
 
        public override string ToString()
@@ -30,11 +30,11 @@ namespace Bifoql.Expressions
            return $"{Key}: {Value.ToString()}]";
        }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IAsyncObject> variables)
+        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
         {
             return new KeyValuePairExpr(Location, Key, Value.Simplify(variables));
         }
 
-       public override bool NeedsAsync(IReadOnlyDictionary<string, IAsyncObject> variables) => Value.NeedsAsync(variables);
+       public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => Value.NeedsAsync(variables);
     }
 }
