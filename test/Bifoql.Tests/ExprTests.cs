@@ -730,6 +730,28 @@ namespace Bifoql.Tests
         }
 
         [Fact]
+        public void UndefinedObjectIsOmittedFromArrayProjection()
+        {
+            RunTest(expected: new object[] { 5 }, query: "[ 5, [][0] ]");
+            RunTest(expected: new object[] { 5 }, query: "[ 5, {}.x ]");
+            RunTest(expected: new object[] { 5 }, query: "[ 5, {}['x'] ]");
+        }
+
+        [Fact]
+        public void UndefinedObjectIsOmittedFromMapProjection()
+        {
+            RunTest(expected: new { x=5 }, query: "{x: 5, y: [][1] }");
+            RunTest(expected: new { x=5 }, query: "{x: 5, y: {}.foo }");
+            RunTest(expected: new { x=5 }, query: "{x: 5, y: {}['foo'] }");
+        }
+
+        [Fact]
+        public void UndefinedObjectResolvesToNull()
+        {
+            RunTest(expected: null, query: "[][0]");
+        }
+
+        [Fact]
         public void CustomFunctionTest()
         {
             Func<IBifoqlNumber, Task<IBifoqlObject>> timesTwo = async (IBifoqlNumber n) => (await n.Value * 2).ToAsyncObject();

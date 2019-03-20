@@ -24,6 +24,8 @@ namespace Bifoql.Expressions
         {
             if (!Condition.NeedsAsync(context.Variables))
             {
+                if (context.QueryTarget is IBifoqlUndefined) return AsyncUndefined.Instance;
+
                 var value = Condition.Simplify(context.Variables).Apply(QueryContext.Empty).Result;
                 // This isn't a filter; it's an array index
                 if (value is IBifoqlNumber)
@@ -44,7 +46,7 @@ namespace Bifoql.Expressions
                     }
                     else
                     {
-                        return AsyncNull.Instance;
+                        return AsyncUndefined.Instance;
                     }
                 }
 
