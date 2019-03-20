@@ -27,6 +27,18 @@ namespace Bifoql.Expressions
         {
             var leftHandValue = await LeftHandSide.Apply(context);
 
+            if (Operator == "??")
+            {
+                if (leftHandValue == null || leftHandValue is IBifoqlNull || leftHandValue is IBifoqlError || leftHandValue is IBifoqlUndefined)
+                {
+                    return await RightHandSide.Apply(context);
+                }
+                else
+                {
+                    return leftHandValue;
+                }
+            }
+
             if (leftHandValue is IBifoqlError) return leftHandValue;
             
             // Special case. If it's && or ||, then we might not have to evaluate the right hand side.
@@ -54,18 +66,6 @@ namespace Bifoql.Expressions
 
                 var rhsVal = await rhsBool.Value;
                 return new AsyncBoolean(rhsVal);
-            }
-
-            if (Operator == "??")
-            {
-                if (leftHandValue != null && !(leftHandValue is IBifoqlNull))
-                {
-                    return leftHandValue;
-                }
-                else
-                {
-                    return await RightHandSide.Apply(context);
-                }
             }
 
             // Another special case; if we have "==" and they are both literally the same object, then it's true.

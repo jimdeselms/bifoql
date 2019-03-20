@@ -5,7 +5,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
 
     <PackageId>Bifoql</PackageId>
-    <Version>0.0.7</Version>
+    <Version>0.0.10</Version>
     <Authors>Jim DeSelms</Authors>
     <Company>Jim DeSelms</Company>
 

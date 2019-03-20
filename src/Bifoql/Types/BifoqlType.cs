@@ -5,6 +5,7 @@ namespace Bifoql.Types
         public static readonly BifoqlType Any = new AnyType();
         public static readonly BifoqlType Unknown = new ScalarType("unknown");
         public static readonly BifoqlType Null = new ScalarType("null");
+        public static readonly BifoqlType Undefined = new ScalarType("undefined");
         public static readonly BifoqlType Error = new ScalarType("error");
         public static readonly BifoqlType Number = new ScalarType("number");
         public static readonly BifoqlType String = new ScalarType("string");

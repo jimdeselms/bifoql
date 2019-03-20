@@ -38,6 +38,11 @@ namespace Bifoql
     {
     }
 
+    // Undefined should never bubble up to the caller
+    internal interface IBifoqlUndefined : IBifoqlObject
+    {
+    }
+
     public interface IBifoqlString : IBifoqlObject
     {
         Task<string> Value { get; }

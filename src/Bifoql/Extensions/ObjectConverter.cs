@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Bifoql.Adapters;
@@ -45,10 +46,9 @@ namespace Bifoql.Extensions
             {
                 var value = await pair.Value();
 
-                if (value != null)
-                {
-                    values[pair.Key] = await ToSimpleObject(value);
-                }
+                if (value == null || value is IBifoqlUndefined) continue;
+
+                values[pair.Key] = await ToSimpleObject(value);
             }
 
             return new DynamicDict(values);
@@ -56,14 +56,18 @@ namespace Bifoql.Extensions
 
         private static async Task<object> ToSimpleObject(IBifoqlArray list, BifoqlType expectedSchema)
         {
-            var tasks = new Task<object>[list.Count];
+            var tasks = new List<Task<object>>();
             for (int i = 0; i < list.Count; i++)
             {
+                // For items that are undefined, we will exclude them from the list.
                 var elementType = expectedSchema?.GetElementType(i);
-                tasks[i] = ConvertListEntryToSimpleObject(list[i], elementType);
+                var asyncObj = await list[i]();
+                if (asyncObj is IBifoqlUndefined) continue;
+
+                tasks.Add(asyncObj.ToSimpleObject(elementType));
             }
 
-            return await Task.WhenAll(tasks);
+            return await Task.WhenAll(tasks.ToArray());
         }
 
         private static async Task<object> ConvertListEntryToSimpleObject(Func<Task<IBifoqlObject>> obj, BifoqlType expectedType)

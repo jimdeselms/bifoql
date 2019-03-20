@@ -27,7 +27,7 @@ namespace Bifoql.Expressions
                 }
                 else
                 {
-                    return AsyncNull.Instance;
+                    return AsyncUndefined.Instance;
                 }
             }
 
@@ -47,9 +47,9 @@ namespace Bifoql.Expressions
                 return new AsyncArray(result);
             }
 
-            if (context.QueryTarget is IBifoqlNull)
+            if (context.QueryTarget is IBifoqlUndefined)
             {
-                return AsyncNull.Instance;
+                return AsyncUndefined.Instance;
             }
 
             return new AsyncError(this.Location, "key expression must be applied to array or map");
