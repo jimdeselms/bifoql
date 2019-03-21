@@ -24,7 +24,7 @@ namespace Bifoql.Expressions
 
             var args = new IndexArgumentList(_arguments, context);
             var resultObj = await leftHandSide.Lookup(args);
-            return resultObj.ToAsyncObject();
+            return resultObj.ToBifoqlObject();
         }
 
         public override string ToString()

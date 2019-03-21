@@ -259,7 +259,7 @@ namespace Bifoql.Expressions
                 {
                     pairsByString.Add(Tuple.Create(await ((IBifoqlString)item.Item1).Value, item.Item2));
                 }
-                return pairsByString.OrderBy(p => p.Item1).Select(p => p.Item2).ToList().ToAsyncObject();
+                return pairsByString.OrderBy(p => p.Item1).Select(p => p.Item2).ToList().ToBifoqlObject();
             }
             else if (pairs.All(p => p.Item1 is IBifoqlNumber))
             {
@@ -268,7 +268,7 @@ namespace Bifoql.Expressions
                 {
                     pairsByNumber.Add(Tuple.Create(await ((IBifoqlNumber)item.Item1).Value, item.Item2));
                 }
-                return pairsByNumber.OrderBy(p => p.Item1).Select(p => p.Item2).ToList().ToAsyncObject();
+                return pairsByNumber.OrderBy(p => p.Item1).Select(p => p.Item2).ToList().ToBifoqlObject();
             }
             else
             {
@@ -308,7 +308,7 @@ namespace Bifoql.Expressions
                 dict.Add(await key.Value, value);
             }
 
-            return dict.ToAsyncObject();
+            return dict.ToBifoqlObject();
         }
 
         public static async Task<IBifoqlObject> ToNumber(Location location, QueryContext context, IBifoqlString str)

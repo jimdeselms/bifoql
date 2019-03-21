@@ -1,6 +1,7 @@
 namespace Bifoql.Extensions
 {
     using System;
+    using System.Linq;
     using System.Collections;
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -9,9 +10,14 @@ namespace Bifoql.Extensions
 
     public static class BifoqlExtensions
     {
-        public static IBifoqlObject ToAsyncObject(this object o, BifoqlType schema=null)
+        public static IBifoqlObject ToBifoqlObject(this object o, BifoqlType schema=null)
         {
             if (o == null) return AsyncNull.Instance;
+
+            if (o is IAsyncBifoqlArray) return ConvertAsyncArray((IAsyncBifoqlArray)o);
+            if (o is ISyncBifoqlArray) return ConvertSyncArray((ISyncBifoqlArray)o);
+            if (o is IAsyncBifoqlMap) return ConvertAsyncMap((IAsyncBifoqlMap)o);
+            if (o is ISyncBifoqlMap) return ConvertSyncMap((ISyncBifoqlMap)o);
 
             if (o is IBifoqlObject) return (IBifoqlObject)o;
 
@@ -29,6 +35,36 @@ namespace Bifoql.Extensions
             if (o is IEnumerable) return ConvertList(o, schema);
 
             return PropertyAdapter.Create(o, o.GetType());
+        }
+
+        private static IBifoqlObject ConvertAsyncArray(IAsyncBifoqlArray a)
+        {
+            var items = a.Items.Select(i => (Func<Task<IBifoqlObject>>)(async () => (await i()).ToBifoqlObject()));
+            return new AsyncArray(items.ToList());
+        }
+
+        private static IBifoqlObject ConvertAsyncMap(IAsyncBifoqlMap m)
+        {
+            var map = m.Items.ToDictionary(
+                pair => pair.Key,
+                pair => (Func<Task<IBifoqlObject>>)(async () => (await pair.Value()).ToBifoqlObject()));
+
+            return new AsyncMap(map);
+        }
+
+        private static IBifoqlObject ConvertSyncArray(ISyncBifoqlArray a)
+        {
+            var items = a.Items.Select(i => (Func<Task<IBifoqlObject>>)(() => Task.FromResult(i().ToBifoqlObject())));
+            return new AsyncArray(items.ToList());
+        }
+
+        private static IBifoqlObject ConvertSyncMap(ISyncBifoqlMap m)
+        {
+            var map = m.Items.ToDictionary(
+                pair => pair.Key,
+                pair => (Func<Task<IBifoqlObject>>)(() => Task.FromResult(pair.Value().ToBifoqlObject())));
+
+            return new AsyncMap(map);
         }
 
         private static IBifoqlObject ConvertList(object o, BifoqlType schema)
@@ -49,7 +85,7 @@ namespace Bifoql.Extensions
                 foreach (object item in (IEnumerable)o)
                 {
                     var elementType = schema?.GetElementType(i++);
-                    list.Add(() => Task.FromResult(item.ToAsyncObject(elementType)));
+                    list.Add(() => Task.FromResult(item.ToBifoqlObject(elementType)));
                 }
             }
 
@@ -82,7 +118,7 @@ namespace Bifoql.Extensions
             {
                 foreach (var pair in ((IDictionary<string, Func<object>>)o))
                 {
-                    dict[pair.Key] = () => Task.FromResult(pair.Value().ToAsyncObject());
+                    dict[pair.Key] = () => Task.FromResult(pair.Value().ToBifoqlObject());
                 }
                 return new AsyncMap(dict);
             }
@@ -91,7 +127,7 @@ namespace Bifoql.Extensions
             {
                 var key = pair.Key.ToString();
                 var valueType = schema?.GetKeyType(key);
-                dict[key] = () => Task.FromResult(pair.Value.ToAsyncObject(valueType));
+                dict[key] = () => Task.FromResult(pair.Value.ToBifoqlObject(valueType));
             }
 
             return new AsyncMap(dict, schema);
@@ -104,7 +140,7 @@ namespace Bifoql.Extensions
             foreach (var pair in dict)
             {
                 var currSchema = schema?.GetKeyType(pair.Key);
-                map[pair.Key] = () => Task.FromResult(pair.Value.ToAsyncObject(currSchema));
+                map[pair.Key] = () => Task.FromResult(pair.Value.ToBifoqlObject(currSchema));
             }
 
             return new AsyncMap(map, schema);

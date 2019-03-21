@@ -42,7 +42,7 @@ namespace Bifoql
 
         private async Task<IBifoqlObject> GetResult(object queryTarget, IReadOnlyDictionary<string, object> arguments)
         {
-            var asyncQueryTarget = queryTarget.ToAsyncObject();
+            var asyncQueryTarget = queryTarget.ToBifoqlObject();
             var variables = new Dictionary<string, IBifoqlObject>
             {
                 [""] = asyncQueryTarget
@@ -52,7 +52,7 @@ namespace Bifoql
             {
                 foreach (var pair in arguments)
                 {
-                    variables[pair.Key.TrimStart('$')] = pair.Value.ToAsyncObject();
+                    variables[pair.Key.TrimStart('$')] = pair.Value.ToBifoqlObject();
                 }
             }
 
