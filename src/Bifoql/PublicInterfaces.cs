@@ -5,26 +5,33 @@ namespace Bifoql
     using System;
     using Bifoql.Types;
 
-    public interface IBifoqlSyncArray
+    internal interface ISyncBifoqlArray
     {
-        IReadOnlyList<Func<object>> Entries { get; }
+        IReadOnlyList<Func<object>> Items { get; }
     }
 
-    public interface IBifoqlSyncMap
+    internal interface ISyncBifoqlMap
     {
-        IEnumerable<string> Keys { get; }
-        Func<object> this[string key] { get; }
+        IReadOnlyDictionary<string, Func<object>> Items { get; }
     }
 
-    public interface IBifoqlAsyncArray
+    internal interface IAsyncBifoqlArray
     {
-        int Count { get; }
-        Task<Func<object>> this[int i] { get; }
+        IReadOnlyList<Func<Task<object>>> Items { get; }
     }
 
-    public interface IBifoqlAsyncMap
+    internal interface IAsyncBifoqlMap
     {
-        IEnumerable<string> Keys { get; }
-        Task<Func<object>> this[string key] { get; }
+        IReadOnlyDictionary<string, Func<Task<object>>> Items { get; }
+    }
+
+    public interface ISyncBifoqlIndex
+    {
+        object Lookup(ISyncIndexArgumentList args);
+    }
+
+    public interface IAsyncBifoqlIndex
+    {
+        Task<object> Lookup(IAsyncIndexArgumentList args);
     }
 }

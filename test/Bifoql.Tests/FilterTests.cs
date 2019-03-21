@@ -19,23 +19,16 @@ namespace Bifoql.Tests
         {
             RunTest(new [] { "Ted" }, "@(name: ('T' + 'e' + 'd') ).name", "Ted", "Fred");
         }
-        private class NamesAndLetterCount : IBifoqlIndex
+        private class NamesAndLetterCountAsync : IAsyncBifoqlIndex
         {
-            public Func<Task<IBifoqlObject>> this[int index] => throw new NotImplementedException();
-
             private HashSet<string> _names;
 
-            // we're simulating a service, so this needs to be async.
-            public bool NeedsAsync => true;
-
-            public NamesAndLetterCount(params string[] names)
+            public NamesAndLetterCountAsync(params string[] names)
             {
                 _names = new HashSet<string>(names);
             }
 
-            public Task<BifoqlType> GetSchema() => Task.FromResult<BifoqlType>(ScalarType.Any);
-
-            public async Task<object> Lookup(IndexArgumentList filter)
+            public async Task<object> Lookup(IAsyncIndexArgumentList filter)
             {
                 var all = new List<Dictionary<string, object>>();
                 foreach (var currName in _names)
@@ -51,18 +44,41 @@ namespace Bifoql.Tests
 
                 return new AsyncError("Not found");
             }
+        }
 
-            public Task<bool> IsEqualTo(IBifoqlObject o)
+
+        private class NamesAndLetterCountSync : ISyncBifoqlIndex
+        {
+            private HashSet<string> _names;
+
+            public NamesAndLetterCountSync(params string[] names)
             {
-                throw new NotImplementedException();
+                _names = new HashSet<string>(names);
+            }
+
+            public object Lookup(ISyncIndexArgumentList filter)
+            {
+                var all = new List<Dictionary<string, object>>();
+                foreach (var currName in _names)
+                {
+                    all.Add(new Dictionary<string, object> { ["name"] = currName, ["length"] = (double)currName.Length});
+                }
+
+                var name = filter.TryGetStringParameter("name");
+                if (name != null)
+                {
+                    return all.Where(e => (string)e["name"] == name);
+                }
+
+                return new AsyncError("Not found");
             }
         }
 
         private static void RunTest(object expected, string query, params string[] names)
         {
-            var inputJson = new NamesAndLetterCount(names);
+            var inputObj = new NamesAndLetterCountAsync(names);
 
-            var result = Query(inputJson, query).Result;
+            var result = Query(inputObj, query).Result;
 
             var actualJson = JsonConvert.SerializeObject(result);
 

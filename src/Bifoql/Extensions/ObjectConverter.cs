@@ -10,7 +10,7 @@ namespace Bifoql.Extensions
 {
     public static class ObjectConverter
     {
-        public static Task<object> ToSimpleObject(this IBifoqlObject o, BifoqlType expectedSchema=null)
+        internal static Task<object> ToSimpleObject(this IBifoqlObject o, BifoqlType expectedSchema=null)
         {
             var lookup = o as IBifoqlMap;
             if (lookup != null) return ToSimpleObject(lookup, expectedSchema);

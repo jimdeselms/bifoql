@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 
 namespace Bifoql.Tests.Extensions
 {
-    public static class Helpers
+    internal static class Helpers
     {
         public static string TryGetString(this IBifoqlObject o)
         {
