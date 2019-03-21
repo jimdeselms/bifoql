@@ -10,6 +10,10 @@ Additionally, the nodes of the object can be lazy-loaded.
 
 Then, you can apply queries to one of these objects, and only the nodes of the object needed to satisfy the query will be loaded.
 
+### Documentation ###
+
+See the _docs folder.
+
 ### Why? ###
 
 Bifoql can be used to make web services more flexible. Often, people design their web services using an over-gereralized API where the service returns more information than the client needs, slowing down the service and wasting computation resources.

@@ -598,16 +598,46 @@ namespace Bifoql
                 else
                 {
                     var idToken = MatchAny(tokens, new [] { "STRING", "ID" }, ref i);
+                    var idLocation = GetLocation(idToken);
                     id = idToken.Text;
                     var curr = GetToken(tokens, i);
                     if (curr.Kind == ":")
                     {
                         Match(tokens, ":", ref i);
-                        projection = new KeyValuePairExpr(GetLocation(idToken), id, ParseExpr(tokens, ref i));
+                        projection = new KeyValuePairExpr(idLocation, id, ParseExpr(tokens, ref i));
+                    }
+                    else if (curr.Kind == "{" || curr.Kind == "|")
+                    {
+                        // These are all equivalent:
+                        // foo: foo | { a, b, c }
+                        // foo | { a, b, c }
+                        // foo { a, b, c }
+                        MatchOptional(tokens, "|", ref i);
+
+                        var rhs = new ChainExpr(
+                            new KeyExpr(idLocation, id),
+                            ParseExpr(tokens, ref i),
+                            toMultiple: false);
+
+                        projection = new KeyValuePairExpr(idLocation, id, rhs);
+                    }
+                    else if (curr.Kind == "|<")
+                    {
+                        // This is another shorthand for filtring an array of objects. These are equivalent:
+                        /// foo: foo |< { a, b, c }
+                        /// foo |< { a, b, c}
+                        Match(tokens, "|<", ref i);
+
+                        var rhs = new ChainExpr(
+                            new KeyExpr(idLocation, id),
+                            ParseExpr(tokens, ref i),
+                            toMultiple: true);
+
+                        projection = new KeyValuePairExpr(idLocation, id, rhs);
                     }
                     else
                     {
-                        projection = new KeyValuePairExpr(GetLocation(idToken), id, new KeyExpr(GetLocation(idToken), id));
+                        projection = new KeyValuePairExpr(idLocation, id, new KeyExpr(idLocation, id));
                     }
                 }
 
