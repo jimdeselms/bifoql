@@ -762,6 +762,29 @@ namespace Bifoql.Tests
             RunTest(expected: 16, query: "timestwo(8)", customFunctions: functions);
         }
 
+        [Fact]
+        public void MapProjectionShorthand()
+        {
+            RunTest(
+                expected: new { obj = new { age = 20 }},
+                query: "{ obj: { name: 'Fred', age: 20, shoeSize: 10 } } | { obj { age } }"
+            );
+            RunTest(
+                expected: new { obj = new { age = 20 }},
+                query: "{ obj: { name: 'Fred', age: 20, shoeSize: 10 } } | { obj | { age } }"
+            );
+        }
+
+        [Fact]
+        public void MapProjectionArrayShorthand()
+        {
+            RunTest(
+                expected: new { obj = new [] { new { age = 20 }, new { age = 30 }}},
+                query: @"{ obj: [{ name: 'Fred', age: 20, shoeSize: 10 }, { name: 'Steve', age: 30, shoeSize: 11 }] } 
+                    | { obj |< { age } }"
+            );
+        }
+
         private static void RunTest(object expected, string query, object input=null, IReadOnlyDictionary<string, object> arguments=null, IReadOnlyDictionary<string, CustomFunction> customFunctions=null)
         {
             var inputJson = JsonConvert.SerializeObject(input);
