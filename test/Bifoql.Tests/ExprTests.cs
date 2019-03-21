@@ -752,14 +752,40 @@ namespace Bifoql.Tests
         }
 
         [Fact]
-        public void CustomFunctionTest()
+        public void CustomFunctionOneArgTest()
         {
-            Func<IBifoqlNumber, Task<IBifoqlObject>> timesTwo = async (IBifoqlNumber n) => (await n.Value * 2).ToBifoqlObject();
+            Func<int, object> timesTwo = x => x * 2;
             var functions = new Dictionary<string, CustomFunction>
             {
-                ["timestwo"] = CustomFunction.Create<IBifoqlNumber>(timesTwo)
+                ["timestwo"] = CustomFunction.Create<int>(timesTwo)
             };
             RunTest(expected: 16, query: "timestwo(8)", customFunctions: functions);
+        }
+
+        [Fact]
+        public void CustomFunctionTwoArgTest()
+        {
+            Func<string, string, object> split = (s1, c) => s1.Split(c[0]);
+
+            var functions = new Dictionary<string, CustomFunction>
+            {
+                ["split"] = CustomFunction.Create(split)
+            };
+
+            RunTest(expected: new [] { "ab", "cd" }, query: "split('ab|cd', '|')", customFunctions: functions);
+        }
+
+        [Fact]
+        public void CustomFunctionThreeArgTest()
+        {
+            Func<int, int, int, object> add3 = (i1, i2, i3) => i1 + i2 + i3;
+
+            var functions = new Dictionary<string, CustomFunction>
+            {
+                ["add3"] = CustomFunction.Create(add3)
+            };
+
+            RunTest(expected: 6, query: "add3(1, 2, 3)", customFunctions: functions);
         }
 
         [Fact]
