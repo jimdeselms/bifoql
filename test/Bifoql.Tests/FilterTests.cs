@@ -19,7 +19,7 @@ namespace Bifoql.Tests
         {
             RunTest(new [] { "Ted" }, "@(name: ('T' + 'e' + 'd') ).name", "Ted", "Fred");
         }
-        private class NamesAndLetterCountAsync : IAsyncBifoqlIndex
+        private class NamesAndLetterCountAsync : IBifoqlIndex
         {
             private HashSet<string> _names;
 
@@ -28,7 +28,7 @@ namespace Bifoql.Tests
                 _names = new HashSet<string>(names);
             }
 
-            public async Task<object> Lookup(IAsyncIndexArgumentList filter)
+            public async Task<object> Lookup(IIndexArgumentList filter)
             {
                 var all = new List<Dictionary<string, object>>();
                 foreach (var currName in _names)
@@ -47,7 +47,7 @@ namespace Bifoql.Tests
         }
 
 
-        private class NamesAndLetterCountSync : ISyncBifoqlIndex
+        private class NamesAndLetterCountSync : IBifoqlIndexSync
         {
             private HashSet<string> _names;
 
@@ -56,7 +56,7 @@ namespace Bifoql.Tests
                 _names = new HashSet<string>(names);
             }
 
-            public object Lookup(ISyncIndexArgumentList filter)
+            public object Lookup(IIndexArgumentListSync filter)
             {
                 var all = new List<Dictionary<string, object>>();
                 foreach (var currName in _names)

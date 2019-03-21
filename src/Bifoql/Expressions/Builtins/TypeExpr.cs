@@ -39,11 +39,11 @@ namespace Bifoql.Expressions.Builtins
             {
                 type = "error";
             }
-            else if (val is IBifoqlArray)
+            else if (val is IBifoqlArrayInternal)
             {
                 type = "array";
             }
-            else if (val is IBifoqlMap)
+            else if (val is IBifoqlMapInternal)
             {
                 type = "object";
             }

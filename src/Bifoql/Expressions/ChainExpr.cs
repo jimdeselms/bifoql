@@ -30,7 +30,7 @@ namespace Bifoql.Expressions
 
             if (_toMultiple)
             {
-                var array = result as IBifoqlArray;
+                var array = result as IBifoqlArrayInternal;
                 if (array == null) return new AsyncError(this.Location, "pipe to multiple only works on an array");
 
                 var resultList = new List<Func<Task<IBifoqlObject>>>();

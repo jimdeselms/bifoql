@@ -69,7 +69,7 @@ namespace Bifoql.Expressions
                 else if (projection is LiteralExpr)
                 {
                     // This seems a little hinky, but it gets the job done.
-                    var lookup = ((LiteralExpr)projection).Literal as IBifoqlMap;
+                    var lookup = ((LiteralExpr)projection).Literal as IBifoqlMapInternal;
                     if (lookup == null)
                     {
                         throw new Exception("Only key value pairs or spreads are allowed in a map projection");
@@ -90,7 +90,7 @@ namespace Bifoql.Expressions
 
         private async Task ApplySpread(SpreadExpr spread, QueryContext context, Dictionary<string, Func<Task<IBifoqlObject>>> dictionary)
         {
-            var thingToSpread = await spread.SpreadObject.Apply(context) as IBifoqlMap;
+            var thingToSpread = await spread.SpreadObject.Apply(context) as IBifoqlMapInternal;
             if (thingToSpread == null) throw new Exception("spread expression must evaluate to a map");
 
             foreach (var pair in thingToSpread)

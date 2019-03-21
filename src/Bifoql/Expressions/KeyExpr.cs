@@ -17,7 +17,7 @@ namespace Bifoql.Expressions
 
         protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
-            var lookup = context.QueryTarget as IBifoqlMap;
+            var lookup = context.QueryTarget as IBifoqlMapInternal;
             if (lookup != null)
             {
                 Func<Task<IBifoqlObject>> value;
@@ -31,7 +31,7 @@ namespace Bifoql.Expressions
                 }
             }
 
-            var array = context.QueryTarget as IBifoqlArray;
+            var array = context.QueryTarget as IBifoqlArrayInternal;
             if (array != null)
             {
                 var result = new List<Func<Task<IBifoqlObject>>>();

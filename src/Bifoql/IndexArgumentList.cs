@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Bifoql
 {
-    public interface ISyncIndexArgumentList
+    public interface IIndexArgumentListSync
     {
         double? TryGetNumberParameter(string key);
         string TryGetStringParameter(string key);
@@ -17,7 +17,7 @@ namespace Bifoql
         string[] TryGetStringArrayParameter(string key);
     }
 
-    public interface IAsyncIndexArgumentList
+    public interface IIndexArgumentList
     {
         Task<double?> TryGetNumberParameter(string key);
         Task<string> TryGetStringParameter(string key);
@@ -26,7 +26,7 @@ namespace Bifoql
         Task<string[]> TryGetStringArrayParameter(string key);
     }
 
-    public class IndexArgumentList : ISyncIndexArgumentList, IAsyncIndexArgumentList
+    public class IndexArgumentList : IIndexArgumentListSync, IIndexArgumentList
     {
         private readonly IReadOnlyDictionary<string, Expr> _entries;
         private readonly QueryContext _context;
@@ -84,7 +84,7 @@ namespace Bifoql
 
         public async Task<double[]> TryGetNumberArrayParameter(string key)
         {
-            var param = await TryGetParameter(key) as IBifoqlArray;
+            var param = await TryGetParameter(key) as IBifoqlArrayInternal;
             if (param == null)
             {
                 return null;
@@ -102,7 +102,7 @@ namespace Bifoql
 
         public async Task<string[]> TryGetStringArrayParameter(string key)
         {
-            var param = await TryGetParameter(key) as IBifoqlArray;
+            var param = await TryGetParameter(key) as IBifoqlArrayInternal;
             if (param == null)
             {
                 return null;
@@ -134,27 +134,27 @@ namespace Bifoql
         }
 
         // Note that the synchronous interface will block the current thread.
-        double? ISyncIndexArgumentList.TryGetNumberParameter(string key)
+        double? IIndexArgumentListSync.TryGetNumberParameter(string key)
         {
             return TryGetNumberParameter(key).Result;
         }
 
-        string ISyncIndexArgumentList.TryGetStringParameter(string key)
+        string IIndexArgumentListSync.TryGetStringParameter(string key)
         {
             return TryGetStringParameter(key).Result;
         }
 
-        bool? ISyncIndexArgumentList.TryGetBooleanParameter(string key)
+        bool? IIndexArgumentListSync.TryGetBooleanParameter(string key)
         {
             return TryGetBooleanParameter(key).Result;
         }
 
-        double[] ISyncIndexArgumentList.TryGetNumberArrayParameter(string key)
+        double[] IIndexArgumentListSync.TryGetNumberArrayParameter(string key)
         {
             return TryGetNumberArrayParameter(key).Result;
         }
 
-        string[] ISyncIndexArgumentList.TryGetStringArrayParameter(string key)
+        string[] IIndexArgumentListSync.TryGetStringArrayParameter(string key)
         {
             return TryGetStringArrayParameter(key).Result;
         }

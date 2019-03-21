@@ -170,7 +170,7 @@ namespace Bifoql.Expressions
                 }
             }
 
-            var lhsArray = lhs as IBifoqlArray;
+            var lhsArray = lhs as IBifoqlArrayInternal;
             // Array operations
             if (lhsArray != null)
             {
@@ -185,7 +185,7 @@ namespace Bifoql.Expressions
             return new AsyncError(this.Location, "Not implemented");
         }
 
-        private IBifoqlObject AddArray(IBifoqlArray lhsArray, IBifoqlObject rhs)
+        private IBifoqlObject AddArray(IBifoqlArrayInternal lhsArray, IBifoqlObject rhs)
         {
             var result = new List<Func<Task<IBifoqlObject>>>();
 
@@ -194,7 +194,7 @@ namespace Bifoql.Expressions
                 result.Add(item);
             }
 
-            var rhsArray = rhs as IBifoqlArray;
+            var rhsArray = rhs as IBifoqlArrayInternal;
             if (rhsArray != null)
             {
                 foreach (var item in rhsArray)
@@ -209,9 +209,9 @@ namespace Bifoql.Expressions
             return new AsyncArray(result);
         }
 
-        private async Task<IBifoqlObject> SubtractArray(IBifoqlArray lhsArray, IBifoqlObject rhs)
+        private async Task<IBifoqlObject> SubtractArray(IBifoqlArrayInternal lhsArray, IBifoqlObject rhs)
         {
-            var rhsArray = rhs as IBifoqlArray;
+            var rhsArray = rhs as IBifoqlArrayInternal;
             if (rhsArray == null)
             {
                 return await SubtractObjectFromArray(lhsArray, rhs);
@@ -222,7 +222,7 @@ namespace Bifoql.Expressions
             }
         }
 
-        private async Task<IBifoqlObject> SubtractArrayFromArray(IBifoqlArray lhsArray, IBifoqlArray rhsArray)
+        private async Task<IBifoqlObject> SubtractArrayFromArray(IBifoqlArrayInternal lhsArray, IBifoqlArrayInternal rhsArray)
         {
             var result = lhsArray;
             foreach (var item in rhsArray)
@@ -232,7 +232,7 @@ namespace Bifoql.Expressions
             return result;
         }
 
-        private async Task<IBifoqlArray> SubtractObjectFromArray(IBifoqlArray lhsArray, IBifoqlObject rhs)
+        private async Task<IBifoqlArrayInternal> SubtractObjectFromArray(IBifoqlArrayInternal lhsArray, IBifoqlObject rhs)
         {
             var result = new List<Func<Task<IBifoqlObject>>>();
             foreach (var item in lhsArray)
@@ -279,7 +279,7 @@ namespace Bifoql.Expressions
                 return new AsyncBoolean(subjectAsString.Contains(searchAsString));
             }
 
-            var subjectAsArray = subject as IBifoqlArray;
+            var subjectAsArray = subject as IBifoqlArrayInternal;
             if (subjectAsArray != null)
             {
                 foreach (var itemObj in subjectAsArray)

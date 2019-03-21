@@ -16,7 +16,7 @@ namespace Bifoql.Tests.Extensions
 
         public static IBifoqlObject TryGetValue(this IBifoqlObject o, string key)
         {
-            return ((IBifoqlMap)o)[key]().Result;
+            return ((IBifoqlMapInternal)o)[key]().Result;
         }
 
         public static string TryGetValueAsString(this IBifoqlObject o, string key)

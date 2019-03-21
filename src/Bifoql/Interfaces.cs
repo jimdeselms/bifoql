@@ -11,11 +11,11 @@ namespace Bifoql
         Task<BifoqlType> GetSchema();
     }
 
-    internal interface IBifoqlMap : IBifoqlObject, IReadOnlyDictionary<string, Func<Task<IBifoqlObject>>>
+    internal interface IBifoqlMapInternal : IBifoqlObject, IReadOnlyDictionary<string, Func<Task<IBifoqlObject>>>
     {
     }
 
-    internal interface IBifoqlArray : IBifoqlObject, IReadOnlyList<Func<Task<IBifoqlObject>>>
+    internal interface IBifoqlArrayInternal : IBifoqlObject, IReadOnlyList<Func<Task<IBifoqlObject>>>
     {
     }
 
@@ -29,7 +29,7 @@ namespace Bifoql
         Task<IBifoqlObject> Evaluate(QueryContext context);
     }
 
-    internal interface IBifoqlIndex : IBifoqlObject
+    internal interface IBifoqlIndexInternal : IBifoqlObject
     {
         Task<object> Lookup(IndexArgumentList elements);
     }
