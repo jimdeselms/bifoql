@@ -27,7 +27,7 @@ namespace Bifoql
         }
     }
 
-    public class AsyncError : IBifoqlError
+    internal class AsyncError : IBifoqlError
     {
         public string Message { get; }
 

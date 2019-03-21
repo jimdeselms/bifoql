@@ -9,7 +9,7 @@ namespace Bifoql.Tests
     using Bifoql.Extensions;
     using Xunit;
 
-    public class ObjectConverterTests
+    internal class ObjectConverterTests
     {
         [Fact]
         public async Task Int()

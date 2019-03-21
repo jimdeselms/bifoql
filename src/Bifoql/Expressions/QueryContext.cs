@@ -4,7 +4,7 @@ using Bifoql.Adapters;
 
 namespace Bifoql
 {
-    public class QueryContext
+    internal class QueryContext
     {
         public IBifoqlObject QueryTarget { get; }
         public IReadOnlyDictionary<string, IBifoqlObject> Variables { get; }

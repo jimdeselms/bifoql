@@ -10,7 +10,7 @@ namespace Bifoql.Tests
 
     public static class ObjectConverter
     {
-        public static IBifoqlObject ToAsyncObject(object o, BifoqlType schema=null)
+        internal static IBifoqlObject ToAsyncObject(object o, BifoqlType schema=null)
         {
             if (o == null) return AsyncNull.Instance;
 

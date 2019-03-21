@@ -5,30 +5,10 @@ namespace Bifoql
     using System;
     using Bifoql.Types;
 
-    public interface IBifoqlObject
+    internal interface IBifoqlObject
     {
         Task<bool> IsEqualTo(IBifoqlObject o);
         Task<BifoqlType> GetSchema();
-    }
-
-    public interface ISyncBifoqlArray
-    {
-        IReadOnlyList<Func<object>> Items { get; }
-    }
-
-    public interface ISyncBifoqlMap
-    {
-        IReadOnlyDictionary<string, Func<object>> Items { get; }
-    }
-
-    public interface IAsyncBifoqlArray
-    {
-        IReadOnlyList<Func<Task<object>>> Items { get; }
-    }
-
-    public interface IAsyncBifoqlMap
-    {
-        IReadOnlyDictionary<string, Func<Task<object>>> Items { get; }
     }
 
     internal interface IBifoqlMap : IBifoqlObject, IReadOnlyDictionary<string, Func<Task<IBifoqlObject>>>

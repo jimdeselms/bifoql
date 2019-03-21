@@ -10,14 +10,18 @@ namespace Bifoql.Extensions
 
     public static class BifoqlExtensions
     {
-        public static IBifoqlObject ToBifoqlObject(this object o, BifoqlType schema=null)
+        internal static IBifoqlObject ToBifoqlObject(this object o, BifoqlType schema=null)
         {
             if (o == null) return AsyncNull.Instance;
 
             if (o is IAsyncBifoqlArray) return ConvertAsyncArray((IAsyncBifoqlArray)o);
             if (o is ISyncBifoqlArray) return ConvertSyncArray((ISyncBifoqlArray)o);
+
             if (o is IAsyncBifoqlMap) return ConvertAsyncMap((IAsyncBifoqlMap)o);
             if (o is ISyncBifoqlMap) return ConvertSyncMap((ISyncBifoqlMap)o);
+
+            if (o is IAsyncBifoqlIndex) return ConvertAsyncIndex((IAsyncBifoqlIndex)o);
+            if (o is ISyncBifoqlIndex) return ConvertSyncIndex((ISyncBifoqlIndex)o);
 
             if (o is IBifoqlObject) return (IBifoqlObject)o;
 
@@ -65,6 +69,16 @@ namespace Bifoql.Extensions
                 pair => (Func<Task<IBifoqlObject>>)(() => Task.FromResult(pair.Value().ToBifoqlObject())));
 
             return new AsyncMap(map);
+        }
+
+        private static IBifoqlObject ConvertAsyncIndex(IAsyncBifoqlIndex i)
+        {
+            return new AsyncIndex(list => i.Lookup(list));
+        }
+
+        private static IBifoqlObject ConvertSyncIndex(ISyncBifoqlIndex i)
+        {
+            return new AsyncIndex(list => Task.FromResult(i.Lookup(list)));
         }
 
         private static IBifoqlObject ConvertList(object o, BifoqlType schema)
