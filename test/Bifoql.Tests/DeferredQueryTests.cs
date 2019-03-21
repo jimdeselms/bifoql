@@ -46,7 +46,7 @@ namespace Bifoql.Tests
             var testObj = new
             {
                 remote = new DeferredQueryObject(remoteObject),
-            }.ToAsyncObject();
+            }.ToBifoqlObject();
 
             var compiledQuery = Query.Compile(query);
             var result = compiledQuery.Run(testObj).Result;
@@ -61,7 +61,7 @@ namespace Bifoql.Tests
                     new { name = "Fred", age = 35 },
                     new { name = "Wilma", age = 30 },
                     new { name = "Pebbles", age = 3 }
-                }.ToAsyncObject();
+                }.ToBifoqlObject();
 
         private class DeferredQueryObject : IBifoqlDeferredQuery
         {
@@ -69,7 +69,7 @@ namespace Bifoql.Tests
 
             public DeferredQueryObject(object remoteObject)
             {
-                _remoteObject = remoteObject.ToAsyncObject();
+                _remoteObject = remoteObject.ToBifoqlObject();
             }
 
             public async Task<IBifoqlObject> EvaluateQuery(string query)
@@ -79,7 +79,7 @@ namespace Bifoql.Tests
 
                 // If this were a real remote service, the compilation would happen on the other side.
                 var compiledQuery = Query.Compile(query);
-                return (await compiledQuery.Run(_remoteObject)).ToAsyncObject();
+                return (await compiledQuery.Run(_remoteObject)).ToBifoqlObject();
             }
 
             public Task<BifoqlType> GetSchema()

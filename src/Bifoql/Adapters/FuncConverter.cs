@@ -37,7 +37,7 @@ namespace Bifoql.Adapters
             }
 
             // Anything else, treat it like a POCO. (We may want to restrict this more.)
-            return o => Task.FromResult(func(o).ToAsyncObject());
+            return o => Task.FromResult(func(o).ToBifoqlObject());
         }
 
         private static Func<object, Task<IBifoqlObject>> ConvertFunc(Func<object, object> func, Type funcType)
@@ -59,7 +59,7 @@ namespace Bifoql.Adapters
 
             if (funcType == typeof(Func<object>))
             {
-                return o => ToTask((CoalesceFunc<object>(func(o))()).ToAsyncObject());
+                return o => ToTask((CoalesceFunc<object>(func(o))()).ToBifoqlObject());
             }
 
             throw new Exception("Func return type must be either Func<object>, Func<IBifoqlObject>, Func<Task<object>> or Func<Task<IBifoqlObject>>");
@@ -88,7 +88,7 @@ namespace Bifoql.Adapters
             if (funcType == typeof(Lazy<object>))
             {
                 return o => ToTask(
-                    CoalesceLazy<object>(func(o)).Value.ToAsyncObject());
+                    CoalesceLazy<object>(func(o)).Value.ToBifoqlObject());
             }
 
             throw new Exception("Lazy return type must be either Lazy<object>, Lazy<IBifoqlObject>, Lazy<Task<object>> or Lazy<Task<IBifoqlObject>>");
@@ -116,7 +116,7 @@ namespace Bifoql.Adapters
             else if (task is Task<object>)
             {
                 var obj = await (Task<object>)task;
-                return obj.ToAsyncObject();
+                return obj.ToBifoqlObject();
             }
 
             throw new Exception($"Don't know how to convert {task.GetType().FullName} to Task<IBifoqlObject>");

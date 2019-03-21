@@ -754,7 +754,7 @@ namespace Bifoql.Tests
         [Fact]
         public void CustomFunctionTest()
         {
-            Func<IBifoqlNumber, Task<IBifoqlObject>> timesTwo = async (IBifoqlNumber n) => (await n.Value * 2).ToAsyncObject();
+            Func<IBifoqlNumber, Task<IBifoqlObject>> timesTwo = async (IBifoqlNumber n) => (await n.Value * 2).ToBifoqlObject();
             var functions = new Dictionary<string, CustomFunction>
             {
                 ["timestwo"] = CustomFunction.Create<IBifoqlNumber>(timesTwo)
@@ -809,7 +809,7 @@ namespace Bifoql.Tests
         private static async Task<object> Query(object o, string query, IReadOnlyDictionary<string, object> arguments, IReadOnlyDictionary<string, CustomFunction> customFunctions)
         {
             var queryObj = Bifoql.Query.Compile(query, customFunctions);
-            var asyncObj = o.ToAsyncObject();
+            var asyncObj = o.ToBifoqlObject();
 
             return await queryObj.Run(asyncObj, arguments);
         }

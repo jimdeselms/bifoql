@@ -24,7 +24,7 @@ namespace Bifoql.Tests
         [Fact]
         public void AsyncStringProperty()
         {
-            var tc = new TestClass { AsyncString = (IBifoqlString)"Hello".ToAsyncObject() };
+            var tc = new TestClass { AsyncString = (IBifoqlString)"Hello".ToBifoqlObject() };
             var obj = PropertyAdapter.Create<TestClass>(tc) as IBifoqlMap;
 
             Assert.Equal("Hello", obj.TryGetValueAsString("AsyncString"));
@@ -42,7 +42,7 @@ namespace Bifoql.Tests
         [Fact]
         public void AsyncFuncObjectFunction()
         {
-            var tc = new TestClass { AsyncFuncObject = () => "Howdy".ToAsyncObject() };
+            var tc = new TestClass { AsyncFuncObject = () => "Howdy".ToBifoqlObject() };
             var obj = PropertyAdapter.Create<TestClass>(tc);
 
             Assert.Equal("Howdy", obj.TryGetValueAsString("AsyncFuncObject"));
@@ -51,7 +51,7 @@ namespace Bifoql.Tests
         [Fact]
         public void AsyncFuncTaskObjectFunction()
         {
-            var tc = new TestClass { AsyncFuncTaskObject = () => Task.FromResult("Howdy".ToAsyncObject()) };
+            var tc = new TestClass { AsyncFuncTaskObject = () => Task.FromResult("Howdy".ToBifoqlObject()) };
             var obj = PropertyAdapter.Create<TestClass>(tc);
 
             Assert.Equal("Howdy", obj.TryGetValueAsString("AsyncFuncTaskObject"));
@@ -69,7 +69,7 @@ namespace Bifoql.Tests
         [Fact]
         public void AsyncLazyObject()
         {
-            var tc = new TestClass { AsyncLazyObject = new Lazy<IBifoqlObject>(() => "Foo".ToAsyncObject()) };
+            var tc = new TestClass { AsyncLazyObject = new Lazy<IBifoqlObject>(() => "Foo".ToBifoqlObject()) };
             var obj = PropertyAdapter.Create<TestClass>(tc);
 
             Assert.Equal("Foo", obj.TryGetValueAsString("AsyncLazyObject"));
@@ -87,7 +87,7 @@ namespace Bifoql.Tests
         [Fact]
         public void AsyncTaskObject()
         {
-            var tc = new TestClass { AsyncTaskObject = Task.FromResult<IBifoqlObject>("HI".ToAsyncObject()) };
+            var tc = new TestClass { AsyncTaskObject = Task.FromResult<IBifoqlObject>("HI".ToBifoqlObject()) };
             var obj = PropertyAdapter.Create<TestClass>(tc);
 
             Assert.Equal("HI", obj.TryGetValueAsString("AsyncTaskObject"));
@@ -114,7 +114,7 @@ namespace Bifoql.Tests
         [Fact]
         public void AsyncLazyTaskObject()
         {
-            var tc = new TestClass { AsyncLazyTaskObject = new Lazy<Task<IBifoqlObject>>(() => Task.FromResult<IBifoqlObject>("HI".ToAsyncObject())) };
+            var tc = new TestClass { AsyncLazyTaskObject = new Lazy<Task<IBifoqlObject>>(() => Task.FromResult<IBifoqlObject>("HI".ToBifoqlObject())) };
             var obj = PropertyAdapter.Create<TestClass>(tc);
 
             Assert.Equal("HI", obj.TryGetValueAsString("AsyncLazyTaskObject"));
@@ -136,7 +136,7 @@ namespace Bifoql.Tests
         [Fact]
         public void SimpleAsyncGenericType()
         {
-            var list = new List<IBifoqlObject> { "Hi".ToAsyncObject() };
+            var list = new List<IBifoqlObject> { "Hi".ToBifoqlObject() };
 
             var tc = new TestClass { AsyncGenericType = list };
             var obj = PropertyAdapter.Create<TestClass>(tc);
@@ -149,7 +149,7 @@ namespace Bifoql.Tests
         [Fact]
         public async Task SimpleNestedAsyncGenericType()
         {
-            var list = new List<IBifoqlObject> { "Hey".ToAsyncObject() };
+            var list = new List<IBifoqlObject> { "Hey".ToBifoqlObject() };
             var listOfList = new List<IList<IBifoqlObject>> { list };
 
             var tc = new TestClass { NestedAsyncGenericType = listOfList };
@@ -230,7 +230,7 @@ namespace Bifoql.Tests
         {
             var dict = new Dictionary<string, Task<IBifoqlObject>>
             {
-                ["a"] = Task.FromResult("ABC".ToAsyncObject())
+                ["a"] = Task.FromResult("ABC".ToBifoqlObject())
             };
 
             var tc = new TestClass() { DictOfAsyncObjectTasks = dict };

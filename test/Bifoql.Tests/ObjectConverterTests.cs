@@ -14,7 +14,7 @@ namespace Bifoql.Tests
         [Fact]
         public async Task Int()
         {
-            var obj = 5.ToAsyncObject();
+            var obj = 5.ToBifoqlObject();
             var actualValue = await ((IBifoqlNumber)obj).Value;
             Assert.Equal(5, actualValue);
         }
@@ -22,7 +22,7 @@ namespace Bifoql.Tests
         [Fact]
         public async Task String()
         {
-            var obj = "Hello".ToAsyncObject();
+            var obj = "Hello".ToBifoqlObject();
             var actualValue = await ((IBifoqlString)obj).Value;
             Assert.Equal("Hello", actualValue);
         }
@@ -30,7 +30,7 @@ namespace Bifoql.Tests
         [Fact]
         public async Task Boolean()
         {
-            var obj = true.ToAsyncObject();
+            var obj = true.ToBifoqlObject();
             var actualValue = await ((IBifoqlBoolean)obj).Value;
             Assert.Equal(true, actualValue);
         }
@@ -38,7 +38,7 @@ namespace Bifoql.Tests
         [Fact]
         public async Task Array()
         {
-            var obj = (new [] { 1, 2, 3 }).ToAsyncObject();
+            var obj = (new [] { 1, 2, 3 }).ToBifoqlObject();
             var list = (IBifoqlArray)obj;
 
             Assert.Equal(3, list.Count);
@@ -50,10 +50,10 @@ namespace Bifoql.Tests
         [Fact]
         public async Task ListWithAsyncItem()
         {
-            var num = 5.ToAsyncObject();
+            var num = 5.ToBifoqlObject();
             var arr = new object[]{ num };
 
-            var obj = (IBifoqlArray)arr.ToAsyncObject();
+            var obj = (IBifoqlArray)arr.ToBifoqlObject();
 
             Assert.Equal(1, obj.Count);
 
@@ -66,7 +66,7 @@ namespace Bifoql.Tests
         {
             var dict = new AsyncDictThatBlowsUp();
             var arr = new object[] { dict };
-            var obj = (IBifoqlArray)arr.ToAsyncObject();
+            var obj = (IBifoqlArray)arr.ToBifoqlObject();
 
             Assert.Equal(1, obj.Count);
 
@@ -79,7 +79,7 @@ namespace Bifoql.Tests
         {
             var dict = new AsyncDictThatBlowsUp();
             var arr = new Dictionary<string, object> { ["dict"] = dict };
-            var obj = (IBifoqlMap)arr.ToAsyncObject();
+            var obj = (IBifoqlMap)arr.ToBifoqlObject();
 
             Assert.Equal(1, obj.Count);
 
@@ -95,7 +95,7 @@ namespace Bifoql.Tests
                 foo = new { bar = dict }
             };
 
-            var obj = (IBifoqlMap)anon.ToAsyncObject();
+            var obj = (IBifoqlMap)anon.ToBifoqlObject();
 
             var foo = (IBifoqlMap)(await obj["foo"]());
             var bar = await foo["bar"]();
@@ -113,7 +113,7 @@ namespace Bifoql.Tests
                 ["foo"] = (new Dictionary<string, object> { ["bar"] = dict })
             };
 
-            var obj = (IBifoqlMap)anon.ToAsyncObject();
+            var obj = (IBifoqlMap)anon.ToBifoqlObject();
 
             var foo = (IBifoqlMap)(await obj["foo"]());
             var bar = await foo["bar"]();
@@ -126,13 +126,88 @@ namespace Bifoql.Tests
         {
             var dict = new AsyncDictThatBlowsUp();
             var arr = new { dict = dict };
-            var obj = (IBifoqlMap)arr.ToAsyncObject();
+            var obj = (IBifoqlMap)arr.ToBifoqlObject();
 
             Assert.Equal(1, obj.Count);
 
             var first = await obj["dict"]();
             Assert.Same(dict, first);
         }
+
+        [Fact]
+        public async Task AsyncMap()
+        {
+            var map = (IBifoqlMap)new MyAsyncMap().ToBifoqlObject();
+            var value = await map["foo"]();
+            Assert.Equal("Hello", await value.ToSimpleObject());
+        }
+
+        [Fact]
+        public async Task AsyncArray()
+        {
+            var array = (IBifoqlArray)new MyAsyncArray().ToBifoqlObject();
+
+            var one = await array[0]();
+            var two = await array[1]();
+
+            Assert.Equal(1, await one.ToSimpleObject());
+            Assert.Equal(2, await two.ToSimpleObject());
+        }
+
+        [Fact]
+        public async Task SyncMap()
+        {
+            var map = (IBifoqlMap)new MySyncMap().ToBifoqlObject();
+            var value = await map["foo"]();
+            Assert.Equal("Hello", await value.ToSimpleObject());
+        }
+
+        [Fact]
+        public async Task SyncArray()
+        {
+            var array = (IBifoqlArray)new MySyncArray().ToBifoqlObject();
+
+            var one = await array[0]();
+            var two = await array[1]();
+
+            Assert.Equal(1, await one.ToSimpleObject());
+            Assert.Equal(2, await two.ToSimpleObject());
+        }
+
+        private class MySyncMap : ISyncBifoqlMap
+        {
+            public IReadOnlyDictionary<string, Func<object>> Items => new Dictionary<string, Func<object>>
+            {
+                ["foo"] = () => "Hello"
+            };
+        }
+
+        private class MySyncArray : ISyncBifoqlArray
+        {
+            public IReadOnlyList<Func<object>> Items => new List<Func<object>>
+            {
+                () => 1,
+                () => 2,
+            };
+        }
+
+        private class MyAsyncMap : IAsyncBifoqlMap
+        {
+            public IReadOnlyDictionary<string, Func<Task<object>>> Items => new Dictionary<string, Func<Task<object>>>
+            {
+                ["foo"] = () => Task.FromResult<object>("Hello")
+            };
+        }
+
+        private class MyAsyncArray : IAsyncBifoqlArray
+        {
+            public IReadOnlyList<Func<Task<object>>> Items => new List<Func<Task<object>>>
+            {
+                () => Task.FromResult<object>(1),
+                () => Task.FromResult<object>(2),
+            };
+        }
+
 
         private class AsyncDictThatBlowsUp : IBifoqlMap
         {

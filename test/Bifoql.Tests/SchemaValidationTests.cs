@@ -77,7 +77,7 @@ namespace Bifoql.Tests
         {
             var query = Query.Compile(expression);
             var obj = await query.Run(null, validateSchema: true);
-            var asyncObj = obj.ToAsyncObject(schema);
+            var asyncObj = obj.ToBifoqlObject(schema);
 
             await asyncObj.ToSimpleObject(expectedType ?? schema);
         }

@@ -99,7 +99,7 @@ namespace Bifoql.Tests
         {
             var query = Query.Compile(expr);
             var obj = await query.Run(null);
-            return obj.ToAsyncObject(schema);
+            return obj.ToBifoqlObject(schema);
         }
     }
 }

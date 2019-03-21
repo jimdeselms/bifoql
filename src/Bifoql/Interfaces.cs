@@ -11,30 +11,50 @@ namespace Bifoql
         Task<BifoqlType> GetSchema();
     }
 
-    public interface IBifoqlMap : IBifoqlObject, IReadOnlyDictionary<string, Func<Task<IBifoqlObject>>>
+    public interface ISyncBifoqlArray
+    {
+        IReadOnlyList<Func<object>> Items { get; }
+    }
+
+    public interface ISyncBifoqlMap
+    {
+        IReadOnlyDictionary<string, Func<object>> Items { get; }
+    }
+
+    public interface IAsyncBifoqlArray
+    {
+        IReadOnlyList<Func<Task<object>>> Items { get; }
+    }
+
+    public interface IAsyncBifoqlMap
+    {
+        IReadOnlyDictionary<string, Func<Task<object>>> Items { get; }
+    }
+
+    internal interface IBifoqlMap : IBifoqlObject, IReadOnlyDictionary<string, Func<Task<IBifoqlObject>>>
     {
     }
 
-    public interface IBifoqlArray : IBifoqlObject, IReadOnlyList<Func<Task<IBifoqlObject>>>
+    internal interface IBifoqlArray : IBifoqlObject, IReadOnlyList<Func<Task<IBifoqlObject>>>
     {
     }
 
-    public interface IBifoqlDeferredQuery : IBifoqlObject
+    internal interface IBifoqlDeferredQuery : IBifoqlObject
     {
         Task<IBifoqlObject> EvaluateQuery(string query);
     }
 
-    public interface IBifoqlExpression : IBifoqlObject
+    internal interface IBifoqlExpression : IBifoqlObject
     {
         Task<IBifoqlObject> Evaluate(QueryContext context);
     }
 
-    public interface IBifoqlIndex : IBifoqlObject
+    internal interface IBifoqlIndex : IBifoqlObject
     {
         Task<object> Lookup(IndexArgumentList elements);
     }
 
-    public interface IBifoqlNull : IBifoqlObject
+    internal interface IBifoqlNull : IBifoqlObject
     {
     }
 
@@ -43,22 +63,22 @@ namespace Bifoql
     {
     }
 
-    public interface IBifoqlString : IBifoqlObject
+    internal interface IBifoqlString : IBifoqlObject
     {
         Task<string> Value { get; }
     }
 
-    public interface IBifoqlNumber : IBifoqlObject
+    internal interface IBifoqlNumber : IBifoqlObject
     {
         Task<double> Value { get; }
     }
 
-    public interface IBifoqlBoolean : IBifoqlObject
+    internal interface IBifoqlBoolean : IBifoqlObject
     {
         Task<bool> Value { get; }
     }
 
-    public interface IBifoqlError : IBifoqlObject
+    internal interface IBifoqlError : IBifoqlObject
     {
         string Message { get; }
     }
