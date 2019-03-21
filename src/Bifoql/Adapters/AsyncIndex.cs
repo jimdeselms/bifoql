@@ -4,7 +4,7 @@ using Bifoql.Types;
 
 namespace Bifoql.Adapters
 {
-    internal class AsyncIndex : AsyncObjectBase, IBifoqlIndex
+    internal class AsyncIndex : AsyncObjectBase, IBifoqlIndexInternal
     {
         private readonly Func<IndexArgumentList, Task<object>> _lookup;
         private readonly BifoqlType _schema;

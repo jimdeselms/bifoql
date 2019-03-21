@@ -30,7 +30,7 @@ namespace Bifoql.Expressions
                 // This isn't a filter; it's an array index
                 if (value is IBifoqlNumber)
                 {
-                    var theList = context.QueryTarget as IBifoqlArray;
+                    var theList = context.QueryTarget as IBifoqlArrayInternal;
                     if (theList == null) return new AsyncError(this.Location, "Index must only be applied to an array");
 
                     var index = Convert.ToInt32(((IBifoqlNumber)value).Value.Result);
@@ -53,7 +53,7 @@ namespace Bifoql.Expressions
                 // This isn't a filter; it's a map key
                 if (value is IBifoqlString)
                 {   
-                    var theMap = context.QueryTarget as IBifoqlMap;
+                    var theMap = context.QueryTarget as IBifoqlMapInternal;
                     if (theMap == null) return new AsyncError(this.Location, "Key lookup must only be applied to a map");
 
                     var key = ((IBifoqlString)value).Value.Result;
@@ -61,7 +61,7 @@ namespace Bifoql.Expressions
                 }
             }
 
-            var list = context.QueryTarget as IBifoqlArray;
+            var list = context.QueryTarget as IBifoqlArrayInternal;
             if (list == null) return new AsyncError(this.Location, "Can only apply filter to an array");
 
             var result = new List<Func<Task<IBifoqlObject>>>();

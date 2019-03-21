@@ -400,34 +400,34 @@ namespace Bifoql
             switch (functionNameToken.Text)
             {
                 case "abs": return new TypedFunctionCallExpr<IBifoqlNumber>(location, "abs", arguments, BuiltinFunctions.Abs);
-                case "avg": return new TypedFunctionCallExpr<IBifoqlArray>(location, "avg", arguments, BuiltinFunctions.Avg);
+                case "avg": return new TypedFunctionCallExpr<IBifoqlArrayInternal>(location, "avg", arguments, BuiltinFunctions.Avg);
                 case "ceil": return new TypedFunctionCallExpr<IBifoqlNumber>(location, "ceil", arguments, BuiltinFunctions.Ceil);
                 case "contains": return new BinaryExpr(arguments[0], "contains", arguments[1]);
-                case "distinct": return new TypedFunctionCallExpr<IBifoqlArray>(location, "distinct", arguments, BuiltinFunctions.Distinct);
+                case "distinct": return new TypedFunctionCallExpr<IBifoqlArrayInternal>(location, "distinct", arguments, BuiltinFunctions.Distinct);
                 case "ends_with": return new BinaryExpr(arguments[0], "ends_with", arguments[1]);
                 case "error": return new ErrorFunctionExpr(location, arguments);
                 case "eval": return new TypedFunctionCallExpr<IBifoqlExpression>(location, "eval", arguments, BuiltinFunctions.Eval);
-                case "flatten": return new TypedFunctionCallExpr<IBifoqlArray>(location, "flatten", arguments, BuiltinFunctions.Flatten);
+                case "flatten": return new TypedFunctionCallExpr<IBifoqlArrayInternal>(location, "flatten", arguments, BuiltinFunctions.Flatten);
                 case "floor": return new TypedFunctionCallExpr<IBifoqlNumber>(location, "floor", arguments, BuiltinFunctions.Floor);
                 case "if_error": return new IfErrorExpr(location, arguments);
-                case "join": return new TypedFunctionCallExpr<IBifoqlString, IBifoqlArray>(location, "join", arguments, BuiltinFunctions.Join);
-                case "keys": return new TypedFunctionCallExpr<IBifoqlMap>(location, "keys", arguments, BuiltinFunctions.Keys);
+                case "join": return new TypedFunctionCallExpr<IBifoqlString, IBifoqlArrayInternal>(location, "join", arguments, BuiltinFunctions.Join);
+                case "keys": return new TypedFunctionCallExpr<IBifoqlMapInternal>(location, "keys", arguments, BuiltinFunctions.Keys);
                 case "length": return new TypedFunctionCallExpr<IBifoqlObject>(location, "length", arguments, BuiltinFunctions.Length);
-                case "max": return new TypedFunctionCallExpr<IBifoqlArray>(location, "max", arguments, BuiltinFunctions.Max);
-                case "max_by": return new TypedFunctionCallExpr<IBifoqlArray, IBifoqlExpression>(location, "max_by", arguments, BuiltinFunctions.MaxBy);
-                case "min": return new TypedFunctionCallExpr<IBifoqlArray>(location, "min", arguments, BuiltinFunctions.Min);
-                case "min_by": return new TypedFunctionCallExpr<IBifoqlArray, IBifoqlExpression>(location, "min_by", arguments, BuiltinFunctions.MinBy);
-                case "reverse": return new TypedFunctionCallExpr<IBifoqlArray>(location, "reverse", arguments, BuiltinFunctions.Reverse);
-                case "sort": return new TypedFunctionCallExpr<IBifoqlArray>(location, "sort", arguments, BuiltinFunctions.Sort);
-                case "sort_by": return new TypedFunctionCallExpr<IBifoqlArray, IBifoqlExpression>(location, "sort_by", arguments, BuiltinFunctions.SortBy);
+                case "max": return new TypedFunctionCallExpr<IBifoqlArrayInternal>(location, "max", arguments, BuiltinFunctions.Max);
+                case "max_by": return new TypedFunctionCallExpr<IBifoqlArrayInternal, IBifoqlExpression>(location, "max_by", arguments, BuiltinFunctions.MaxBy);
+                case "min": return new TypedFunctionCallExpr<IBifoqlArrayInternal>(location, "min", arguments, BuiltinFunctions.Min);
+                case "min_by": return new TypedFunctionCallExpr<IBifoqlArrayInternal, IBifoqlExpression>(location, "min_by", arguments, BuiltinFunctions.MinBy);
+                case "reverse": return new TypedFunctionCallExpr<IBifoqlArrayInternal>(location, "reverse", arguments, BuiltinFunctions.Reverse);
+                case "sort": return new TypedFunctionCallExpr<IBifoqlArrayInternal>(location, "sort", arguments, BuiltinFunctions.Sort);
+                case "sort_by": return new TypedFunctionCallExpr<IBifoqlArrayInternal, IBifoqlExpression>(location, "sort_by", arguments, BuiltinFunctions.SortBy);
                 case "starts_with": return new BinaryExpr(arguments[0], "starts_with", arguments[1]);
-                case "sum": return new TypedFunctionCallExpr<IBifoqlArray>(location, "sum", arguments, BuiltinFunctions.Sum);
+                case "sum": return new TypedFunctionCallExpr<IBifoqlArrayInternal>(location, "sum", arguments, BuiltinFunctions.Sum);
                 case "to_number": return new TypedFunctionCallExpr<IBifoqlString>(location, "to_number", arguments, BuiltinFunctions.ToNumber);
-                case "to_map": return new TypedFunctionCallExpr<IBifoqlArray, IBifoqlExpression, IBifoqlExpression>(location, "to_map", arguments, BuiltinFunctions.ToMap);
+                case "to_map": return new TypedFunctionCallExpr<IBifoqlArrayInternal, IBifoqlExpression, IBifoqlExpression>(location, "to_map", arguments, BuiltinFunctions.ToMap);
                 case "type": return new TypeExpr(location, arguments);
-                case "unzip": return new TypedFunctionCallExpr<IBifoqlMap>(location, "unzip", arguments, BuiltinFunctions.Unzip);
-                case "values": return new TypedFunctionCallExpr<IBifoqlMap>(location, "values", arguments, BuiltinFunctions.Values);
-                case "zip": return new TypedFunctionCallExpr<IBifoqlArray, IBifoqlArray>(location, "zip", arguments, BuiltinFunctions.Zip);
+                case "unzip": return new TypedFunctionCallExpr<IBifoqlMapInternal>(location, "unzip", arguments, BuiltinFunctions.Unzip);
+                case "values": return new TypedFunctionCallExpr<IBifoqlMapInternal>(location, "values", arguments, BuiltinFunctions.Values);
+                case "zip": return new TypedFunctionCallExpr<IBifoqlArrayInternal, IBifoqlArrayInternal>(location, "zip", arguments, BuiltinFunctions.Zip);
                 default:
                     return new ErrorExpr(location, $"Unknown function name {functionNameToken.Text}");
             }

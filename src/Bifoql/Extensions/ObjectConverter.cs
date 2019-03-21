@@ -12,10 +12,10 @@ namespace Bifoql.Extensions
     {
         internal static Task<object> ToSimpleObject(this IBifoqlObject o, BifoqlType expectedSchema=null)
         {
-            var lookup = o as IBifoqlMap;
+            var lookup = o as IBifoqlMapInternal;
             if (lookup != null) return ToSimpleObject(lookup, expectedSchema);
 
-            var arr = o as IBifoqlArray;
+            var arr = o as IBifoqlArrayInternal;
             if (arr != null) return ToSimpleObject(arr, expectedSchema);
 
             var str = o as IBifoqlString;
@@ -36,7 +36,7 @@ namespace Bifoql.Extensions
             return Task.FromResult<object>(null);
         }
 
-        private static async Task<object> ToSimpleObject(IBifoqlMap lookup, BifoqlType expectedSchema)
+        private static async Task<object> ToSimpleObject(IBifoqlMapInternal lookup, BifoqlType expectedSchema)
         {
             await AssertSchema(lookup, expectedSchema);
 
@@ -54,7 +54,7 @@ namespace Bifoql.Extensions
             return new DynamicDict(values);
         }
 
-        private static async Task<object> ToSimpleObject(IBifoqlArray list, BifoqlType expectedSchema)
+        private static async Task<object> ToSimpleObject(IBifoqlArrayInternal list, BifoqlType expectedSchema)
         {
             var tasks = new List<Task<object>>();
             for (int i = 0; i < list.Count; i++)
@@ -127,7 +127,7 @@ namespace Bifoql.Extensions
             }
         }
 
-        private static async Task AssertSchema(IBifoqlMap asyncMap, BifoqlType expectedSchema)
+        private static async Task AssertSchema(IBifoqlMapInternal asyncMap, BifoqlType expectedSchema)
         {
             // No expected schema? Then no assertion.
             if (expectedSchema == null) return;
@@ -169,7 +169,7 @@ namespace Bifoql.Extensions
             }
         }
 
-        private static async Task AssertSchema(IBifoqlArray asyncArray, BifoqlType expectedSchema)
+        private static async Task AssertSchema(IBifoqlArrayInternal asyncArray, BifoqlType expectedSchema)
         {
             // No expected schema? Then no assertion.
             if (expectedSchema == null) return;

@@ -15,7 +15,7 @@ namespace Bifoql.Expressions
             return new AsyncNumber(Math.Abs(value));
         }
 
-        public static async Task<IBifoqlObject> Avg(Location location, QueryContext context, IBifoqlArray list)
+        public static async Task<IBifoqlObject> Avg(Location location, QueryContext context, IBifoqlArrayInternal list)
         {
             double average = 0.0;
 
@@ -36,7 +36,7 @@ namespace Bifoql.Expressions
             return new AsyncNumber(Math.Ceiling(value));
         }
 
-        public static async Task<IBifoqlObject> Distinct(Location location, QueryContext context, IBifoqlArray list)
+        public static async Task<IBifoqlObject> Distinct(Location location, QueryContext context, IBifoqlArrayInternal list)
         {
             var distinctObjects = new List<IBifoqlObject>();
 
@@ -71,14 +71,14 @@ namespace Bifoql.Expressions
             return await expr.Evaluate(context);
         }
 
-        public static async Task<IBifoqlObject> Flatten(Location location, QueryContext context, IBifoqlArray list)
+        public static async Task<IBifoqlObject> Flatten(Location location, QueryContext context, IBifoqlArrayInternal list)
         {
             var flattenedList = new List<Func<Task<IBifoqlObject>>>();
 
             foreach (var item in list)
             {
                 var currItem = await item();
-                var currList = currItem as IBifoqlArray;
+                var currList = currItem as IBifoqlArrayInternal;
                 if (currList != null)
                 {
                     foreach (var subitem in currList)
@@ -101,7 +101,7 @@ namespace Bifoql.Expressions
             return new AsyncNumber(Math.Floor(value));
         }
 
-        public static async Task<IBifoqlObject> Join(Location location, QueryContext context, IBifoqlString glue, IBifoqlArray stringList)
+        public static async Task<IBifoqlObject> Join(Location location, QueryContext context, IBifoqlString glue, IBifoqlArrayInternal stringList)
         {
             var strings = new List<string>();
             foreach (var s in stringList)
@@ -116,7 +116,7 @@ namespace Bifoql.Expressions
             return new AsyncString(string.Join(glueStr, strings));
         }
 
-        public static Task<IBifoqlObject> Keys(Location location, QueryContext context, IBifoqlMap map)
+        public static Task<IBifoqlObject> Keys(Location location, QueryContext context, IBifoqlMapInternal map)
         {
             var keys = new List<Func<Task<IBifoqlObject>>>();
 
@@ -136,7 +136,7 @@ namespace Bifoql.Expressions
                 return new AsyncNumber((await str.Value).Length);
             }
 
-            var arr = value as IBifoqlArray;
+            var arr = value as IBifoqlArrayInternal;
             if (arr != null)
             {
                 return new AsyncNumber(arr.Count);
@@ -145,27 +145,27 @@ namespace Bifoql.Expressions
             return new AsyncError(location, "length accepts a number or string argument");
         }
 
-        public static Task<IBifoqlObject> MaxBy(Location location, QueryContext context, IBifoqlArray list, IBifoqlExpression keyExpr)
+        public static Task<IBifoqlObject> MaxBy(Location location, QueryContext context, IBifoqlArrayInternal list, IBifoqlExpression keyExpr)
         {
             return MaxMin(location, context, list, keyExpr, max: true);
         }
 
-        public static Task<IBifoqlObject> Max(Location location, QueryContext context, IBifoqlArray list)
+        public static Task<IBifoqlObject> Max(Location location, QueryContext context, IBifoqlArrayInternal list)
         {
             return MaxMin(location, context, list, null, max: true);
         }
 
-        public static Task<IBifoqlObject> MinBy(Location location, QueryContext context, IBifoqlArray list, IBifoqlExpression keyExpr)
+        public static Task<IBifoqlObject> MinBy(Location location, QueryContext context, IBifoqlArrayInternal list, IBifoqlExpression keyExpr)
         {
             return MaxMin(location, context, list, keyExpr, max: false);
         }
 
-        public static Task<IBifoqlObject> Min(Location location, QueryContext context, IBifoqlArray list)
+        public static Task<IBifoqlObject> Min(Location location, QueryContext context, IBifoqlArrayInternal list)
         {
             return MaxMin(location, context, list, null, max: false);
         }
 
-        private static async Task<IBifoqlObject> MaxMin(Location location, QueryContext context, IBifoqlArray list, IBifoqlExpression keyQuery, bool max)
+        private static async Task<IBifoqlObject> MaxMin(Location location, QueryContext context, IBifoqlArrayInternal list, IBifoqlExpression keyQuery, bool max)
         {
             var pairs = new List<KeyValuePair<IBifoqlObject, IBifoqlObject>>();
             foreach (var value in list)
@@ -228,17 +228,17 @@ namespace Bifoql.Expressions
             return result;
         }
 
-        public static Task<IBifoqlObject> Reverse(Location location, QueryContext context, IBifoqlArray array)
+        public static Task<IBifoqlObject> Reverse(Location location, QueryContext context, IBifoqlArrayInternal array)
         {
             return Task.FromResult<IBifoqlObject>(new AsyncArray(array.Reverse().ToList()));
         }
 
-        public static Task<IBifoqlObject> Sort(Location location, QueryContext context, IBifoqlArray array)
+        public static Task<IBifoqlObject> Sort(Location location, QueryContext context, IBifoqlArrayInternal array)
         {
             return SortBy(location, context, array, null);
         }
 
-        public static async Task<IBifoqlObject> SortBy(Location location, QueryContext context, IBifoqlArray array, IBifoqlExpression keyExpr)
+        public static async Task<IBifoqlObject> SortBy(Location location, QueryContext context, IBifoqlArrayInternal array, IBifoqlExpression keyExpr)
         {
             var pairs = new List<Tuple<IBifoqlObject, IBifoqlObject>>();
             var values = new List<IBifoqlObject>();
@@ -276,7 +276,7 @@ namespace Bifoql.Expressions
             }
         }
 
-        public static async Task<IBifoqlObject> Sum(Location location, QueryContext context, IBifoqlArray numbers)
+        public static async Task<IBifoqlObject> Sum(Location location, QueryContext context, IBifoqlArrayInternal numbers)
         {
             double sum = 0.0;
 
@@ -291,7 +291,7 @@ namespace Bifoql.Expressions
             return new AsyncNumber(sum);
         }
 
-        public static async Task<IBifoqlObject> ToMap(Location location, QueryContext context, IBifoqlArray list, IBifoqlExpression keyExpr, IBifoqlExpression valueExpr)
+        public static async Task<IBifoqlObject> ToMap(Location location, QueryContext context, IBifoqlArrayInternal list, IBifoqlExpression keyExpr, IBifoqlExpression valueExpr)
         {
             var dict = new Dictionary<string, IBifoqlObject>();
 
@@ -324,7 +324,7 @@ namespace Bifoql.Expressions
             }
         }
 
-        public static Task<IBifoqlObject> Unzip(Location location, QueryContext context, IBifoqlMap map)
+        public static Task<IBifoqlObject> Unzip(Location location, QueryContext context, IBifoqlMapInternal map)
         {
             var keys = new List<Func<Task<IBifoqlObject>>>();
             var values = new List<Func<Task<IBifoqlObject>>>();
@@ -344,7 +344,7 @@ namespace Bifoql.Expressions
             return Task.FromResult<IBifoqlObject>(new AsyncArray(resultDict));
         }
 
-        public static Task<IBifoqlObject> Values(Location location, QueryContext context, IBifoqlMap map)
+        public static Task<IBifoqlObject> Values(Location location, QueryContext context, IBifoqlMapInternal map)
         {
             var values = new List<Func<Task<IBifoqlObject>>>();
 
@@ -356,7 +356,7 @@ namespace Bifoql.Expressions
             return Task.FromResult<IBifoqlObject>(new AsyncArray(values));
         }
 
-        public static async Task<IBifoqlObject> Zip(Location location, QueryContext context, IBifoqlArray keyList, IBifoqlArray valueList)
+        public static async Task<IBifoqlObject> Zip(Location location, QueryContext context, IBifoqlArrayInternal keyList, IBifoqlArrayInternal valueList)
         {
             if (keyList.Count != valueList.Count) return new AsyncError(location, "lists passed to zip must be the same length");
             var resultDict = new Dictionary<string, Func<Task<IBifoqlObject>>>();

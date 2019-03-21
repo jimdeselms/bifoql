@@ -19,7 +19,7 @@ namespace Bifoql.Expressions
 
         protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
-            var list = context.QueryTarget as IBifoqlArray;
+            var list = context.QueryTarget as IBifoqlArrayInternal;
             if (list == null) return new AsyncError(this.Location, "Can't take slice of non-list");
 
             var result = new List<Func<Task<IBifoqlObject>>>();

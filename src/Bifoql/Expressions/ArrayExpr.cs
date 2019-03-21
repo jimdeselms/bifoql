@@ -40,7 +40,7 @@ namespace Bifoql.Expressions
 
                 if (tasks[i].spread)
                 {
-                    var spreadList = resolvedExprs[i] as IBifoqlArray;
+                    var spreadList = resolvedExprs[i] as IBifoqlArrayInternal;
                     if (spreadList == null) return new AsyncError(this.Location, "In an array, spread expression must resolve to an array");
                     foreach (var item in spreadList)
                     {

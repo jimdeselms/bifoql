@@ -19,7 +19,7 @@ namespace Bifoql.Expressions
 
         protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
-            var leftHandSide = await _leftHandSide.Apply(context) as IBifoqlIndex;
+            var leftHandSide = await _leftHandSide.Apply(context) as IBifoqlIndexInternal;
             if (leftHandSide == null) return new AsyncError(this.Location, "Can't do index lookup on something that isn't an index");
 
             var args = new IndexArgumentList(_arguments, context);

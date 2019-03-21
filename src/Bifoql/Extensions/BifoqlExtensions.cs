@@ -14,14 +14,14 @@ namespace Bifoql.Extensions
         {
             if (o == null) return AsyncNull.Instance;
 
-            if (o is IAsyncBifoqlArray) return ConvertAsyncArray((IAsyncBifoqlArray)o);
-            if (o is ISyncBifoqlArray) return ConvertSyncArray((ISyncBifoqlArray)o);
+            if (o is IBifoqlArray) return ConvertAsyncArray((IBifoqlArray)o);
+            if (o is IBifoqlArraySync) return ConvertSyncArray((IBifoqlArraySync)o);
 
-            if (o is IAsyncBifoqlMap) return ConvertAsyncMap((IAsyncBifoqlMap)o);
-            if (o is ISyncBifoqlMap) return ConvertSyncMap((ISyncBifoqlMap)o);
+            if (o is IBifoqlMap) return ConvertAsyncMap((IBifoqlMap)o);
+            if (o is IBifoqlMapSync) return ConvertSyncMap((IBifoqlMapSync)o);
 
-            if (o is IAsyncBifoqlIndex) return ConvertAsyncIndex((IAsyncBifoqlIndex)o);
-            if (o is ISyncBifoqlIndex) return ConvertSyncIndex((ISyncBifoqlIndex)o);
+            if (o is IBifoqlIndex) return ConvertAsyncIndex((IBifoqlIndex)o);
+            if (o is IBifoqlIndexSync) return ConvertSyncIndex((IBifoqlIndexSync)o);
 
             if (o is IBifoqlObject) return (IBifoqlObject)o;
 
@@ -41,13 +41,13 @@ namespace Bifoql.Extensions
             return PropertyAdapter.Create(o, o.GetType());
         }
 
-        private static IBifoqlObject ConvertAsyncArray(IAsyncBifoqlArray a)
+        private static IBifoqlObject ConvertAsyncArray(IBifoqlArray a)
         {
             var items = a.Items.Select(i => (Func<Task<IBifoqlObject>>)(async () => (await i()).ToBifoqlObject()));
             return new AsyncArray(items.ToList());
         }
 
-        private static IBifoqlObject ConvertAsyncMap(IAsyncBifoqlMap m)
+        private static IBifoqlObject ConvertAsyncMap(IBifoqlMap m)
         {
             var map = m.Items.ToDictionary(
                 pair => pair.Key,
@@ -56,13 +56,13 @@ namespace Bifoql.Extensions
             return new AsyncMap(map);
         }
 
-        private static IBifoqlObject ConvertSyncArray(ISyncBifoqlArray a)
+        private static IBifoqlObject ConvertSyncArray(IBifoqlArraySync a)
         {
             var items = a.Items.Select(i => (Func<Task<IBifoqlObject>>)(() => Task.FromResult(i().ToBifoqlObject())));
             return new AsyncArray(items.ToList());
         }
 
-        private static IBifoqlObject ConvertSyncMap(ISyncBifoqlMap m)
+        private static IBifoqlObject ConvertSyncMap(IBifoqlMapSync m)
         {
             var map = m.Items.ToDictionary(
                 pair => pair.Key,
@@ -71,12 +71,12 @@ namespace Bifoql.Extensions
             return new AsyncMap(map);
         }
 
-        private static IBifoqlObject ConvertAsyncIndex(IAsyncBifoqlIndex i)
+        private static IBifoqlObject ConvertAsyncIndex(IBifoqlIndex i)
         {
             return new AsyncIndex(list => i.Lookup(list));
         }
 
-        private static IBifoqlObject ConvertSyncIndex(ISyncBifoqlIndex i)
+        private static IBifoqlObject ConvertSyncIndex(IBifoqlIndexSync i)
         {
             return new AsyncIndex(list => Task.FromResult(i.Lookup(list)));
         }

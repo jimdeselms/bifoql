@@ -9,7 +9,7 @@ using Bifoql.Extensions;
 
 namespace Bifoql.Adapters
 {
-    internal class AsyncMap : AsyncObjectBase, IBifoqlMap
+    internal class AsyncMap : AsyncObjectBase, IBifoqlMapInternal
     {
         private readonly BifoqlType _type;
 
@@ -45,7 +45,7 @@ namespace Bifoql.Adapters
             if (this == other) return true;
             
             var otherDict
-             = other as IBifoqlMap;
+             = other as IBifoqlMapInternal;
             if (otherDict == null) return false;
             if (otherDict.Count != this.Count) return false;
 

@@ -16,7 +16,7 @@ namespace Bifoql.Tests
         public void SimpleProperty()
         {
             var tc = new TestClass { String = "Hello" };
-            var obj = PropertyAdapter.Create<TestClass>(tc) as IBifoqlMap;
+            var obj = PropertyAdapter.Create<TestClass>(tc) as IBifoqlMapInternal;
 
             Assert.Equal("Hello", obj.TryGetValueAsString("String"));
         }
@@ -25,7 +25,7 @@ namespace Bifoql.Tests
         public void AsyncStringProperty()
         {
             var tc = new TestClass { AsyncString = (IBifoqlString)"Hello".ToBifoqlObject() };
-            var obj = PropertyAdapter.Create<TestClass>(tc) as IBifoqlMap;
+            var obj = PropertyAdapter.Create<TestClass>(tc) as IBifoqlMapInternal;
 
             Assert.Equal("Hello", obj.TryGetValueAsString("AsyncString"));
         }
@@ -128,7 +128,7 @@ namespace Bifoql.Tests
             var tc = new TestClass { GenericType = list };
             var obj = PropertyAdapter.Create<TestClass>(tc);
 
-            var listObj = (IBifoqlArray)obj.TryGetValue("GenericType");
+            var listObj = (IBifoqlArrayInternal)obj.TryGetValue("GenericType");
             var hi = listObj[0]().Result.TryGetString();
             Assert.Equal("Hi", hi);
         }
@@ -141,7 +141,7 @@ namespace Bifoql.Tests
             var tc = new TestClass { AsyncGenericType = list };
             var obj = PropertyAdapter.Create<TestClass>(tc);
 
-            var listObj = (IBifoqlArray)obj.TryGetValue("AsyncGenericType");
+            var listObj = (IBifoqlArrayInternal)obj.TryGetValue("AsyncGenericType");
             var hi = listObj[0]().Result.TryGetString();
             Assert.Equal("Hi", hi);
         }
@@ -155,8 +155,8 @@ namespace Bifoql.Tests
             var tc = new TestClass { NestedAsyncGenericType = listOfList };
             var obj = PropertyAdapter.Create<TestClass>(tc);
 
-            var listObj = (IBifoqlArray)obj.TryGetValue("NestedAsyncGenericType");
-            var innerListObj = (IBifoqlArray)await listObj[0]();
+            var listObj = (IBifoqlArrayInternal)obj.TryGetValue("NestedAsyncGenericType");
+            var innerListObj = (IBifoqlArrayInternal)await listObj[0]();
 
             var hi = innerListObj[0]().Result.TryGetString();
             Assert.Equal("Hey", hi);
@@ -236,7 +236,7 @@ namespace Bifoql.Tests
             var tc = new TestClass() { DictOfAsyncObjectTasks = dict };
             var obj = PropertyAdapter.Create<TestClass>(tc);
 
-            IBifoqlMap lookup = (IBifoqlMap)obj.TryGetValue("DictOfAsyncObjectTasks");
+            IBifoqlMapInternal lookup = (IBifoqlMapInternal)obj.TryGetValue("DictOfAsyncObjectTasks");
 
             Assert.Equal("ABC", lookup.TryGetValueAsString("a"));
         }

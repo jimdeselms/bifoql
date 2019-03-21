@@ -9,7 +9,7 @@ using Bifoql.Extensions;
 
 namespace Bifoql.Adapters
 {
-    internal class AsyncArray : IBifoqlArray
+    internal class AsyncArray : IBifoqlArrayInternal
     {
         private readonly BifoqlType _type;
         private readonly IReadOnlyList<Func<Task<IBifoqlObject>>> _getters;
@@ -54,7 +54,7 @@ namespace Bifoql.Adapters
         {
             if (this == other) return true;
             
-            var otherArray = other as IBifoqlArray;
+            var otherArray = other as IBifoqlArrayInternal;
             if (otherArray == null) return false;
             if (otherArray.Count != this.Count) return false;
 
