@@ -7,13 +7,15 @@ namespace Bifoql.Types
     {
         public string Name { get; }
         public BifoqlType Type { get; }
+        private readonly string _documentation;
 
-        public NamedType(string name, BifoqlType type)
+        public NamedType(string name, BifoqlType type, string documentation)
         {
             Guard.ArgumentNotNull(name, nameof(name));
             Guard.ArgumentNotNull(type, nameof(type));
             Name = name;
             Type = type;
+            _documentation = documentation;
         }
 
         public override object ToObject()
@@ -34,11 +36,9 @@ namespace Bifoql.Types
             return 209837492;
         }
 
-        internal override IEnumerable<NamedType> ReferencedNamedTypes => Type.ReferencedNamedTypes.Concat(new [] { this });
-
-        internal override string ToString(int indent)
+        internal override string GetDocumentation(int indent)
         {
-            return Name;
+            return $"{FormatDocumentation(_documentation, indent)}{Indent(indent)}{Name} = {Type.GetDocumentation(indent)}";
         }
     }
 }

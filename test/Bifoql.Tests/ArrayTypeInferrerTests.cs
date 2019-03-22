@@ -18,25 +18,25 @@ namespace Bifoql.Tests
         public void NoEntries()
         {
             // An array with zero entries in it is an empty tuple.p
-            Test(Schema.Tuple(), new BifoqlType[0]);
+            Test(BifoqlType.Tuple(), new BifoqlType[0]);
         }
 
         [Fact]
         public void OneType()
         {
-            Test(Schema.ArrayOf(BifoqlType.String), BifoqlType.String);
+            Test(BifoqlType.ArrayOf(BifoqlType.String), BifoqlType.String);
         }
         
         [Fact]
         public void TwoSameTypes()
         {
-            Test(Schema.ArrayOf(BifoqlType.String), BifoqlType.String, BifoqlType.String);
+            Test(BifoqlType.ArrayOf(BifoqlType.String), BifoqlType.String, BifoqlType.String);
         }
         
         [Fact]
         public void TwoDifferentTypes()
         {
-            Test(Schema.Tuple(BifoqlType.String, BifoqlType.Number), 
+            Test(BifoqlType.Tuple(BifoqlType.String, BifoqlType.Number), 
                 BifoqlType.String, 
                 BifoqlType.Number);
         }
@@ -44,11 +44,11 @@ namespace Bifoql.Tests
         [Fact]
         public void TwoSameTypesOneNullMakesOptional()
         {
-            Test(Schema.ArrayOf(Schema.Optional(BifoqlType.String)), 
+            Test(BifoqlType.ArrayOf(BifoqlType.Optional(BifoqlType.String)), 
                 BifoqlType.String,
                 BifoqlType.Null);
 
-            Test(Schema.ArrayOf(Schema.Optional(BifoqlType.String)), 
+            Test(BifoqlType.ArrayOf(BifoqlType.Optional(BifoqlType.String)), 
                 BifoqlType.Null,
                 BifoqlType.String);
         }
@@ -56,37 +56,37 @@ namespace Bifoql.Tests
         [Fact]
         public void TwoSameTypesOneOptionalMakesOptional()
         {
-            Test(Schema.ArrayOf(Schema.Optional(BifoqlType.String)), 
+            Test(BifoqlType.ArrayOf(BifoqlType.Optional(BifoqlType.String)), 
                 BifoqlType.String,
-                Schema.Optional(BifoqlType.String));
+                BifoqlType.Optional(BifoqlType.String));
 
-            Test(Schema.ArrayOf(Schema.Optional(BifoqlType.String)), 
-                Schema.Optional(BifoqlType.String),
+            Test(BifoqlType.ArrayOf(BifoqlType.Optional(BifoqlType.String)), 
+                BifoqlType.Optional(BifoqlType.String),
                 BifoqlType.String);
         }
 
         [Fact]
         public void TwoDifferentOptionalTypes()
         {
-            Test(Schema.Tuple(Schema.Optional(BifoqlType.String), Schema.Optional(BifoqlType.Boolean)),
-                Schema.Optional(BifoqlType.String),
-                Schema.Optional(BifoqlType.Boolean));
+            Test(BifoqlType.Tuple(BifoqlType.Optional(BifoqlType.String), BifoqlType.Optional(BifoqlType.Boolean)),
+                BifoqlType.Optional(BifoqlType.String),
+                BifoqlType.Optional(BifoqlType.Boolean));
         }
 
         [Fact]
         public void TwoDifferentOptionalTypesOneOptional()
         {
-            Test(Schema.Tuple(BifoqlType.String, Schema.Optional(BifoqlType.Boolean)),
+            Test(BifoqlType.Tuple(BifoqlType.String, BifoqlType.Optional(BifoqlType.Boolean)),
                 BifoqlType.String,
-                Schema.Optional(BifoqlType.Boolean));
+                BifoqlType.Optional(BifoqlType.Boolean));
         }
 
         [Fact]
         public void ArrayAndCompatibleTuple()
         {
-            Test(Schema.ArrayOf(Schema.ArrayOf(BifoqlType.Number)),
-                Schema.ArrayOf(BifoqlType.Number),
-                Schema.Tuple(BifoqlType.Number, BifoqlType.Number));
+            Test(BifoqlType.ArrayOf(BifoqlType.ArrayOf(BifoqlType.Number)),
+                BifoqlType.ArrayOf(BifoqlType.Number),
+                BifoqlType.Tuple(BifoqlType.Number, BifoqlType.Number));
         }
 
         private void Test(BifoqlType expected, params BifoqlType[] entries)

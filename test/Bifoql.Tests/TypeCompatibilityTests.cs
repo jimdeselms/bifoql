@@ -19,72 +19,72 @@ namespace Bifoql.Tests
         public void Equality()
         {
             AssertCompatible(BifoqlType.String, BifoqlType.String);
-            AssertCompatible(Schema.ArrayOf(BifoqlType.String), Schema.ArrayOf(BifoqlType.String));
+            AssertCompatible(BifoqlType.ArrayOf(BifoqlType.String), BifoqlType.ArrayOf(BifoqlType.String));
         }
 
         [Fact]
         public void Inequality()
         {
             AssertNotCompatible(BifoqlType.Number, BifoqlType.String);
-            AssertNotCompatible(Schema.ArrayOf(BifoqlType.String), Schema.ArrayOf(BifoqlType.Number));
+            AssertNotCompatible(BifoqlType.ArrayOf(BifoqlType.String), BifoqlType.ArrayOf(BifoqlType.Number));
         }
 
         [Fact]
         public void Optional()
         {
-            AssertCompatible(BifoqlType.Boolean, Schema.Optional(BifoqlType.Boolean));
-            AssertCompatible(BifoqlType.Null, Schema.Optional(BifoqlType.Boolean));
-            AssertCompatible(Schema.Optional(BifoqlType.Boolean), Schema.Optional(BifoqlType.Boolean));
+            AssertCompatible(BifoqlType.Boolean, BifoqlType.Optional(BifoqlType.Boolean));
+            AssertCompatible(BifoqlType.Null, BifoqlType.Optional(BifoqlType.Boolean));
+            AssertCompatible(BifoqlType.Optional(BifoqlType.Boolean), BifoqlType.Optional(BifoqlType.Boolean));
 
-            AssertNotCompatible(Schema.Optional(BifoqlType.Boolean), BifoqlType.Boolean);
-            AssertNotCompatible(Schema.Optional(BifoqlType.Boolean), BifoqlType.Null);
+            AssertNotCompatible(BifoqlType.Optional(BifoqlType.Boolean), BifoqlType.Boolean);
+            AssertNotCompatible(BifoqlType.Optional(BifoqlType.Boolean), BifoqlType.Null);
         }
 
         [Fact]
         public void ArrayWithIncompatibleArray()
         {
-            AssertNotCompatible(Schema.ArrayOf(BifoqlType.String), Schema.ArrayOf(BifoqlType.Number));
+            AssertNotCompatible(BifoqlType.ArrayOf(BifoqlType.String), BifoqlType.ArrayOf(BifoqlType.Number));
         }
 
         [Fact]
         public void ArrayOfOptional()
         {
             AssertCompatible(
-                Schema.ArrayOf(BifoqlType.Number), 
-                Schema.ArrayOf(Schema.Optional(BifoqlType.Number)));
+                BifoqlType.ArrayOf(BifoqlType.Number), 
+                BifoqlType.ArrayOf(BifoqlType.Optional(BifoqlType.Number)));
 
             AssertNotCompatible(
-                Schema.ArrayOf(Schema.Optional(BifoqlType.Number)),
-                Schema.ArrayOf(BifoqlType.Number)); 
+                BifoqlType.ArrayOf(BifoqlType.Optional(BifoqlType.Number)),
+                BifoqlType.ArrayOf(BifoqlType.Number)); 
         }
 
         [Fact]
         public void ArrayAndTupleOfSameType()
         {
             AssertCompatible(
-                Schema.Tuple(BifoqlType.Number, BifoqlType.Number), 
-                Schema.ArrayOf(Schema.Optional(BifoqlType.Number)));
+                BifoqlType.Tuple(BifoqlType.Number, BifoqlType.Number), 
+                BifoqlType.ArrayOf(BifoqlType.Optional(BifoqlType.Number)));
 
             AssertCompatible(
-                Schema.Tuple(BifoqlType.Number, Schema.Optional(BifoqlType.Number)), 
-                Schema.ArrayOf(Schema.Optional(BifoqlType.Number)));
+                BifoqlType.Tuple(BifoqlType.Number, BifoqlType.Optional(BifoqlType.Number)), 
+                BifoqlType.ArrayOf(BifoqlType.Optional(BifoqlType.Number)));
 
             AssertCompatible(
-                Schema.Tuple(BifoqlType.Number, BifoqlType.Number), 
-                Schema.ArrayOf(BifoqlType.Number));
+                BifoqlType.Tuple(BifoqlType.Number, BifoqlType.Number), 
+                BifoqlType.ArrayOf(BifoqlType.Number));
 
 
             AssertNotCompatible(
-                Schema.Tuple(BifoqlType.Number, Schema.Optional(BifoqlType.Number)), 
-                Schema.ArrayOf(BifoqlType.Number));
+                BifoqlType.Tuple(BifoqlType.Number, BifoqlType.Optional(BifoqlType.Number)), 
+                BifoqlType.ArrayOf(BifoqlType.Number));
         }
 
         [Fact]
         public void ArrayComparedToTuple()
         {
             AssertNotCompatible(
-                Schema.ArrayOf(BifoqlType.String),
-                Schema.Tuple(BifoqlType.String)
+                BifoqlType.ArrayOf(BifoqlType.String),
+                BifoqlType.Tuple(BifoqlType.String)
             );
         }
 
@@ -92,18 +92,18 @@ namespace Bifoql.Tests
         public void TwoTuples()
         {
             AssertCompatible(
-                Schema.Tuple(BifoqlType.String, BifoqlType.Number),
-                Schema.Tuple(Schema.Optional(BifoqlType.String), Schema.Optional(BifoqlType.Number))
+                BifoqlType.Tuple(BifoqlType.String, BifoqlType.Number),
+                BifoqlType.Tuple(BifoqlType.Optional(BifoqlType.String), BifoqlType.Optional(BifoqlType.Number))
             );
 
             AssertNotCompatible(
-            Schema.Tuple(BifoqlType.String, BifoqlType.Number),
-                Schema.Tuple(Schema.Optional(BifoqlType.String), Schema.Optional(BifoqlType.String))
+            BifoqlType.Tuple(BifoqlType.String, BifoqlType.Number),
+                BifoqlType.Tuple(BifoqlType.Optional(BifoqlType.String), BifoqlType.Optional(BifoqlType.String))
             );
 
             AssertNotCompatible(
-                Schema.Tuple(BifoqlType.String, BifoqlType.String),
-                Schema.Tuple(BifoqlType.String, BifoqlType.String, BifoqlType.String)
+                BifoqlType.Tuple(BifoqlType.String, BifoqlType.String),
+                BifoqlType.Tuple(BifoqlType.String, BifoqlType.String, BifoqlType.String)
             );
         }
 

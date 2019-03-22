@@ -7,7 +7,7 @@ namespace Bifoql.Types
     public abstract class BifoqlType
     {
         public static readonly BifoqlType Any = new ScalarType("any");
-        public static readonly BifoqlType Unknown = new ScalarType("unknown");
+        internal static readonly BifoqlType Unknown = new ScalarType("unknown");
         public static readonly BifoqlType Null = new ScalarType("null");
         public static readonly BifoqlType Undefined = new ScalarType("undefined");
         public static readonly BifoqlType Error = new ScalarType("error");
@@ -15,6 +15,60 @@ namespace Bifoql.Types
         public static readonly BifoqlType String = new ScalarType("string");
         public static readonly BifoqlType Boolean = new ScalarType("boolean");
 
+       public static BifoqlType Optional(BifoqlType type)
+        {
+            // Already optional? Just return it.
+            return (type is OptionalType) 
+                ? type
+                : new OptionalType(type);
+        }
+
+        public static BifoqlType ArrayOf(BifoqlType elementType)
+        {
+            return new ArrayType(elementType);
+        }
+
+        public static BifoqlType DictionaryOf(BifoqlType valueType)
+        {
+            return new DictionaryType(valueType);
+        }
+
+        public static BifoqlType Tuple(params BifoqlType[] types)
+        {
+            return new TupleType(types);
+        }
+
+        public static BifoqlType Union(params BifoqlType[] types)
+        {
+            return new UnionType(types);
+        }
+
+        public static BifoqlType Map(params MapProperty[] pairs)
+        {
+            var dict = pairs.ToDictionary(p => p.Name, p => p);
+            return new MapType(dict);
+        }
+
+        public static MapProperty Property(string key, BifoqlType value, string documentation=null)
+        {
+            return new MapProperty(key, value, documentation);
+        }
+
+        public static BifoqlType Index(BifoqlType resultType, params IndexParameter[] parameters)
+        {
+            return new IndexedType(resultType, parameters);
+        }
+
+        public static BifoqlType Named(string name)
+        {
+            return new NamedTypeReference(name);
+        }
+
+        public static IndexParameter IndexParameter(string name, BifoqlType type, bool optional=false)
+        {
+            return new IndexParameter(name, type, optional);
+        }
+ 
         public abstract object ToObject();
 
         // For container types, get the type of the nth element,
@@ -31,45 +85,28 @@ namespace Bifoql.Types
             return BifoqlType.Unknown;
         }
 
-        internal virtual IEnumerable<NamedType> ReferencedNamedTypes => Enumerable.Empty<NamedType>();
-
-        internal abstract string ToString(int indent);
+        internal abstract string GetDocumentation(int indent);
         internal string Indent(int i)
         {
             return "".PadRight(i * 4);
         }
 
-        public override string ToString()
+        protected string FormatDocumentation(string documentation, int indent)
         {
-            var builder = new StringBuilder();
-            builder.Append(ToString(0));
-
-            bool first = true;
-            foreach (var type in ReferencedNamedTypes.Distinct(NamedTypeComparer.Instance).OrderBy(t => t.Name))
+            if (documentation != null)
             {
-                if (first)
+                var lines = documentation.Replace("\r", "").Split('\n');
+                var text = new StringBuilder();
+                foreach (var line in lines)
                 {
-                    builder.AppendLine();
-                    first = false;
+                    var formatted = $"{Indent(indent)}// {line}";
+                    text.AppendLine(formatted);
                 }
-                builder.AppendLine();
-                builder.AppendLine($"{type.Name} {type.Type.ToString(0)}");
+                return text.ToString();
             }
-
-            return builder.ToString();
-        }
-
-        private class NamedTypeComparer : IEqualityComparer<NamedType>
-        {
-            public static readonly NamedTypeComparer Instance = new NamedTypeComparer();
-            public bool Equals(NamedType x, NamedType y)
+            else
             {
-                return x.Name == y.Name;
-            }
-
-            public int GetHashCode(NamedType obj)
-            {
-                return obj.GetHashCode();
+                return "";
             }
         }
     }

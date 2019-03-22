@@ -10,11 +10,11 @@ namespace Bifoql.Types
             var commonType = GetCommonType(types);
             if (commonType != null)
             {
-                return Schema.ArrayOf(commonType);
+                return BifoqlType.ArrayOf(commonType);
             }
             else
             {
-                return Schema.Tuple(types.ToArray());
+                return BifoqlType.Tuple(types.ToArray());
             }
         }
 
@@ -55,7 +55,7 @@ namespace Bifoql.Types
                 }
 
                 // If one of the types is null or optional, then get the optional version of the other one
-                if (t1.Equals(BifoqlType.Null)) return Schema.Optional(t2);
+                if (t1.Equals(BifoqlType.Null)) return BifoqlType.Optional(t2);
                 if (t1 is OptionalType) return GetCommonType((OptionalType)t1, t2);
                 if (t1 is ArrayType && t2 is TupleType) return GetCommonType((ArrayType)t1, (TupleType)t2);
 
@@ -70,7 +70,7 @@ namespace Bifoql.Types
             var common = GetCommonType(t1.ElementType, t2.ElementType);
             if (common == null) return null;
 
-            return Schema.ArrayOf(common);
+            return BifoqlType.ArrayOf(common);
         }
 
         private static BifoqlType GetCommonType(ArrayType t1, TupleType t2)
@@ -91,13 +91,13 @@ namespace Bifoql.Types
             var common = GetCommonType(t1.Type, t2.Type);
             if (common == null) return null;
 
-            return Schema.Optional(common);
+            return BifoqlType.Optional(common);
         }
 
         private static BifoqlType GetCommonType(OptionalType t1, BifoqlType t2)
         {
             var common = GetCommonType(t1.Type, t2);
-            if (common != null) return Schema.Optional(common);
+            if (common != null) return BifoqlType.Optional(common);
 
             return null;
         }

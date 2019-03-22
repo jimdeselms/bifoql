@@ -12,7 +12,7 @@ namespace Bifoql.Types
         {
             Guard.ArgumentNotNull(name, nameof(name));
             Guard.ArgumentNotNull(type, nameof(type));
-            
+
             Name = name;
             Type = type;
             Optional = optional;
@@ -27,12 +27,10 @@ namespace Bifoql.Types
             };
         }
 
-        internal IEnumerable<NamedType> ReferencedNamedTypes => Type.ReferencedNamedTypes;
-
         internal string ToString(int indent)
         {
             var optionalOperator = Optional ? "?" : "";
-            return $"{Name}{optionalOperator}: {Type.ToString(indent)}";
+            return $"{Name}{optionalOperator}: {Type.GetDocumentation(indent)}";
         }
     }
 }
