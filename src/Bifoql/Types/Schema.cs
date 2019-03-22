@@ -19,7 +19,7 @@ namespace Bifoql.Types
                 _namedTypes.Add(namedType.Name, namedType);
             }
         }
-        
+
         public string BuildDocumentation()
         {
             var builder = new StringBuilder();

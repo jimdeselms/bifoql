@@ -76,6 +76,8 @@ namespace Bifoql.Expressions
         {
             if (_first.NeedsAsync(variables)) return true;
 
+            if (_next.ReferencesRootVariable) return true;
+
             // Some things can't be simplified by themselves, but they can be in the
             // context of a chain. If this chain doesn't need to be asynchronous, then
             // the next key or index won't need it either.
@@ -83,5 +85,6 @@ namespace Bifoql.Expressions
 
             return !_next.NeedsAsyncByItself && !_next.NeedsAsync(variables);
         }
+        public override bool ReferencesRootVariable => _first.ReferencesRootVariable || _next.ReferencesRootVariable;
     }
 }

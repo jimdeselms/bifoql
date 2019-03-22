@@ -301,5 +301,7 @@ namespace Bifoql.Expressions
         }
 
         public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => LeftHandSide.NeedsAsync(variables) || RightHandSide.NeedsAsync(variables);
+
+        public override bool ReferencesRootVariable => LeftHandSide.ReferencesRootVariable || RightHandSide.ReferencesRootVariable;
     }
 }

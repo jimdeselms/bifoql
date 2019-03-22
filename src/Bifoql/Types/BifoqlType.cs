@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -59,9 +60,10 @@ namespace Bifoql.Types
             return new IndexedType(resultType, parameters);
         }
 
-        public static BifoqlType Named(string name)
+        // Doing it this way allows us to 
+        public static BifoqlType Named(Func<BifoqlNamedType> named)
         {
-            return new NamedTypeReference(name);
+            return new NamedTypeReference(named);
         }
 
         public static BifoqlNamedType CreateNamedType(string name, BifoqlType type, string documentation = null)

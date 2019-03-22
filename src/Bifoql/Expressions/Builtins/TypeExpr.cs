@@ -58,5 +58,6 @@ namespace Bifoql.Expressions.Builtins
 
             return new AsyncString(type);
         }
+        public override bool ReferencesRootVariable => _obj.ReferencesRootVariable;
     }
 }

@@ -29,6 +29,8 @@ namespace Bifoql.Expressions
             return new SpreadExpr(Location, SpreadObject.Simplify(variables));
         }
 
-       public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => SpreadObject.NeedsAsync(variables);
+        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => SpreadObject.NeedsAsync(variables);
+
+        public override bool ReferencesRootVariable => SpreadObject.ReferencesRootVariable;
     }
 }

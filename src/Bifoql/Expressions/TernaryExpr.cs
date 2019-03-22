@@ -48,5 +48,7 @@ namespace Bifoql.Expressions
         {
             return _condition.NeedsAsync(variables) || _ifFalse.NeedsAsync(variables) || _ifTrue.NeedsAsync(variables);
         }
+
+        public override bool ReferencesRootVariable => _condition.ReferencesRootVariable || _ifTrue.ReferencesRootVariable || _ifFalse.ReferencesRootVariable;
     }
 }

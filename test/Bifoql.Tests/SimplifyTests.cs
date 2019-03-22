@@ -46,6 +46,12 @@ namespace Bifoql.Tests
         }
 
         [Fact]
+        public void RootVariable()
+        {
+            TestToString("5 | $", "5 | $");
+        }
+
+        [Fact]
         public void Zip()
         {
             var expected = new Dictionary<string, object>
