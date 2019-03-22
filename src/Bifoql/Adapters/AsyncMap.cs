@@ -69,20 +69,5 @@ namespace Bifoql.Adapters
 
             return true;
         }
-
-        public async Task<BifoqlType> GetSchema()
-        {
-            if (_type != null) return _type;
-
-            var dict = new Dictionary<string, BifoqlType>();
-
-            foreach (var pair in _getters)
-            {
-                var val = await pair.Value();
-                dict[pair.Key] = await val.GetSchema();
-            }
-
-            return new MapType(dict);
-        }
     }
 }

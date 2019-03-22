@@ -27,5 +27,9 @@ namespace Bifoql.Types
             return 29384234 ^ Type.GetHashCode();
         }
 
+        internal override string ToString(int indent)
+        {
+            return Type;
+        }
     }
 }

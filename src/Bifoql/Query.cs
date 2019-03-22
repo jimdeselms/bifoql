@@ -30,14 +30,7 @@ namespace Bifoql
         {
             var obj = await GetResult(queryTarget, arguments);
 
-            var expectedSchema = validateSchema ? await obj.GetSchema() : null;
-            return await obj.ToSimpleObject(expectedSchema);
-        }
-
-        public async Task<BifoqlType> GetSchema(object queryTarget, IReadOnlyDictionary<string, object> arguments=null)
-        {
-            var result = await GetResult(queryTarget, arguments);
-            return await result.GetSchema();
+            return await obj.ToSimpleObject();
         }
 
         private async Task<IBifoqlObject> GetResult(object queryTarget, IReadOnlyDictionary<string, object> arguments)

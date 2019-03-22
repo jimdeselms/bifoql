@@ -6,7 +6,7 @@ namespace Bifoql.Types
         {
             if (moreSpecific.Equals(lessSpecific)) return true;
 
-            if (moreSpecific is AnyType) return true;
+            if ((moreSpecific as ScalarType)?.Type == "any") return true;
 
             if (lessSpecific is OptionalType) return IsCompatibleWithOptional(moreSpecific, ((OptionalType)lessSpecific));
             if (lessSpecific is ArrayType) return IsCompatibleWithArray(moreSpecific, ((ArrayType)lessSpecific));

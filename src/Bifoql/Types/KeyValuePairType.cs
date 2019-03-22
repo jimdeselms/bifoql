@@ -30,5 +30,12 @@ namespace Bifoql.Types
         {
             return ValueType.GetHashCode() ^ -83629234;
         }
+
+        public override IEnumerable<NamedType> ReferencedNamedTypes => ValueType.ReferencedNamedTypes;
+
+        internal override string ToString(int indent)
+        {
+            return ValueType.ToString(indent);
+        }
     }
 }

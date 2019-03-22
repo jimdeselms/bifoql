@@ -1,6 +1,8 @@
 namespace Bifoql.Types
 {
+    using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
 
     public class TupleType : BifoqlType
     {
@@ -55,5 +57,23 @@ namespace Bifoql.Types
 
             return code;
         }
+
+        internal override string ToString(int indent)
+        {
+            var builder = new StringBuilder();
+            builder.AppendLine("[");
+
+            for (int i = 0; i < Types.Length; i++)
+            {
+                string comma = i == Types.Length - 1 ? "" : ",";
+                builder.AppendLine($"{Indent(indent+1)}{Types[i].ToString(indent+1)}{comma}");
+            }
+
+            builder.Append($"{Indent(indent)}]");
+
+            return builder.ToString();
+        }
+        public override IEnumerable<NamedType> ReferencedNamedTypes => Types.SelectMany(t => t.ReferencedNamedTypes);
+
     }
 }

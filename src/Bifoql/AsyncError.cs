@@ -72,7 +72,5 @@ namespace Bifoql
         {
             return Message.GetHashCode();
         }
-
-         public Task<BifoqlType> GetSchema() => Task.FromResult<BifoqlType>(ScalarType.Error);
-   }
+    }
 }

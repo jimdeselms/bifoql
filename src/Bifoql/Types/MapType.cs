@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Text;
+using System.Linq;
 
 namespace Bifoql.Types
 {
@@ -73,5 +75,24 @@ namespace Bifoql.Types
 
             return code;
         }
+
+        internal override string ToString(int indent)
+        {
+            var builder = new StringBuilder();
+            builder.AppendLine("{");
+
+            int i = 0;
+            foreach (var prop in Properties)
+            {
+                var comma = ++i == Properties.Count ? "" : ",";
+                builder.AppendLine($"{Indent(indent+1)}{prop.Key}: {prop.Value.ToString(indent+1)}{comma}");
+            }
+
+            builder.Append($"{Indent(indent)}}}");
+
+            return builder.ToString();
+        }
+
+        public override IEnumerable<NamedType> ReferencedNamedTypes => Properties.Values.SelectMany(p => p.ReferencedNamedTypes);
     }
 }

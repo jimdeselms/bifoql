@@ -10,36 +10,34 @@ namespace Bifoql.Extensions
 {
     public static class ObjectConverter
     {
-        internal static Task<object> ToSimpleObject(this IBifoqlObject o, BifoqlType expectedSchema=null)
+        internal static Task<object> ToSimpleObject(this IBifoqlObject o)
         {
             var lookup = o as IBifoqlMapInternal;
-            if (lookup != null) return ToSimpleObject(lookup, expectedSchema);
+            if (lookup != null) return ToSimpleObject(lookup);
 
             var arr = o as IBifoqlArrayInternal;
-            if (arr != null) return ToSimpleObject(arr, expectedSchema);
+            if (arr != null) return ToSimpleObject(arr);
 
             var str = o as IBifoqlString;
-            if (str != null) return ToSimpleObject(str, expectedSchema);
+            if (str != null) return ToSimpleObject(str);
 
             var num = o as IBifoqlNumber;
-            if (num != null) return ToSimpleObject(num, expectedSchema);
+            if (num != null) return ToSimpleObject(num);
 
             var boolean = o as IBifoqlBoolean;
-            if (boolean != null) return ToSimpleObject(boolean, expectedSchema);
+            if (boolean != null) return ToSimpleObject(boolean);
 
             var deferred = o as IBifoqlDeferredQuery;
-            if (deferred != null) return ToSimpleObject(deferred, expectedSchema);
+            if (deferred != null) return ToSimpleObject(deferred);
 
             var err = o as IBifoqlError;
-            if (err != null) return ToSimpleObject(err, expectedSchema);
+            if (err != null) return ToSimpleObject(err);
 
             return Task.FromResult<object>(null);
         }
 
-        private static async Task<object> ToSimpleObject(IBifoqlMapInternal lookup, BifoqlType expectedSchema)
+        private static async Task<object> ToSimpleObject(IBifoqlMapInternal lookup)
         {
-            await AssertSchema(lookup, expectedSchema);
-
             var values = new Dictionary<string, object>();
 
             foreach (var pair in lookup)
@@ -54,37 +52,33 @@ namespace Bifoql.Extensions
             return new DynamicDict(values);
         }
 
-        private static async Task<object> ToSimpleObject(IBifoqlArrayInternal list, BifoqlType expectedSchema)
+        private static async Task<object> ToSimpleObject(IBifoqlArrayInternal list)
         {
             var tasks = new List<Task<object>>();
             for (int i = 0; i < list.Count; i++)
             {
-                // For items that are undefined, we will exclude them from the list.
-                var elementType = expectedSchema?.GetElementType(i);
                 var asyncObj = await list[i]();
                 if (asyncObj is IBifoqlUndefined) continue;
 
-                tasks.Add(asyncObj.ToSimpleObject(elementType));
+                tasks.Add(asyncObj.ToSimpleObject());
             }
 
             return await Task.WhenAll(tasks.ToArray());
         }
 
-        private static async Task<object> ConvertListEntryToSimpleObject(Func<Task<IBifoqlObject>> obj, BifoqlType expectedType)
+        private static async Task<object> ConvertListEntryToSimpleObject(Func<Task<IBifoqlObject>> obj)
         {
             var asyncObj = await obj();
-            return await asyncObj.ToSimpleObject(expectedType);
+            return await asyncObj.ToSimpleObject();
         }
 
-        private static async Task<object> ToSimpleObject(IBifoqlString str, BifoqlType expectedSchema)
+        private static async Task<object> ToSimpleObject(IBifoqlString str)
         {
-            AssertSchema(BifoqlType.String, expectedSchema);
             return await str.Value;
         }
 
-        private static async Task<object> ToSimpleObject(IBifoqlNumber num, BifoqlType expectedSchema)
+        private static async Task<object> ToSimpleObject(IBifoqlNumber num)
         {
-            AssertSchema(BifoqlType.Number, expectedSchema);
             var value = await num.Value;
             if ((int)value == value)
             {
@@ -96,100 +90,20 @@ namespace Bifoql.Extensions
             }
         }
 
-        private static async Task<object> ToSimpleObject(IBifoqlBoolean boolean, BifoqlType expectedSchema)
+        private static async Task<object> ToSimpleObject(IBifoqlBoolean boolean)
         {
-            AssertSchema(BifoqlType.Boolean, expectedSchema);
             return await boolean.Value;
         }
         
-        private static async Task<object> ToSimpleObject(IBifoqlDeferredQuery deferred, BifoqlType expectedSchema)
+        private static async Task<object> ToSimpleObject(IBifoqlDeferredQuery deferred)
         {
             var obj = await deferred.EvaluateQuery("@");
-            await AssertSchema(obj, expectedSchema);
-            return await obj.ToSimpleObject(expectedSchema);
+            return await obj.ToSimpleObject();
         }
         
-        private static Task<object> ToSimpleObject(IBifoqlError error, BifoqlType expectedSchema)
+        private static Task<object> ToSimpleObject(IBifoqlError error)
         {
-            AssertSchema(BifoqlType.Error, expectedSchema);
             return Task.FromResult<object>($"<error: {error.Message}>");
-        }
-
-        private static async Task AssertSchema(IBifoqlObject asyncObject, BifoqlType expectedSchema)
-        {
-            // No expected schema? Then no assertion.
-            if (expectedSchema == null) return;
-
-            var actualSchema = await asyncObject.GetSchema();
-            if (!TypeCompatibilityChecker.IsCompatible(actualSchema, expectedSchema))
-            {
-                throw new Exception($"Schema mismatch. Expected {expectedSchema.ToString()} Actual {actualSchema.ToString()}");
-            }
-        }
-
-        private static async Task AssertSchema(IBifoqlMapInternal asyncMap, BifoqlType expectedSchema)
-        {
-            // No expected schema? Then no assertion.
-            if (expectedSchema == null) return;
-
-            bool fail = false;
-
-            var mapType = expectedSchema as MapType;
-            if (mapType != null)
-            {
-                foreach (var pair in mapType.Properties)
-                {
-                    // optional types are okay if they're not defined
-                    if (pair.Value is OptionalType && !asyncMap.ContainsKey(pair.Key)) continue;
-
-                    if (!asyncMap.ContainsKey(pair.Key))
-                    {
-                        fail = true;
-                        break;
-                    }
-                    var value = await asyncMap[pair.Key]();
-                    var valueType = await value.GetSchema();
-
-                    if (!TypeCompatibilityChecker.IsCompatible(valueType, pair.Value))
-                    {
-                        fail = true;
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                fail = true;
-            }
-
-            if (fail)
-            {
-                var actualSchema = await asyncMap.GetSchema();
-                throw new Exception($"Schema mismatch. Expected {expectedSchema.ToString()} Actual {actualSchema.ToString()}");
-            }
-        }
-
-        private static async Task AssertSchema(IBifoqlArrayInternal asyncArray, BifoqlType expectedSchema)
-        {
-            // No expected schema? Then no assertion.
-            if (expectedSchema == null) return;
-
-            var actualSchema = await asyncArray.GetSchema();
-            if (!TypeCompatibilityChecker.IsCompatible(actualSchema, expectedSchema))
-            {
-                throw new Exception($"Schema mismatch. Expected {expectedSchema.ToString()} Actual {actualSchema.ToString()}");
-            }
-        }
-
-
-        private static void AssertSchema(BifoqlType actualSchema, BifoqlType expectedSchema)
-        {
-            if (expectedSchema == null) return;
-
-            if (!TypeCompatibilityChecker.IsCompatible(actualSchema, expectedSchema))
-            {
-                throw new Exception($"Schema mismatch. Expected {expectedSchema.ToString()} Actual {actualSchema.ToString()}");
-            }
         }
     }
 }

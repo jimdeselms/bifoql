@@ -19,11 +19,6 @@ namespace Bifoql.Adapters
             return _expr.Apply(context);
         }
 
-        public Task<BifoqlType> GetSchema()
-        {
-            return Task.FromResult<BifoqlType>(BifoqlType.Unknown);
-        }
-
         public Task<bool> IsEqualTo(IBifoqlObject o)
         {
             var other = o as AsyncExpression;

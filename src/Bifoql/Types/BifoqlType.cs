@@ -1,8 +1,12 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
 namespace Bifoql.Types
 {
     public abstract class BifoqlType
     {
-        public static readonly BifoqlType Any = new AnyType();
+        public static readonly BifoqlType Any = new ScalarType("any");
         public static readonly BifoqlType Unknown = new ScalarType("unknown");
         public static readonly BifoqlType Null = new ScalarType("null");
         public static readonly BifoqlType Undefined = new ScalarType("undefined");
@@ -25,6 +29,34 @@ namespace Bifoql.Types
         internal virtual BifoqlType GetKeyType(string key)
         {
             return BifoqlType.Unknown;
+        }
+
+        public virtual IEnumerable<NamedType> ReferencedNamedTypes => Enumerable.Empty<NamedType>();
+
+        internal abstract string ToString(int indent);
+        internal string Indent(int i)
+        {
+            return "".PadRight(i * 4);
+        }
+
+        public override string ToString()
+        {
+            var builder = new StringBuilder();
+            builder.Append(ToString(0));
+
+            bool first = true;
+            foreach (var type in ReferencedNamedTypes.Distinct().OrderBy(t => t.Name))
+            {
+                if (first)
+                {
+                    builder.AppendLine();
+                    first = false;
+                }
+                builder.AppendLine();
+                builder.AppendLine($"{type.Name} {type.Type.ToString(0)}");
+            }
+
+            return builder.ToString();
         }
     }
 }

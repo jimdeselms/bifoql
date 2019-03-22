@@ -82,11 +82,6 @@ namespace Bifoql.Tests
                 return (await compiledQuery.Run(_remoteObject)).ToBifoqlObject();
             }
 
-            public Task<BifoqlType> GetSchema()
-            {
-                throw new NotImplementedException();
-            }
-
             public Task<bool> IsEqualTo(IBifoqlObject o)
             {
                 return Task.FromResult(o is DeferredQueryObject);
