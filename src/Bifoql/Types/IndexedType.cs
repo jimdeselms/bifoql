@@ -4,7 +4,7 @@ using System.Linq;
 namespace Bifoql.Types
 {
     using System.Linq;
-    public class IndexedType : BifoqlType
+    internal class IndexedType : BifoqlType
     {
         public BifoqlType ResultType { get; }
         public IndexParameter[] Parameters { get; }
@@ -24,7 +24,7 @@ namespace Bifoql.Types
             };
         }
 
-        public override IEnumerable<NamedType> ReferencedNamedTypes => 
+        internal override IEnumerable<NamedType> ReferencedNamedTypes => 
             Parameters
                 .SelectMany(p => p.Type.ReferencedNamedTypes)
                 .Concat(ResultType.ReferencedNamedTypes);

@@ -4,7 +4,7 @@ namespace Bifoql.Types
     using System.Linq;
     using System.Text;
 
-    public class TupleType : BifoqlType
+    internal class TupleType : BifoqlType
     {
         public BifoqlType[] Types { get; }
 
@@ -73,7 +73,7 @@ namespace Bifoql.Types
 
             return builder.ToString();
         }
-        public override IEnumerable<NamedType> ReferencedNamedTypes => Types.SelectMany(t => t.ReferencedNamedTypes);
+        internal override IEnumerable<NamedType> ReferencedNamedTypes => Types.SelectMany(t => t.ReferencedNamedTypes);
 
     }
 }

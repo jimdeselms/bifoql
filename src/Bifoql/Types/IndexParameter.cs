@@ -24,7 +24,7 @@ namespace Bifoql.Types
             };
         }
 
-        public IEnumerable<NamedType> ReferencedNamedTypes => Type.ReferencedNamedTypes;
+        internal IEnumerable<NamedType> ReferencedNamedTypes => Type.ReferencedNamedTypes;
 
         internal string ToString(int indent)
         {

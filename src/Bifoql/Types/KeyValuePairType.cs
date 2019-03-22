@@ -4,7 +4,7 @@ namespace Bifoql.Types
 {
     using System.Collections.Generic;
 
-    public class KeyValuePairType : BifoqlType
+    internal class KeyValuePairType : BifoqlType
     {
         public BifoqlType ValueType { get; }
 
@@ -31,7 +31,7 @@ namespace Bifoql.Types
             return ValueType.GetHashCode() ^ -83629234;
         }
 
-        public override IEnumerable<NamedType> ReferencedNamedTypes => ValueType.ReferencedNamedTypes;
+        internal override IEnumerable<NamedType> ReferencedNamedTypes => ValueType.ReferencedNamedTypes;
 
         internal override string ToString(int indent)
         {
