@@ -10,6 +10,8 @@ namespace Bifoql.Types
 
         public NamedType(string name, BifoqlType type)
         {
+            Guard.ArgumentNotNull(name, nameof(name));
+            Guard.ArgumentNotNull(type, nameof(type));
             Name = name;
             Type = type;
         }

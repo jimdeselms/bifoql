@@ -32,14 +32,14 @@ namespace Bifoql.Types
             return new DictionaryType(valueType);
         }
 
-        public static BifoqlType KeyValuePairOf(BifoqlType valueType)
-        {
-            return new KeyValuePairType(valueType);
-        }
-
         public static BifoqlType Tuple(params BifoqlType[] types)
         {
             return new TupleType(types);
+        }
+
+        public static BifoqlType Union(params BifoqlType[] types)
+        {
+            return new UnionType(types);
         }
 
         public static BifoqlType Map(params KeyValuePair<string, BifoqlType>[] pairs)

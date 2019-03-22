@@ -10,6 +10,9 @@ namespace Bifoql.Types
 
         public IndexParameter(string name, BifoqlType type, bool optional)
         {
+            Guard.ArgumentNotNull(name, nameof(name));
+            Guard.ArgumentNotNull(type, nameof(type));
+            
             Name = name;
             Type = type;
             Optional = optional;

@@ -45,7 +45,7 @@ namespace Bifoql.Types
             builder.Append(ToString(0));
 
             bool first = true;
-            foreach (var type in ReferencedNamedTypes.Distinct().OrderBy(t => t.Name))
+            foreach (var type in ReferencedNamedTypes.Distinct(NamedTypeComparer.Instance).OrderBy(t => t.Name))
             {
                 if (first)
                 {
@@ -57,6 +57,20 @@ namespace Bifoql.Types
             }
 
             return builder.ToString();
+        }
+
+        private class NamedTypeComparer : IEqualityComparer<NamedType>
+        {
+            public static readonly NamedTypeComparer Instance = new NamedTypeComparer();
+            public bool Equals(NamedType x, NamedType y)
+            {
+                return x.Name == y.Name;
+            }
+
+            public int GetHashCode(NamedType obj)
+            {
+                return obj.GetHashCode();
+            }
         }
     }
 }

@@ -5,11 +5,11 @@ namespace Bifoql.Types
     using System.Linq;
     using System.Text;
 
-    internal class TupleType : BifoqlType
+    internal class UnionType : BifoqlType
     {
         public BifoqlType[] Types { get; }
 
-        public TupleType(BifoqlType[] types)
+        public UnionType(BifoqlType[] types)
         {
             Guard.ArgumentNotNull(types, nameof(types));
 
@@ -20,36 +20,25 @@ namespace Bifoql.Types
                     throw new ArgumentException($"types must not have any empty entries");
                 }
             }
-            
             Types = types;
         }
 
         public override object ToObject()
         {
-            return Types.Select(t => t.ToObject()).ToArray();
-        }
-
-        internal override BifoqlType GetElementType(int i)
-        {
-            if (i >= 0 && i < Types.Length)
-            {
-                return Types[i];
-            }
-            else
-            {
-                return BifoqlType.Unknown;
-            }
+            return new {
+                unionOf = Types.Select(t => t.ToObject()).ToArray()
+            };
         }
 
         public override bool Equals(object other)
         {
-            var otherTuple = other as TupleType;
-            if (otherTuple == null) return false;
-            if (otherTuple.Types.Length != Types.Length) return false;
+            var otherUnion = other as UnionType;
+            if (otherUnion == null) return false;
+            if (otherUnion.Types.Length != Types.Length) return false;
 
             for (int i = 0; i < Types.Length; i++)
             {
-                if (!otherTuple.Types[i].Equals(Types[i]))
+                if (!otherUnion.Types[i].Equals(Types[i]))
                 {
                     return false;
                 }
@@ -59,7 +48,7 @@ namespace Bifoql.Types
 
         public override int GetHashCode()
         {
-            int code = -238234;
+            int code = -78098230;
 
             foreach (var type in Types)
             {
@@ -71,18 +60,7 @@ namespace Bifoql.Types
 
         internal override string ToString(int indent)
         {
-            var builder = new StringBuilder();
-            builder.AppendLine("[");
-
-            for (int i = 0; i < Types.Length; i++)
-            {
-                string comma = i == Types.Length - 1 ? "" : ",";
-                builder.AppendLine($"{Indent(indent+1)}{Types[i].ToString(indent+1)}{comma}");
-            }
-
-            builder.Append($"{Indent(indent)}]");
-
-            return builder.ToString();
+            return string.Join(" | ", Types.Select(t => t.ToString(indent)));
         }
         internal override IEnumerable<NamedType> ReferencedNamedTypes => Types.SelectMany(t => t.ReferencedNamedTypes);
 

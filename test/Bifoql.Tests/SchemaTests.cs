@@ -83,6 +83,14 @@ namespace Bifoql.Tests
         }
 
         [Fact]
+        public void UnionType()
+        {
+            var type = Schema.Union(Schema.String, Schema.Number, Schema.Null);
+
+            Assert.Equal("string | number | null", type.ToString());
+        }
+
+        [Fact]
         public void NamedTypeTest()
         {
             var address = Schema.Named("Address", Schema.Map(Schema.Pair("street", Schema.String)));
@@ -107,6 +115,53 @@ Person {
 }
 ";
             Assert.Equal(schema, optionalPerson.ToString());
+        }
+
+        [Fact]
+        public void DuplicateNamedReferences()
+        {
+            // We could build in protection to prevent there from being more than one named type with the same
+            // name, but for now, we'll just make sure they get filtered out properly.
+            var n1 = Schema.Named("n1", Schema.Map(Schema.Pair("x", Schema.String)));
+            var n2 = Schema.Named("n1", Schema.Map(Schema.Pair("x", Schema.String)));
+            var n3 = Schema.Named("n2", Schema.Map(Schema.Pair("x", Schema.String)));
+            var n4 = Schema.Named("n2", Schema.Map(Schema.Pair("x", Schema.String)));
+            var n5 = Schema.Named("n3", Schema.Map(Schema.Pair("x", Schema.String)));
+            var n6 = Schema.Named("n3", Schema.Map(Schema.Pair("x", Schema.String)));
+            
+            var type = Schema.Map(
+                Schema.Pair("a1", n1),
+                Schema.Pair("a2", n2),
+                Schema.Pair("a3", n3),
+                Schema.Pair("a4", n4),
+                Schema.Pair("a5", n5),
+                Schema.Pair("a6", n6)
+            );
+            
+            var schema =
+@"{
+    a1: n1,
+    a2: n1,
+    a3: n2,
+    a4: n2,
+    a5: n3,
+    a6: n3
+}
+
+n1 {
+    x: string
+}
+
+n2 {
+    x: string
+}
+
+n3 {
+    x: string
+}
+";
+            Assert.Equal(schema, type.ToString());
+
         }
     }
 }

@@ -8,6 +8,7 @@ namespace Bifoql.Types
 
         public ArrayType(BifoqlType elementType)
         {
+            Guard.ArgumentNotNull(elementType, nameof(elementType));
             ElementType = elementType;
         }
 
