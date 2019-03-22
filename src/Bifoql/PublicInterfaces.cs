@@ -34,4 +34,13 @@ namespace Bifoql
     {
         Task<object> Lookup(IIndexArgumentList args);
     }
+
+    /// <summary>
+    /// Represents a call to another Bifoql service; a Bifoql query
+    /// can actually be serviced by lots of calls to other Bifoql services.
+    /// </summary>
+    public interface IBifoqlDeferredQuery
+    {
+        Task<object> EvaluateQuery(string query);
+    }
 }

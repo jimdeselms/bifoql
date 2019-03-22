@@ -5,6 +5,7 @@ namespace Bifoql.Expressions
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Bifoql.Adapters;
+    using Bifoql.Extensions;
 
     internal abstract class Expr
     {
@@ -22,12 +23,12 @@ namespace Bifoql.Expressions
                 return context.QueryTarget;
             }
 
-            if (context.QueryTarget is IBifoqlDeferredQuery)
+            if (context.QueryTarget is IBifoqlDeferredQueryInternal)
             {
                 // A deferred query is a query that won't actually be evaluated here, but by some other
                 // service. For example, let's say that I have another REST service that provides a BifoQL
                 // endpoint. I can take this query and pass it along to that endpoint and get the result back.
-                var deferred = ((IBifoqlDeferredQuery)context.QueryTarget);
+                var deferred = ((IBifoqlDeferredQueryInternal)context.QueryTarget);
                 var query = this.ToString();
 
                 // Super cheesy.
@@ -45,7 +46,8 @@ namespace Bifoql.Expressions
                     query = "@ | " + query;
                 }
 
-                return await deferred.EvaluateQuery(query);
+                var bifoqlObject = await deferred.EvaluateQuery(query);
+                return bifoqlObject.ToBifoqlObject();
             }
 
             return await DoApply(context);

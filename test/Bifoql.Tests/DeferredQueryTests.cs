@@ -63,7 +63,7 @@ namespace Bifoql.Tests
                     new { name = "Pebbles", age = 3 }
                 }.ToBifoqlObject();
 
-        private class DeferredQueryObject : IBifoqlDeferredQuery
+        private class DeferredQueryObject : IBifoqlDeferredQueryInternal
         {
             private IBifoqlObject _remoteObject;
 
@@ -72,14 +72,14 @@ namespace Bifoql.Tests
                 _remoteObject = remoteObject.ToBifoqlObject();
             }
 
-            public async Task<IBifoqlObject> EvaluateQuery(string query)
+            public async Task<object> EvaluateQuery(string query)
             {
                 // We'll simulate a service call where we get a query and pass it along to a service where
                 // it gets compiled.
 
                 // If this were a real remote service, the compilation would happen on the other side.
                 var compiledQuery = Query.Compile(query);
-                return (await compiledQuery.Run(_remoteObject)).ToBifoqlObject();
+                return (await compiledQuery.Run(_remoteObject));
             }
 
             public Task<bool> IsEqualTo(IBifoqlObject o)
