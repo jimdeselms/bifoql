@@ -42,6 +42,8 @@ namespace Bifoql.Expressions
             // Special case. If this is "eval", then we can't simplify this
             return Name == "eval" || Arguments.Any(a => a.NeedsAsync(variables));
         }
+
+        public override bool ReferencesRootVariable => Arguments.Any(a => a.ReferencesRootVariable);
     }
 
     internal class TypedFunctionCallExpr<T1> : TypedFunctionCallExpr where T1 : IBifoqlObject

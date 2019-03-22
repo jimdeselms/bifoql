@@ -36,5 +36,6 @@ namespace Bifoql.Expressions
         }
 
        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => Value.NeedsAsync(variables);
+        public override bool ReferencesRootVariable => Value.ReferencesRootVariable;
     }
 }

@@ -523,6 +523,13 @@ namespace Bifoql.Tests
         }
 
         [Fact]
+        public void RootObjectVariableAfterPipe()
+        {
+
+            RunTest(expected: 5, input: 5, query: "2|$");
+        }
+
+        [Fact]
         public void Inequalities()
         {
             RunTest(expected: true, query: "1 < 2");
@@ -811,14 +818,45 @@ namespace Bifoql.Tests
             );
         }
 
+        [Fact]
+        public void LookupTests()
+        {
+            RunTest(
+                expected: "world",
+                query: "'hello' | $.foo",
+                input: new { foo="howdy", index = new Greeting() }.ToBifoqlObject());
+        }
+
+        private class Greeting : IBifoqlIndexSync
+        {
+            public object Lookup(IIndexArgumentListSync args)
+            {
+                var id = args.TryGetStringParameter("key");
+                if (id == "hello")
+                {
+                    return "world";
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
         private static void RunTest(object expected, string query, object input=null, IReadOnlyDictionary<string, object> arguments=null, IReadOnlyDictionary<string, CustomFunction> customFunctions=null)
         {
-            var inputJson = JsonConvert.SerializeObject(input);
-            var jobject = JsonConvert.DeserializeObject<object>(inputJson);
-            var originalJson = JsonConvert.SerializeObject(jobject);
-            var asyncObj = ObjectConverter.ToAsyncObject(jobject);
+            IBifoqlObject inputObj = input as IBifoqlObject;
 
-            var result = Query(asyncObj, query, arguments, customFunctions).Result;
+            if (inputObj == null)
+            {
+                var asyncObj = input?.ToBifoqlObject();
+                var inputJson = JsonConvert.SerializeObject(input);
+                var jobject = JsonConvert.DeserializeObject<object>(inputJson);
+                var originalJson = JsonConvert.SerializeObject(jobject);
+                inputObj = ObjectConverter.ToAsyncObject(jobject);
+            }
+
+            var result = Query(inputObj, query, arguments, customFunctions).Result;
 
             var actualJson = JsonConvert.SerializeObject(result);
 

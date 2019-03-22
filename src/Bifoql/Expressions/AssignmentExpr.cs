@@ -67,5 +67,8 @@ namespace Bifoql.Expressions
         }
 
         public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => true;
+
+        public override bool ReferencesRootVariable => _value.ReferencesRootVariable || (_pipedInto?.ReferencesRootVariable ?? false);
+
     }
 }

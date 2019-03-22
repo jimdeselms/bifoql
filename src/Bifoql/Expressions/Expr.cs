@@ -85,5 +85,7 @@ namespace Bifoql.Expressions
                 return this;
             }
         }
+
+        public abstract bool ReferencesRootVariable { get; }
     }
 }

@@ -110,5 +110,6 @@ namespace Bifoql.Expressions
 
         public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => _projections.Any(a => a.NeedsAsync(variables));
         public override bool NeedsAsyncByItself => true;    
+        public override bool ReferencesRootVariable => _projections.Any(p => p.ReferencesRootVariable);
     }
 }

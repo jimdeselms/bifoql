@@ -53,7 +53,10 @@ namespace Bifoql.Expressions
 
         public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables)
         {
-            return !variables.ContainsKey(Name);
+            // References to the root variable can't be simplified.
+            return Name != "" && !variables.ContainsKey(Name);
         }
+
+        public override bool ReferencesRootVariable => Name == "";
     }
 }
