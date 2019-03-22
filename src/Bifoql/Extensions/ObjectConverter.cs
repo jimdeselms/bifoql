@@ -27,7 +27,7 @@ namespace Bifoql.Extensions
             var boolean = o as IBifoqlBoolean;
             if (boolean != null) return ToSimpleObject(boolean);
 
-            var deferred = o as IBifoqlDeferredQuery;
+            var deferred = o as IBifoqlDeferredQueryInternal;
             if (deferred != null) return ToSimpleObject(deferred);
 
             var err = o as IBifoqlError;
@@ -95,10 +95,10 @@ namespace Bifoql.Extensions
             return await boolean.Value;
         }
         
-        private static async Task<object> ToSimpleObject(IBifoqlDeferredQuery deferred)
+        private static async Task<object> ToSimpleObject(IBifoqlDeferredQueryInternal deferred)
         {
             var obj = await deferred.EvaluateQuery("@");
-            return await obj.ToSimpleObject();
+            return obj;
         }
         
         private static Task<object> ToSimpleObject(IBifoqlError error)

@@ -18,9 +18,9 @@ namespace Bifoql
     {
     }
 
-    internal interface IBifoqlDeferredQuery : IBifoqlObject
+    internal interface IBifoqlDeferredQueryInternal : IBifoqlObject
     {
-        Task<IBifoqlObject> EvaluateQuery(string query);
+        Task<object> EvaluateQuery(string query);
     }
 
     internal interface IBifoqlExpression : IBifoqlObject
