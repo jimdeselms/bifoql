@@ -25,15 +25,10 @@ namespace Bifoql.Types
             };
         }
 
-        internal override IEnumerable<NamedType> ReferencedNamedTypes => 
-            Parameters
-                .SelectMany(p => p.Type.ReferencedNamedTypes)
-                .Concat(ResultType.ReferencedNamedTypes);
-
-        internal override string ToString(int indent)
+        internal override string GetDocumentation(int indent)
         {
             var keys = Parameters.Select(p => p.ToString(indent));
-            return $"({string.Join(", ", keys)}) => {ResultType.ToString(indent)}";
+            return $"({string.Join(", ", keys)}) => {ResultType.GetDocumentation(indent)}";
         }
     }
 }

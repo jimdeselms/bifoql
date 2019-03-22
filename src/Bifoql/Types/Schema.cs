@@ -3,69 +3,42 @@ namespace Bifoql.Types
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    public static class Schema
+    using System.Text;
+
+    public class Schema
     {
-        public static readonly BifoqlType Any = BifoqlType.Any;
-        public static readonly BifoqlType Unknown = BifoqlType.Unknown;
-        public static readonly BifoqlType Null = BifoqlType.Null;
-        public static readonly BifoqlType Undefined = BifoqlType.Undefined;
-        public static readonly BifoqlType Error = BifoqlType.Error;
-        public static readonly BifoqlType Number = BifoqlType.Number;
-        public static readonly BifoqlType String = BifoqlType.String;
-        public static readonly BifoqlType Boolean = BifoqlType.Boolean;
+        private readonly BifoqlType _rootType;
+        private readonly Dictionary<string, NamedType> _namedTypes = new Dictionary<string, NamedType>();
 
-        public static BifoqlType Optional(BifoqlType type)
+        public Schema(BifoqlType rootType)
         {
-            // Already optional? Just return it.
-            return (type is OptionalType) 
-                ? type
-                : new OptionalType(type);
+            _rootType = rootType;
         }
-
-        public static BifoqlType ArrayOf(BifoqlType elementType)
+        public Schema WithNamedType(string name, BifoqlType type, string documentation = null)
         {
-            return new ArrayType(elementType);
+            // Make this a dictionary to prevent duplicates.
+            _namedTypes.Add(name, new NamedType(name, type, documentation));
+            return this;
         }
-
-        public static BifoqlType DictionaryOf(BifoqlType valueType)
+        
+        public string BuildDocumentation()
         {
-            return new DictionaryType(valueType);
-        }
+            var builder = new StringBuilder();
+            builder.Append(_rootType.GetDocumentation(0));
 
-        public static BifoqlType Tuple(params BifoqlType[] types)
-        {
-            return new TupleType(types);
-        }
+            bool first = true;
+            foreach (var type in _namedTypes.Values.OrderBy(pair => pair.Name))
+            {
+                if (first)
+                {
+                    builder.AppendLine();
+                    first = false;
+                }
+                builder.AppendLine();
+                builder.AppendLine(type.GetDocumentation(0));
+            }
 
-        public static BifoqlType Union(params BifoqlType[] types)
-        {
-            return new UnionType(types);
-        }
-
-        public static BifoqlType Map(params KeyValuePair<string, BifoqlType>[] pairs)
-        {
-            var dict = pairs.ToDictionary(p => p.Key, p => p.Value);
-            return new MapType(dict);
-        }
-
-        public static KeyValuePair<string, BifoqlType> Pair(string key, BifoqlType value)
-        {
-            return new KeyValuePair<string, BifoqlType>(key, value);
-        }
-
-        public static BifoqlType Index(BifoqlType resultType, params IndexParameter[] parameters)
-        {
-            return new IndexedType(resultType, parameters);
-        }
-
-        public static BifoqlType Named(string name, BifoqlType definition)
-        {
-            return new NamedType(name, definition);
-        }
-
-        public static IndexParameter IndexParameter(string name, BifoqlType type, bool optional=false)
-        {
-            return new IndexParameter(name, type, optional);
+            return builder.ToString();
         }
     }
 

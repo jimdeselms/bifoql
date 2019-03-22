@@ -19,18 +19,18 @@ namespace Bifoql.Tests
         [Fact]
         public void SimpleTypes()
         {
-            Assert.Equal("null", Schema.Null.ToString());
-            Assert.Equal("number", Schema.Number.ToString());
-            Assert.Equal("string", Schema.String.ToString());
-            Assert.Equal("any", Schema.Any.ToString());
+            Assert.Equal("null", new Schema(BifoqlType.Null).BuildDocumentation());
+            Assert.Equal("number", new Schema(BifoqlType.Number).BuildDocumentation());
+            Assert.Equal("string", new Schema(BifoqlType.String).BuildDocumentation());
+            Assert.Equal("any", new Schema(BifoqlType.Any).BuildDocumentation());
         }
 
         [Fact]
         public void ArrayTypes()
         {
-            Assert.Equal("string[]", Schema.ArrayOf(Schema.String).ToString());
-            Assert.Equal("string[]?", Schema.Optional(Schema.ArrayOf(Schema.String)).ToString());
-            Assert.Equal("string?[]", Schema.ArrayOf(Schema.Optional(Schema.String)).ToString());
+            Assert.Equal("string[]", new Schema(BifoqlType.ArrayOf(BifoqlType.String)).BuildDocumentation());
+            Assert.Equal("string[]?", new Schema(BifoqlType.Optional(BifoqlType.ArrayOf(BifoqlType.String))).BuildDocumentation());
+            Assert.Equal("string?[]", new Schema(BifoqlType.ArrayOf(BifoqlType.Optional(BifoqlType.String))).BuildDocumentation());
         }
 
         [Fact]
@@ -44,8 +44,8 @@ namespace Bifoql.Tests
     ],
     string
 ]";
-            var type = Schema.Tuple(Schema.Number, Schema.Tuple(Schema.Boolean), Schema.String);
-            Assert.Equal(expected, type.ToString());
+            var type = new Schema(BifoqlType.Tuple(BifoqlType.Number, BifoqlType.Tuple(BifoqlType.Boolean), BifoqlType.String));
+            Assert.Equal(expected, type.BuildDocumentation());
         }
 
         [Fact]
@@ -59,109 +59,113 @@ namespace Bifoql.Tests
     ],
     street: string
 }";
-            var type = Schema.Map(
-                Schema.Pair("x", Schema.Number),
-                Schema.Pair("burger", Schema.Tuple(Schema.Boolean)),
-                Schema.Pair("street", Schema.String));
-            Assert.Equal(expected, type.ToString());
+            var type = new Schema(BifoqlType.Map(
+                BifoqlType.Property("x", BifoqlType.Number),
+                BifoqlType.Property("burger", BifoqlType.Tuple(BifoqlType.Boolean)),
+                BifoqlType.Property("street", BifoqlType.String)));
+            Assert.Equal(expected, type.BuildDocumentation());
+        }
+
+        [Fact]
+        public void MapTypesWithDocumentation()
+        {
+            var expected =
+@"{
+    // A number
+    x: number,
+
+    // A tasty burger
+    // yum!
+    burger: [
+        boolean
+    ],
+
+    // The street
+    street: string
+}";
+            var type = new Schema(BifoqlType.Map(
+                BifoqlType.Property("x", BifoqlType.Number, "A number"),
+                BifoqlType.Property("burger", BifoqlType.Tuple(BifoqlType.Boolean), "A tasty burger\nyum!"),
+                BifoqlType.Property("street", BifoqlType.String, "The street")));
+
+            System.IO.File.WriteAllText("d:\\foo.txt", type.BuildDocumentation());
+            Assert.Equal(expected, type.BuildDocumentation());
         }
 
         [Fact]
         public void OptionalTypes()
         {
-            Assert.Equal("number?", Schema.Optional(Schema.Number).ToString());
+            Assert.Equal("number?", new Schema(BifoqlType.Optional(BifoqlType.Number)).BuildDocumentation());
         }
 
         [Fact]
         public void IndexedType()
         {
-            var type = Schema.Index(Schema.String,
-                Schema.IndexParameter("a", Schema.Number, true),
-                Schema.IndexParameter("b", Schema.Boolean)
+            var type = new Schema(BifoqlType.Index(BifoqlType.String,
+                BifoqlType.IndexParameter("a", BifoqlType.Number, true),
+                BifoqlType.IndexParameter("b", BifoqlType.Boolean))
             );
-            Assert.Equal("(a?: number, b: boolean) => string", type.ToString());
+            Assert.Equal("(a?: number, b: boolean) => string", type.BuildDocumentation());
         }
 
         [Fact]
         public void UnionType()
         {
-            var type = Schema.Union(Schema.String, Schema.Number, Schema.Null);
+            var type = new Schema(BifoqlType.Union(BifoqlType.String, BifoqlType.Number, BifoqlType.Null));
 
-            Assert.Equal("string | number | null", type.ToString());
+            Assert.Equal("string | number | null", type.BuildDocumentation());
         }
 
         [Fact]
         public void NamedTypeTest()
         {
-            var address = Schema.Named("Address", Schema.Map(Schema.Pair("street", Schema.String)));
-            var person = Schema.Named("Person", Schema.Map(Schema.Pair("name", Schema.String), Schema.Pair("address", address)));
-            var optionalPerson = Schema.Map(Schema.Pair("p", 
-                Schema.Index(person, 
-                    Schema.IndexParameter("id", Schema.Number),
-                    Schema.IndexParameter("locale", Schema.String, optional: true))));
+            var optionalPerson = BifoqlType.Map(BifoqlType.Property("p", 
+                BifoqlType.Index(BifoqlType.Named("Person"), 
+                    BifoqlType.IndexParameter("id", BifoqlType.Number),
+                    BifoqlType.IndexParameter("locale", BifoqlType.String, optional: true))));
+
+            var s = new Schema(optionalPerson)
+                .WithNamedType("Address", BifoqlType.Map(BifoqlType.Property("street", BifoqlType.String)))
+                .WithNamedType("Person", BifoqlType.Map(BifoqlType.Property("name", BifoqlType.String), BifoqlType.Property("address", BifoqlType.Named("Address"))));
 
             var schema = 
 @"{
     p: (id: number, locale?: string) => Person
 }
 
-Address {
+Address = {
     street: string
 }
 
-Person {
+Person = {
     name: string,
     address: Address
 }
 ";
-            Assert.Equal(schema, optionalPerson.ToString());
+            Assert.Equal(schema, s.BuildDocumentation());
         }
-
         [Fact]
-        public void DuplicateNamedReferences()
+        public void NamedTypeWithDocumentationTest()
         {
-            // We could build in protection to prevent there from being more than one named type with the same
-            // name, but for now, we'll just make sure they get filtered out properly.
-            var n1 = Schema.Named("n1", Schema.Map(Schema.Pair("x", Schema.String)));
-            var n2 = Schema.Named("n1", Schema.Map(Schema.Pair("x", Schema.String)));
-            var n3 = Schema.Named("n2", Schema.Map(Schema.Pair("x", Schema.String)));
-            var n4 = Schema.Named("n2", Schema.Map(Schema.Pair("x", Schema.String)));
-            var n5 = Schema.Named("n3", Schema.Map(Schema.Pair("x", Schema.String)));
-            var n6 = Schema.Named("n3", Schema.Map(Schema.Pair("x", Schema.String)));
-            
-            var type = Schema.Map(
-                Schema.Pair("a1", n1),
-                Schema.Pair("a2", n2),
-                Schema.Pair("a3", n3),
-                Schema.Pair("a4", n4),
-                Schema.Pair("a5", n5),
-                Schema.Pair("a6", n6)
-            );
-            
-            var schema =
+            var optionalPerson = BifoqlType.Map(BifoqlType.Property("p", 
+                BifoqlType.Index(BifoqlType.Named("Person"), 
+                    BifoqlType.IndexParameter("id", BifoqlType.Number),
+                    BifoqlType.IndexParameter("locale", BifoqlType.String, optional: true))));
+
+            var s = new Schema(optionalPerson)
+                .WithNamedType("Person", BifoqlType.Map(BifoqlType.Property("name", BifoqlType.String)), "A human being");
+
+            var schema = 
 @"{
-    a1: n1,
-    a2: n1,
-    a3: n2,
-    a4: n2,
-    a5: n3,
-    a6: n3
+    p: (id: number, locale?: string) => Person
 }
 
-n1 {
-    x: string
-}
-
-n2 {
-    x: string
-}
-
-n3 {
-    x: string
+// A human being
+Person = {
+    name: string
 }
 ";
-            Assert.Equal(schema, type.ToString());
-
+            Assert.Equal(schema, s.BuildDocumentation());
         }
     }
 }

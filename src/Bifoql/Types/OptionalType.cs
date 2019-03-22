@@ -30,10 +30,9 @@ namespace Bifoql.Types
             return 209837492;
         }
 
-        internal override string ToString(int indent)
+        internal override string GetDocumentation(int indent)
         {
-            return Type.ToString(indent) + "?";
+            return Type.GetDocumentation(indent) + "?";
         }
-        internal override IEnumerable<NamedType> ReferencedNamedTypes => Type.ReferencedNamedTypes;
     }
 }

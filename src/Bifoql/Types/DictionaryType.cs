@@ -35,12 +35,9 @@ namespace Bifoql.Types
             return ValueType;
         }
 
-        internal override IEnumerable<NamedType> ReferencedNamedTypes => ValueType.ReferencedNamedTypes;
-
-
-        internal override string ToString(int indent)
+        internal override string GetDocumentation(int indent)
         {
-            return $"string => {ValueType.ToString(indent)}[]";
+            return $"string => {ValueType.GetDocumentation(indent)}[]";
         }
     }
 }

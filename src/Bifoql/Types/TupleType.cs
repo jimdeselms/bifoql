@@ -69,7 +69,7 @@ namespace Bifoql.Types
             return code;
         }
 
-        internal override string ToString(int indent)
+        internal override string GetDocumentation(int indent)
         {
             var builder = new StringBuilder();
             builder.AppendLine("[");
@@ -77,14 +77,12 @@ namespace Bifoql.Types
             for (int i = 0; i < Types.Length; i++)
             {
                 string comma = i == Types.Length - 1 ? "" : ",";
-                builder.AppendLine($"{Indent(indent+1)}{Types[i].ToString(indent+1)}{comma}");
+                builder.AppendLine($"{Indent(indent+1)}{Types[i].GetDocumentation(indent+1)}{comma}");
             }
 
             builder.Append($"{Indent(indent)}]");
 
             return builder.ToString();
         }
-        internal override IEnumerable<NamedType> ReferencedNamedTypes => Types.SelectMany(t => t.ReferencedNamedTypes);
-
     }
 }

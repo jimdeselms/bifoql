@@ -58,11 +58,9 @@ namespace Bifoql.Types
             return code;
         }
 
-        internal override string ToString(int indent)
+        internal override string GetDocumentation(int indent)
         {
-            return string.Join(" | ", Types.Select(t => t.ToString(indent)));
+            return string.Join(" | ", Types.Select(t => t.GetDocumentation(indent)));
         }
-        internal override IEnumerable<NamedType> ReferencedNamedTypes => Types.SelectMany(t => t.ReferencedNamedTypes);
-
     }
 }

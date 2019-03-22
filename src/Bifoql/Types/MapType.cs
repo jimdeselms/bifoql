@@ -8,9 +8,9 @@ namespace Bifoql.Types
 
     internal class MapType : BifoqlType
     {
-        public IReadOnlyDictionary<string, BifoqlType> Properties { get; }
+        public IReadOnlyDictionary<string, MapProperty> Properties { get; }
 
-        public MapType(IReadOnlyDictionary<string, BifoqlType> properties)
+        public MapType(IReadOnlyDictionary<string, MapProperty> properties)
         {
             Guard.ArgumentNotNull(properties, nameof(properties));
             Properties = properties;
@@ -36,13 +36,8 @@ namespace Bifoql.Types
 
             foreach (var pair in Properties)
             {
-                BifoqlType otherType;
-                if (!otherMap.Properties.TryGetValue(pair.Key, out otherType))
-                {
-                    return false;
-                }
-
-                if (!pair.Value.Equals(otherType))
+                MapProperty otherType;
+                if (!otherMap.Properties.TryGetValue(pair.Key, out otherType) || !otherType.Equals(pair.Value))
                 {
                     return false;
                 }
@@ -53,7 +48,7 @@ namespace Bifoql.Types
 
         internal override BifoqlType GetKeyType(string key)
         {
-            BifoqlType type;
+            MapProperty type;
             if (Properties.TryGetValue(key, out type))
             {
                 return type;
@@ -77,7 +72,7 @@ namespace Bifoql.Types
             return code;
         }
 
-        internal override string ToString(int indent)
+        internal override string GetDocumentation(int indent)
         {
             var builder = new StringBuilder();
             builder.AppendLine("{");
@@ -85,15 +80,17 @@ namespace Bifoql.Types
             int i = 0;
             foreach (var prop in Properties)
             {
+                if (i > 0 && prop.Value.Documentation != null)
+                {
+                    builder.AppendLine();
+                }
                 var comma = ++i == Properties.Count ? "" : ",";
-                builder.AppendLine($"{Indent(indent+1)}{prop.Key}: {prop.Value.ToString(indent+1)}{comma}");
+                builder.AppendLine($"{prop.Value.GetDocumentation(indent+1)}{comma}");
             }
 
             builder.Append($"{Indent(indent)}}}");
 
             return builder.ToString();
         }
-
-        internal override IEnumerable<NamedType> ReferencedNamedTypes => Properties.Values.SelectMany(p => p.ReferencedNamedTypes);
     }
 }
