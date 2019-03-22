@@ -8,17 +8,16 @@ namespace Bifoql.Types
     public class Schema
     {
         private readonly BifoqlType _rootType;
-        private readonly Dictionary<string, NamedType> _namedTypes = new Dictionary<string, NamedType>();
+        private readonly Dictionary<string, BifoqlNamedType> _namedTypes = new Dictionary<string, BifoqlNamedType>();
 
-        public Schema(BifoqlType rootType)
+        public Schema(BifoqlType rootType, params BifoqlNamedType[] namedTypes)
         {
             _rootType = rootType;
-        }
-        public Schema WithNamedType(string name, BifoqlType type, string documentation = null)
-        {
-            // Make this a dictionary to prevent duplicates.
-            _namedTypes.Add(name, new NamedType(name, type, documentation));
-            return this;
+
+            foreach (var namedType in namedTypes)
+            {
+                _namedTypes.Add(namedType.Name, namedType);
+            }
         }
         
         public string BuildDocumentation()

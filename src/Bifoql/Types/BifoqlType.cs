@@ -64,6 +64,11 @@ namespace Bifoql.Types
             return new NamedTypeReference(name);
         }
 
+        public static BifoqlNamedType CreateNamedType(string name, BifoqlType type, string documentation = null)
+        {
+            return new BifoqlNamedType(name, type, documentation);
+        }
+
         public static IndexParameter IndexParameter(string name, BifoqlType type, bool optional=false)
         {
             return new IndexParameter(name, type, optional);
@@ -86,12 +91,12 @@ namespace Bifoql.Types
         }
 
         internal abstract string GetDocumentation(int indent);
-        internal string Indent(int i)
+        internal static string Indent(int i)
         {
             return "".PadRight(i * 4);
         }
 
-        protected string FormatDocumentation(string documentation, int indent)
+        internal static string FormatDocumentation(string documentation, int indent)
         {
             if (documentation != null)
             {

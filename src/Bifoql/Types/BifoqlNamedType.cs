@@ -3,13 +3,13 @@ using System.Linq;
 
 namespace Bifoql.Types
 {
-    internal class NamedType : BifoqlType
+    public class BifoqlNamedType : BifoqlType
     {
         public string Name { get; }
         public BifoqlType Type { get; }
         private readonly string _documentation;
 
-        public NamedType(string name, BifoqlType type, string documentation)
+        public BifoqlNamedType(string name, BifoqlType type, string documentation=null)
         {
             Guard.ArgumentNotNull(name, nameof(name));
             Guard.ArgumentNotNull(type, nameof(type));

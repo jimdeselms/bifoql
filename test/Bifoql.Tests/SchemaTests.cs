@@ -119,14 +119,15 @@ namespace Bifoql.Tests
         [Fact]
         public void NamedTypeTest()
         {
+            var address = new BifoqlNamedType("Address", BifoqlType.Map(BifoqlType.Property("street", BifoqlType.String)));
+            var person = new BifoqlNamedType("Person", BifoqlType.Map(BifoqlType.Property("name", BifoqlType.String), BifoqlType.Property("address", BifoqlType.Named("Address"))));
+
             var optionalPerson = BifoqlType.Map(BifoqlType.Property("p", 
                 BifoqlType.Index(BifoqlType.Named("Person"), 
                     BifoqlType.IndexParameter("id", BifoqlType.Number),
                     BifoqlType.IndexParameter("locale", BifoqlType.String, optional: true))));
 
-            var s = new Schema(optionalPerson)
-                .WithNamedType("Address", BifoqlType.Map(BifoqlType.Property("street", BifoqlType.String)))
-                .WithNamedType("Person", BifoqlType.Map(BifoqlType.Property("name", BifoqlType.String), BifoqlType.Property("address", BifoqlType.Named("Address"))));
+            var s = new Schema(optionalPerson, address, person);
 
             var schema = 
 @"{
@@ -152,8 +153,9 @@ Person = {
                     BifoqlType.IndexParameter("id", BifoqlType.Number),
                     BifoqlType.IndexParameter("locale", BifoqlType.String, optional: true))));
 
-            var s = new Schema(optionalPerson)
-                .WithNamedType("Person", BifoqlType.Map(BifoqlType.Property("name", BifoqlType.String)), "A human being");
+            var person = new BifoqlNamedType("Person", BifoqlType.Map(BifoqlType.Property("name", BifoqlType.String)), "A human being");
+
+            var s = new Schema(optionalPerson, person);
 
             var schema = 
 @"{
