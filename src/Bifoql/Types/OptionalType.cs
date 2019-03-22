@@ -8,6 +8,7 @@ namespace Bifoql.Types
 
         public OptionalType(BifoqlType type)
         {
+            Guard.ArgumentNotNull(type, nameof(type));
             Type = type;
         }
 

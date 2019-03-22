@@ -6,6 +6,7 @@ namespace Bifoql.Types
 
         public ScalarType(string type)
         {
+            Guard.ArgumentNotNull(type, nameof(type));
             Type = type;
         }
 

@@ -11,6 +11,7 @@ namespace Bifoql.Types
 
         public IndexedType(BifoqlType resultType, params IndexParameter[] parameters)
         {
+            Guard.ArgumentNotNull(resultType, nameof(resultType));
             ResultType = resultType;
             Parameters = parameters;
         }

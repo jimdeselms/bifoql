@@ -12,6 +12,7 @@ namespace Bifoql.Types
 
         public MapType(IReadOnlyDictionary<string, BifoqlType> properties)
         {
+            Guard.ArgumentNotNull(properties, nameof(properties));
             Properties = properties;
         }
 

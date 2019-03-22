@@ -8,6 +8,7 @@ namespace Bifoql.Types
 
         public DictionaryType(BifoqlType valueType)
         {
+            Guard.ArgumentNotNull(valueType, nameof(valueType));
             ValueType = valueType;
         }
 
