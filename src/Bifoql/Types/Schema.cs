@@ -27,6 +27,11 @@ namespace Bifoql.Types
             return new ArrayType(elementType);
         }
 
+        public static BifoqlType DictionaryOf(BifoqlType valueType)
+        {
+            return new DictionaryType(valueType);
+        }
+
         public static BifoqlType KeyValuePairOf(BifoqlType valueType)
         {
             return new KeyValuePairType(valueType);
