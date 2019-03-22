@@ -23,8 +23,6 @@ namespace Bifoql.Adapters
             return Task.FromResult(o?._lookup == this._lookup);
         }
         
-        public Task<BifoqlType> GetSchema() => Task.FromResult<BifoqlType>(_schema);
-
         public Task<object> Lookup(IndexArgumentList arguments)
         {
             return _lookup(arguments);

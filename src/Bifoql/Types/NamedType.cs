@@ -1,19 +1,22 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Bifoql.Types
 {
-    public class OptionalType : BifoqlType
+    public class NamedType : BifoqlType
     {
+        public string Name { get; }
         public BifoqlType Type { get; }
 
-        public OptionalType(BifoqlType type)
+        public NamedType(string name, BifoqlType type)
         {
+            Name = name;
             Type = type;
         }
 
         public override object ToObject()
         {
-            return new { optionalOf = Type.ToObject() };
+            return Name;
         }
 
         public override bool Equals(object other)
@@ -29,10 +32,11 @@ namespace Bifoql.Types
             return 209837492;
         }
 
+        public override IEnumerable<NamedType> ReferencedNamedTypes => Type.ReferencedNamedTypes.Concat(new [] { this });
+
         internal override string ToString(int indent)
         {
-            return Type.ToString(indent) + "?";
+            return Name;
         }
-        public override IEnumerable<NamedType> ReferencedNamedTypes => Type.ReferencedNamedTypes;
     }
 }

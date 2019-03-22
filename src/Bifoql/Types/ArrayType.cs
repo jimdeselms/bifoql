@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Bifoql.Types
 {
     public class ArrayType : BifoqlType
@@ -30,6 +32,14 @@ namespace Bifoql.Types
         internal override BifoqlType GetElementType(int index)
         {
             return ElementType;
+        }
+
+        public override IEnumerable<NamedType> ReferencedNamedTypes => ElementType.ReferencedNamedTypes;
+
+
+        internal override string ToString(int indent)
+        {
+            return ElementType.ToString(indent) + "[]";
         }
     }
 }

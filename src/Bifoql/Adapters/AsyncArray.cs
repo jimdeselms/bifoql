@@ -16,21 +16,6 @@ namespace Bifoql.Adapters
 
         public int Count => _getters.Count;
 
-        public async Task<BifoqlType> GetSchema()
-        {
-            if (_type != null) return _type;
-
-            var elementTypes = new List<BifoqlType>();
-
-            foreach (var el in _getters)
-            {
-                var val = await el();
-                elementTypes.Add(await val.GetSchema());
-            }
-
-            return ArrayTypeInferer.InferArrayType(elementTypes);
-        }
-
         public Func<Task<IBifoqlObject>> this[int key] => _getters[key];
 
         public AsyncArray(IReadOnlyList<Func<Task<IBifoqlObject>>> getters, BifoqlType type=null)

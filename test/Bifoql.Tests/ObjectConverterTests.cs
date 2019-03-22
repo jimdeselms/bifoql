@@ -219,8 +219,6 @@ namespace Bifoql.Tests
 
             public int Count => throw new NotImplementedException();
 
-            public Task<BifoqlType> GetSchema() => Task.FromResult<BifoqlType>(BifoqlType.Any);
-
             public bool ContainsKey(string key)
             {
                 throw new NotImplementedException();

@@ -5,6 +5,14 @@ namespace Bifoql.Types
     using System.Linq;
     public static class Schema
     {
+        public static readonly BifoqlType Any = BifoqlType.Any;
+        public static readonly BifoqlType Unknown = BifoqlType.Unknown;
+        public static readonly BifoqlType Null = BifoqlType.Null;
+        public static readonly BifoqlType Undefined = BifoqlType.Undefined;
+        public static readonly BifoqlType Error = BifoqlType.Error;
+        public static readonly BifoqlType Number = BifoqlType.Number;
+        public static readonly BifoqlType String = BifoqlType.String;
+        public static readonly BifoqlType Boolean = BifoqlType.Boolean;
 
         public static BifoqlType Optional(BifoqlType type)
         {
@@ -40,15 +48,19 @@ namespace Bifoql.Types
             return new KeyValuePair<string, BifoqlType>(key, value);
         }
 
-        public static BifoqlType Indexed(BifoqlType resultType, params Index[] indexes)
+        public static BifoqlType Index(BifoqlType resultType, params IndexParameter[] parameters)
         {
-            return new IndexedType(resultType, indexes);
+            return new IndexedType(resultType, parameters);
         }
 
-        public static Index Index(params KeyValuePair<string, BifoqlType>[] keys)
+        public static BifoqlType Named(string name, BifoqlType definition)
         {
-            var dict = keys.ToDictionary(k => k.Key, k => k.Value);
-            return new Index(dict);
+            return new NamedType(name, definition);
+        }
+
+        public static IndexParameter IndexParameter(string name, BifoqlType type, bool optional=false)
+        {
+            return new IndexParameter(name, type, optional);
         }
     }
 

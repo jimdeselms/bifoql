@@ -24,9 +24,6 @@ namespace Bifoql.Adapters
         {
         }
 
-        public Task<BifoqlType> GetSchema() => Task.FromResult<BifoqlType>(ScalarType.Null);
-
-
         public static readonly AsyncNull Instance = new AsyncNull();
     }
 }

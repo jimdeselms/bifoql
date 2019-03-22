@@ -8,7 +8,6 @@ namespace Bifoql
     internal interface IBifoqlObject
     {
         Task<bool> IsEqualTo(IBifoqlObject o);
-        Task<BifoqlType> GetSchema();
     }
 
     internal interface IBifoqlMapInternal : IBifoqlObject, IReadOnlyDictionary<string, Func<Task<IBifoqlObject>>>

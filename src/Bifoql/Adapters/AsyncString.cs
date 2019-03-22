@@ -23,7 +23,5 @@ namespace Bifoql.Adapters
 
             return (await o.Value) == await Value;
         }
-
-        public Task<BifoqlType> GetSchema() => Task.FromResult<BifoqlType>(_schema);
     }
 }
