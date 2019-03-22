@@ -6,7 +6,7 @@ namespace Bifoql.Types
 {
     using System.Collections.Generic;
 
-    public class MapType : BifoqlType
+    internal class MapType : BifoqlType
     {
         public IReadOnlyDictionary<string, BifoqlType> Properties { get; }
 
@@ -93,6 +93,6 @@ namespace Bifoql.Types
             return builder.ToString();
         }
 
-        public override IEnumerable<NamedType> ReferencedNamedTypes => Properties.Values.SelectMany(p => p.ReferencedNamedTypes);
+        internal override IEnumerable<NamedType> ReferencedNamedTypes => Properties.Values.SelectMany(p => p.ReferencedNamedTypes);
     }
 }

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Bifoql.Types
 {
-    public class OptionalType : BifoqlType
+    internal class OptionalType : BifoqlType
     {
         public BifoqlType Type { get; }
 
@@ -33,6 +33,6 @@ namespace Bifoql.Types
         {
             return Type.ToString(indent) + "?";
         }
-        public override IEnumerable<NamedType> ReferencedNamedTypes => Type.ReferencedNamedTypes;
+        internal override IEnumerable<NamedType> ReferencedNamedTypes => Type.ReferencedNamedTypes;
     }
 }

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Bifoql.Types
 {
-    public class ArrayType : BifoqlType
+    internal class ArrayType : BifoqlType
     {
         public BifoqlType ElementType { get; }
 
@@ -34,7 +34,7 @@ namespace Bifoql.Types
             return ElementType;
         }
 
-        public override IEnumerable<NamedType> ReferencedNamedTypes => ElementType.ReferencedNamedTypes;
+        internal override IEnumerable<NamedType> ReferencedNamedTypes => ElementType.ReferencedNamedTypes;
 
 
         internal override string ToString(int indent)

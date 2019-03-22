@@ -31,7 +31,7 @@ namespace Bifoql.Types
             return BifoqlType.Unknown;
         }
 
-        public virtual IEnumerable<NamedType> ReferencedNamedTypes => Enumerable.Empty<NamedType>();
+        internal virtual IEnumerable<NamedType> ReferencedNamedTypes => Enumerable.Empty<NamedType>();
 
         internal abstract string ToString(int indent);
         internal string Indent(int i)

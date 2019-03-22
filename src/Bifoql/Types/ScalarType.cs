@@ -1,6 +1,6 @@
 namespace Bifoql.Types
 {
-    public class ScalarType : BifoqlType
+    internal class ScalarType : BifoqlType
     {
         public string Type { get; }
 

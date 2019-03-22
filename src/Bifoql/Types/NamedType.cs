@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Bifoql.Types
 {
-    public class NamedType : BifoqlType
+    internal class NamedType : BifoqlType
     {
         public string Name { get; }
         public BifoqlType Type { get; }
@@ -32,7 +32,7 @@ namespace Bifoql.Types
             return 209837492;
         }
 
-        public override IEnumerable<NamedType> ReferencedNamedTypes => Type.ReferencedNamedTypes.Concat(new [] { this });
+        internal override IEnumerable<NamedType> ReferencedNamedTypes => Type.ReferencedNamedTypes.Concat(new [] { this });
 
         internal override string ToString(int indent)
         {
