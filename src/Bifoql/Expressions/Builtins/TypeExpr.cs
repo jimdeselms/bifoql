@@ -18,7 +18,7 @@ namespace Bifoql.Expressions.Builtins
             _obj = arguments[0];
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
+        protected override Expr SimplifyChildren(VariableScope variables)
         {
            return new TypeExpr(Location, new[] { _obj.Simplify(variables) });
         }

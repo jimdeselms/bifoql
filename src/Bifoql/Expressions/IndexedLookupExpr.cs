@@ -33,7 +33,7 @@ namespace Bifoql.Expressions
             return $"{_leftHandSide.ToString()}({string.Join(", ", entries)})";
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
+        protected override Expr SimplifyChildren(VariableScope variables)
         {
             var newArgs = _arguments.ToDictionary(p => p.Key, p => p.Value.Simplify(variables));
             return new IndexedLookupExpr(
@@ -41,7 +41,7 @@ namespace Bifoql.Expressions
                 newArgs);
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) 
+        public override bool NeedsAsync(VariableScope variables) 
         {
             return _leftHandSide.NeedsAsync(variables) || _arguments.Any(p => p.Value.NeedsAsync(variables));
         }

@@ -37,7 +37,7 @@ namespace Bifoql.Expressions
             return Name + args;
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables)
+        public override bool NeedsAsync(VariableScope variables)
         {
             // Special case. If this is "eval", then we can't simplify this
             return Name == "eval" || Arguments.Any(a => a.NeedsAsync(variables));
@@ -67,7 +67,7 @@ namespace Bifoql.Expressions
             return await _func(Location, context, (T1)a1);
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
+        protected override Expr SimplifyChildren(VariableScope variables)
         {
             return new TypedFunctionCallExpr<T1>(Location, Name, Arguments, _func);
         }
@@ -100,7 +100,7 @@ namespace Bifoql.Expressions
             return await _func(Location, context, (T1)a1, (T2)a2);
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
+        protected override Expr SimplifyChildren(VariableScope variables)
         {
             return new TypedFunctionCallExpr<T1, T2>(Location, Name, Arguments, _func);
         }
@@ -136,7 +136,7 @@ namespace Bifoql.Expressions
             return await _func(Location, context, (T1)a1, (T2)a2, (T3)a3);
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
+        protected override Expr SimplifyChildren(VariableScope variables)
         {
             return new TypedFunctionCallExpr<T1, T2, T3>(Location, Name, Arguments, _func);
         }

@@ -43,30 +43,26 @@ namespace Bifoql.Expressions
             return $"${Name} = {_value.ToString()}; {_pipedInto.ToString()}";
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
+        protected override Expr SimplifyChildren(VariableScope variables)
         {
             var simplifiedValue = _value.Simplify(variables);
             if (simplifiedValue is LiteralExpr)
             {
-                var newVariables = variables.ToDictionary(p => p.Key, p => p.Value);
-                
-                newVariables[Name] = ((LiteralExpr)simplifiedValue).Literal;
-                return new AssignmentExpr(Location, Name, simplifiedValue, _pipedInto.Simplify(newVariables));
+                var newScope = variables.AddVariable(Name, ((LiteralExpr)simplifiedValue).Literal);
+                return new AssignmentExpr(Location, Name, simplifiedValue, _pipedInto.Simplify(newScope));
             }
             else if (simplifiedValue is ExpressionExpr)
             {
-                var newVariables = variables.ToDictionary(p => p.Key, p => p.Value);
-                
-                newVariables[Name] = new AsyncExpression(((ExpressionExpr)simplifiedValue).InnerExpression);
-                return new AssignmentExpr(Location, Name, simplifiedValue, _pipedInto);
+                var newScope = variables.AddVariable(Name, new AsyncExpression(((ExpressionExpr)simplifiedValue).InnerExpression));
+                return new AssignmentExpr(Location, Name, simplifiedValue, _pipedInto.Simplify(newScope));
             }
             else
-            {
+            {   
                 return new AssignmentExpr(Location, Name, simplifiedValue, _pipedInto.Simplify(variables));
             }
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => true;
+        public override bool NeedsAsync(VariableScope variables) => true;
 
         public override bool ReferencesRootVariable => _value.ReferencesRootVariable || (_pipedInto?.ReferencesRootVariable ?? false);
 

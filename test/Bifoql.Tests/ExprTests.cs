@@ -19,6 +19,15 @@ namespace Bifoql.Tests
                 input: "5", 
                 query: "");
         }
+    
+        [Fact]
+        public void SimpleKey()
+        {
+            RunTest(
+                expected: 1,
+                query: "{a:1}.a"
+            );
+        }
 
         [Fact]
         public void SimpleObjectButNotIdentity()
@@ -177,7 +186,7 @@ namespace Bifoql.Tests
             RunTest(
                 expected: 123, 
                 input: new[] {123, 234}, 
-                query: "@[@ == 123][0]");
+                query: "@[?@ == 123][0]");
         }
 
         [Fact]
@@ -517,6 +526,22 @@ namespace Bifoql.Tests
         }
 
         [Fact]
+        public void VariableScopingWithArray()
+        {
+            RunTest(
+                expected: 30, 
+                query: "([1,2] |< ($x=@; $x*10)) | sum(@)");
+        }
+
+        [Fact]
+        public void VariableScoping()
+        {
+            RunTest(
+                expected: 1, 
+                query: "1 | ($x=@; $x)");
+        }
+
+        [Fact]
         public void RootObjectVariable()
         {
             RunTest(expected: 5, input: 5, query: "$");
@@ -564,9 +589,9 @@ namespace Bifoql.Tests
         [Fact]
         public void Filter()
         {
-            RunTest(expected: new [] { 1, 2 }, input: new [] { 1, 2, 3 }, query: "@[@ < 3]");
-            RunTest(expected: new object[0], input: new [] { "Hello" }, query: "@[false]");
-            RunTest(expected: new object[] { "Hello" }, input: new [] { "Hello" }, query: "@[true]");
+            RunTest(expected: new [] { 1, 2 }, input: new [] { 1, 2, 3 }, query: "@[?@ < 3]");
+            RunTest(expected: new object[0], input: new [] { "Hello" }, query: "@[?false]");
+            RunTest(expected: new object[] { "Hello" }, input: new [] { "Hello" }, query: "@[?true]");
         }
 
         [Fact]
@@ -574,7 +599,7 @@ namespace Bifoql.Tests
         {
             var obj = new Dictionary<string, object> { ["name"] = "Frank", ["length"] = 5 };
             RunTest(expected: 5, input: new [] { obj }, query: "@[0].length");
-            RunTest(expected: new [] { 5 }, input: new [] { obj }, query: "@[true].length");
+            RunTest(expected: new [] { 5 }, input: new [] { obj }, query: "@[?true].length");
         }
 
         [Fact]
@@ -701,6 +726,11 @@ namespace Bifoql.Tests
             RunTest(expected: 2, query: "[1, 2, 3][1]");
             RunTest(expected: 3, query: "[1, 2, 3][2]");
             RunTest(expected: null, query: "[1, 2, 3][3]");
+        }
+
+        [Fact]
+        public void NegativeIndexes()
+        {
             RunTest(expected: 2, query: "[1, 2, 3][-2]");
             RunTest(expected: 1, query: "[1, 2, 3][-3]");
             RunTest(expected: null, query: "[1, 2, 3][-4]");
@@ -819,12 +849,21 @@ namespace Bifoql.Tests
         }
 
         [Fact]
-        public void LookupTests()
+        public void IndexReferencingContextWithChain()
         {
             RunTest(
                 expected: "world",
-                query: "'hello' | $.foo",
+                query: "'hello' | $.index(key: @)",
                 input: new { foo="howdy", index = new Greeting() }.ToBifoqlObject());
+        }
+
+        [Fact]
+        public void IndexReferencingContext()
+        {
+            RunTest(
+                expected: "world",
+                query: "'hello' | $(key: @)",
+                input: new Greeting().ToBifoqlObject());
         }
 
         private class Greeting : IBifoqlIndexSync

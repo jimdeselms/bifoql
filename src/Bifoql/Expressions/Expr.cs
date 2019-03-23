@@ -16,7 +16,7 @@ namespace Bifoql.Expressions
             Location = location ?? new Location(0, 0);
         }
 
-        public virtual async Task<IBifoqlObject> Apply(QueryContext context)
+        public virtual async Task<IBifoqlObject> Apply(QueryContext context, bool resolveDeferred=true)
         {
             if (context.QueryTarget is ErrorExpr)
             {
@@ -50,33 +50,42 @@ namespace Bifoql.Expressions
                 return bifoqlObject.ToBifoqlObject();
             }
 
-            return await DoApply(context);
+            var result = await DoApply(context);
+
+            if (resolveDeferred && result is IBifoqlDeferredQueryInternal)
+            {
+                result = await DeferredQueryWrapper.EvaluateDeferredQuery(result);
+            }
+
+            return result;
         }
 
         protected abstract Task<IBifoqlObject> DoApply(QueryContext context);
 
         // True if it can be simplified synchronously without having a context applied to it.
-        public abstract bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables);
+        public abstract bool NeedsAsync(VariableScope variables);
         public virtual bool NeedsAsyncByItself => false;
         public virtual bool IsConstant => false;
-        public virtual Expr Simplify(IReadOnlyDictionary<string, IBifoqlObject> variables)
+        public virtual Expr Simplify(VariableScope scope)
         {
-            if (NeedsAsync(variables))
+            if (IsConstant) return this;
+            
+            if (NeedsAsync(scope))
             {
-                return SimplifyChildren(variables);
+                return SimplifyChildren(scope);
             }
             else
             {
                 // Since this thing can be simplified in real time, lk
-                return new LiteralExpr(Location, this.Apply(new QueryContext(AsyncNull.Instance, variables)).Result);
+                return new LiteralExpr(Location, this.Apply(new QueryContext(AsyncNull.Instance, scope)).Result);
             }
         }
 
         // Derived classes that need a context to be evaluated
         // must override this method to return a new expression that has the simplified versions of their children.
-        protected virtual Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
+        protected virtual Expr SimplifyChildren(VariableScope scope)
         {
-            if (NeedsAsync(variables))
+            if (NeedsAsync(scope))
             {
                 throw new NotImplementedException("Must implement SimplifyChildren");
             }

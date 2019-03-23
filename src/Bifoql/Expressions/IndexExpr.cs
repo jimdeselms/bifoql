@@ -6,17 +6,17 @@ namespace Bifoql.Expressions
     using System.Threading.Tasks;
     using Bifoql.Adapters;
 
-    internal class KeyExpr : Expr
+    internal class IndexExpr : Expr
     {
         private readonly Location _location;
         private readonly Expr _target;
-        private readonly string _key;
+        private readonly Expr _index;
 
-        public KeyExpr(Location location, Expr target, string key) : base(location)
+        public IndexExpr(Location location, Expr target, Expr index) : base(location)
         {
             _location = location;
             _target = target;
-            _key = key;
+            _index = index;
         }
 
         protected override async Task<IBifoqlObject> DoApply(QueryContext context)
@@ -25,16 +25,14 @@ namespace Bifoql.Expressions
                 ? context.QueryTarget
                 : await _target.Apply(context, resolveDeferred: false);
 
-            return await GetKeyFromObject(target, context);
-        }
+            var index = await _index.Apply(context);
 
-        private async Task<IBifoqlObject> GetKeyFromObject(IBifoqlObject target, QueryContext context)
-        {
             var lookup = target as IBifoqlMapInternal;
-            if (lookup != null)
+            if (lookup != null && index is IBifoqlString)
             {
+                var key = await ((IBifoqlString)index).Value;
                 Func<Task<IBifoqlObject>> value;
-                if (lookup.TryGetValue(_key, out value))
+                if (lookup.TryGetValue(key, out value))
                 {
                     return await value();
                 }
@@ -45,18 +43,27 @@ namespace Bifoql.Expressions
             }
 
             var array = target as IBifoqlArrayInternal;
-            if (array != null)
+            if (array != null && index is IBifoqlNumber)
             {
-                var result = new List<Func<Task<IBifoqlObject>>>();
-
-                foreach (var item in array)
+                var i = (int)await ((IBifoqlNumber)index).Value;
+                if (i < 0)
                 {
-                    var resolvedItem = await item();
-                    var entry = GetKeyFromObject(resolvedItem, context);
-                    result.Add(() => entry);
-                }
+                    if (-i > array.Count)
+                    {
+                        return AsyncUndefined.Instance;
+                    }
 
-                return new AsyncArray(result);
+                    return await array[array.Count + i]();
+                }
+                else
+                {
+                    if (i >= array.Count)
+                    {
+                        return AsyncUndefined.Instance;
+                    }
+
+                    return await array[i]();
+                }
             }
 
             if (target is IBifoqlUndefined)
@@ -69,7 +76,6 @@ namespace Bifoql.Expressions
             {
                 return DeferredQueryWrapper.AddToQuery(deferred, RightHandSideString());
             }
-
             return new AsyncError(this.Location, "key expression must be applied to array or map");
         }
 
@@ -79,32 +85,27 @@ namespace Bifoql.Expressions
                 ? ""
                 : $"{_target.ToString()}";
 
-            var rhs = RightHandSideString();
-
-            return $"{target}{rhs}";
+            return $"{target}[{RightHandSideString()}]";
         }
-
+        
         private string RightHandSideString()
         {
-            bool isEscaped;
-            var key = Utilities.Escape(_key, out isEscaped);
-
-            var dot = isEscaped ? "" : ".";
-
-            return isEscaped ? $"[\"{key}\"]" : $"{dot}{key}";
+            return $"[{_index.ToString()}]";
         }
 
         protected override Expr SimplifyChildren(VariableScope variables)
         {
-            return new KeyExpr(_location, _target?.Simplify(variables), _key);
+            return new IndexExpr(
+                _location, 
+                _target?.Simplify(variables),
+                _index.Simplify(variables));
         }
 
         public override bool NeedsAsync(VariableScope variables)
         {
-            return _target == null || _target.NeedsAsync(variables);
+            return _target?.NeedsAsync(variables) == true || _index.NeedsAsync(variables);
         }
-
-        public override bool NeedsAsyncByItself => _target == null || _target.NeedsAsyncByItself == true;
+        public override bool NeedsAsyncByItself => true;
         public override bool ReferencesRootVariable => _target?.ReferencesRootVariable == true;
 
     }

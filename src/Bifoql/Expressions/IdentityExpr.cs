@@ -19,13 +19,13 @@ namespace Bifoql.Expressions
             return "@";
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
+        protected override Expr SimplifyChildren(VariableScope variables)
         {
             // This can't be simplified.
             return this;
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => true;
+        public override bool NeedsAsync(VariableScope variables) => true;
         public override bool ReferencesRootVariable => false;
     }
 }

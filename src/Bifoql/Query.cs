@@ -21,7 +21,7 @@ namespace Bifoql
         {
             var parser = new QueryParser(customFunctions);
             var expr = parser.Parse(query);
-            var simplified = expr.Simplify(new Dictionary<string, IBifoqlObject>());
+            var simplified = expr.Simplify(VariableScope.Empty);
 
             return new Query(simplified);
         }
@@ -36,16 +36,13 @@ namespace Bifoql
         private async Task<IBifoqlObject> GetResult(object queryTarget, IReadOnlyDictionary<string, object> arguments)
         {
             var asyncQueryTarget = queryTarget.ToBifoqlObject();
-            var variables = new Dictionary<string, IBifoqlObject>
-            {
-                [""] = asyncQueryTarget
-            };
+            var variables = new VariableScope(null, "", asyncQueryTarget);
 
             if (arguments != null)
             {
                 foreach (var pair in arguments)
                 {
-                    variables[pair.Key.TrimStart('$')] = pair.Value.ToBifoqlObject();
+                    variables = variables.AddVariable(pair.Key.TrimStart('$'), pair.Value.ToBifoqlObject());
                 }
             }
 

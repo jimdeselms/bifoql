@@ -7,11 +7,16 @@ namespace Bifoql.Expressions
 
     internal class SliceExpr : Expr
     {
+        private readonly Location _location;
+        private readonly Expr _target;
         private readonly Expr _lowerBound;
         private readonly Expr _upperBound;
 
-        public SliceExpr(Location location, Expr lowerBound, Expr upperBound) : base(location)
+        public SliceExpr(Location location, Expr target, Expr lowerBound, Expr upperBound) : base(location)
         {
+            _location = location;
+            _target = target;
+
             // Using the location for these expressions is wrong, but who cares.
             _lowerBound = lowerBound ?? new LiteralExpr(location, AsyncNull.Instance);
             _upperBound = upperBound ?? new LiteralExpr(location, AsyncNull.Instance);
@@ -19,7 +24,11 @@ namespace Bifoql.Expressions
 
         protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
-            var list = context.QueryTarget as IBifoqlArrayInternal;
+            var target = _target == null
+                ? context.QueryTarget
+                : await _target.Apply(context);
+
+            var list = target as IBifoqlArrayInternal;
             if (list == null) return new AsyncError(this.Location, "Can't take slice of non-list");
 
             var result = new List<Func<Task<IBifoqlObject>>>();
@@ -69,19 +78,34 @@ namespace Bifoql.Expressions
 
        public override string ToString()
        {
-           var lower = _lowerBound?.ToString() ?? "";
-           var upper = _upperBound?.ToString() ?? "";
+            var target = _target == null
+                ? _target.ToString()
+                : "";
+            var lower = _lowerBound?.ToString() ?? "";
+            var upper = _upperBound?.ToString() ?? "";
 
-           return $"[{lower}..{upper}]";
+            return $"{target}[{lower}..{upper}]";
        }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
+        protected override Expr SimplifyChildren(VariableScope variables)
         {
-            // This can't be simplified
-            return this;
+            return new SliceExpr(
+                _location,
+                _target?.Simplify(variables),
+                _lowerBound?.Simplify(variables),
+                _upperBound?.Simplify(variables));
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => true;
-        public override bool ReferencesRootVariable => _lowerBound.ReferencesRootVariable || _upperBound.ReferencesRootVariable;
+        public override bool NeedsAsync(VariableScope variables)
+        {
+            return _target == null 
+                || _target.NeedsAsync(variables) 
+                || _lowerBound?.NeedsAsync(variables) == true
+                || _upperBound?.NeedsAsync(variables) == true;
+        }
+        public override bool ReferencesRootVariable => 
+            _target?.ReferencesRootVariable == true
+            || _lowerBound?.ReferencesRootVariable == true
+            || _upperBound?.ReferencesRootVariable == true;
     }
 }
