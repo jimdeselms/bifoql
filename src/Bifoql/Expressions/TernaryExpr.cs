@@ -18,7 +18,7 @@ namespace Bifoql.Expressions
             _ifFalse = ifFalse;
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
+        protected override Expr SimplifyChildren(VariableScope variables)
         {
             return new TernaryExpr(_condition.Simplify(variables), _ifTrue.Simplify(variables), _ifFalse.Simplify(variables));
         }
@@ -44,7 +44,7 @@ namespace Bifoql.Expressions
             return $"{_condition.ToString()} ? {_ifTrue.ToString()} : {_ifFalse.ToString()}";
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables)
+        public override bool NeedsAsync(VariableScope variables)
         {
             return _condition.NeedsAsync(variables) || _ifFalse.NeedsAsync(variables) || _ifTrue.NeedsAsync(variables);
         }

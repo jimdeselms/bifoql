@@ -7,12 +7,13 @@ namespace Bifoql
     internal class QueryContext
     {
         public IBifoqlObject QueryTarget { get; }
-        public IReadOnlyDictionary<string, IBifoqlObject> Variables { get; }
 
-        public QueryContext(IBifoqlObject target, IReadOnlyDictionary<string, IBifoqlObject> variables)
+        public VariableScope Variables { get; }
+
+        public QueryContext(IBifoqlObject target, VariableScope scope)
         {
             QueryTarget = target;
-            Variables = variables;
+            Variables = scope;
         }
 
         public QueryContext ReplaceTarget(IBifoqlObject newTarget)
@@ -20,14 +21,11 @@ namespace Bifoql
             return new QueryContext(newTarget, Variables);
         }
 
-        public static QueryContext Empty = new QueryContext(AsyncNull.Instance, new Dictionary<string, IBifoqlObject>());
+        public static QueryContext Empty = new QueryContext(AsyncNull.Instance, VariableScope.Empty);
 
         public QueryContext AddVariable(string key, IBifoqlObject value)
         {
-            var newDict = Variables.ToDictionary(p => p.Key, p => p.Value);
-            newDict[key] = value;
-
-            return new QueryContext(QueryTarget, newDict);
+            return new QueryContext(QueryTarget, Variables.AddVariable(key, value));
         }
     }
 }

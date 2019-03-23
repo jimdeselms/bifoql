@@ -18,7 +18,7 @@ namespace Bifoql.Expressions
             RightHandSide = rightHandSide;
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
+        protected override Expr SimplifyChildren(VariableScope variables)
         {
             return new BinaryExpr(LeftHandSide.Simplify(variables), Operator, RightHandSide.Simplify(variables));
         }
@@ -300,7 +300,7 @@ namespace Bifoql.Expressions
             return $"{LeftHandSide.ToString()} {Operator} {RightHandSide.ToString()}";
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => LeftHandSide.NeedsAsync(variables) || RightHandSide.NeedsAsync(variables);
+        public override bool NeedsAsync(VariableScope variables) => LeftHandSide.NeedsAsync(variables) || RightHandSide.NeedsAsync(variables);
 
         public override bool ReferencesRootVariable => LeftHandSide.ReferencesRootVariable || RightHandSide.ReferencesRootVariable;
     }

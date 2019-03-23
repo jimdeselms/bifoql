@@ -8,60 +8,35 @@ namespace Bifoql.Expressions
 
     internal class FilterExpr : Expr
     {
+        public Expr Target { get; }
         public Expr Condition { get; }
 
-        public FilterExpr(Expr condition) : base(condition.Location)
+        public FilterExpr(Expr target, Expr condition) : base(condition.Location)
         {
+            Target = target;
             Condition = condition;
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
+        protected override Expr SimplifyChildren(VariableScope variables)
         {
-            return new FilterExpr(Condition.Simplify(variables));
+            return new FilterExpr(
+                Target?.Simplify(variables),
+                Condition.Simplify(variables));
         }
 
         protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
-            if (!Condition.NeedsAsync(context.Variables))
-            {
-                if (context.QueryTarget is IBifoqlUndefined) return AsyncUndefined.Instance;
+            var target = Target == null
+                ? context.QueryTarget
+                : await Target.Apply(context, resolveDeferred: false);
 
-                var value = Condition.Simplify(context.Variables).Apply(QueryContext.Empty).Result;
-                // This isn't a filter; it's an array index
-                if (value is IBifoqlNumber)
-                {
-                    var theList = context.QueryTarget as IBifoqlArrayInternal;
-                    if (theList == null) return new AsyncError(this.Location, "Index must only be applied to an array");
-
-                    var index = Convert.ToInt32(((IBifoqlNumber)value).Value.Result);
-
-                    if (index < 0)
-                    {
-                        index = theList.Count + index;
-                    }
-
-                    if (index >= 0 && index < theList.Count)
-                    {
-                        return await theList[index]();
-                    }
-                    else
-                    {
-                        return AsyncUndefined.Instance;
-                    }
-                }
-
-                // This isn't a filter; it's a map key
-                if (value is IBifoqlString)
-                {   
-                    var theMap = context.QueryTarget as IBifoqlMapInternal;
-                    if (theMap == null) return new AsyncError(this.Location, "Key lookup must only be applied to a map");
-
-                    var key = ((IBifoqlString)value).Value.Result;
-                    return await theMap[key]();
-                }
+            var deferred = target as IBifoqlDeferredQueryInternal;
+            if (deferred != null)
+            {   
+                return DeferredQueryWrapper.AddToQuery(deferred, RightHandSideString());
             }
 
-            var list = context.QueryTarget as IBifoqlArrayInternal;
+            var list = target as IBifoqlArrayInternal;
             if (list == null) return new AsyncError(this.Location, "Can only apply filter to an array");
 
             var result = new List<Func<Task<IBifoqlObject>>>();
@@ -88,10 +63,19 @@ namespace Bifoql.Expressions
 
         public override string ToString()
         {
-            return $"[{Condition.ToString()}]";
+            var target = Target == null
+                ? ""
+                : Target.ToString();
+
+            return $"{Target}{RightHandSideString()}";
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => true;
+        private string RightHandSideString()
+        {
+            return $"[? {Condition.ToString()}]";
+        }
+
+        public override bool NeedsAsync(VariableScope variables) => true;
         public override bool ReferencesRootVariable => Condition.ReferencesRootVariable;
 
     }

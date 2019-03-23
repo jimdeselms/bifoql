@@ -19,14 +19,20 @@ namespace Bifoql.Expressions
             _toMultiple = toMultiple;
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
+        protected override Expr SimplifyChildren(VariableScope variables)
         {
             return new ChainExpr(_first?.Simplify(variables), _next?.Simplify(variables), _toMultiple);
         }
 
         protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
-            var result = await _first.Apply(context);
+            var result = await _first.Apply(context, resolveDeferred: false);
+
+            var deferred = result as IBifoqlDeferredQueryInternal;
+            if (deferred != null)
+            {
+                return DeferredQueryWrapper.AddToQuery(deferred, RightHandSideString());
+            }
 
             if (_toMultiple)
             {
@@ -52,6 +58,14 @@ namespace Bifoql.Expressions
         public override string ToString()
         {
             var result = _first.ToString();
+
+            return $"{result}{RightHandSideString()}";
+        }
+
+        private string RightHandSideString()
+        {
+            var result = "";
+
             if (_next != null)
             {
                 if (_next is KeyExpr)
@@ -65,18 +79,20 @@ namespace Bifoql.Expressions
                 }
                 else
                 {
-                    result += " | " + _next.ToString();
+                    var pipe = _toMultiple ? " |< " : " | ";
+
+                    result += pipe + _next.ToString();
                 }
             }
 
             return result;
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) 
+        public override bool NeedsAsync(VariableScope variables) 
         {
             if (_first.NeedsAsync(variables)) return true;
 
-            if (_next.ReferencesRootVariable) return true;
+            if (_first.ReferencesRootVariable || _next.ReferencesRootVariable) return true;
 
             // Some things can't be simplified by themselves, but they can be in the
             // context of a chain. If this chain doesn't need to be asynchronous, then

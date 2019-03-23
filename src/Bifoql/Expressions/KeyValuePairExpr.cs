@@ -30,12 +30,12 @@ namespace Bifoql.Expressions
            return $"{Key}: {Value.ToString()}]";
        }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
+        protected override Expr SimplifyChildren(VariableScope variables)
         {
             return new KeyValuePairExpr(Location, Key, Value.Simplify(variables));
         }
 
-       public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => Value.NeedsAsync(variables);
+       public override bool NeedsAsync(VariableScope variables) => Value.NeedsAsync(variables);
         public override bool ReferencesRootVariable => Value.ReferencesRootVariable;
     }
 }

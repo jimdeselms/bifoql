@@ -14,7 +14,7 @@ namespace Bifoql.Expressions
             InnerExpression = innerExpression;
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
+        protected override Expr SimplifyChildren(VariableScope variables)
         {
             return new ExpressionExpr(InnerExpression.Simplify(variables));
         }
@@ -29,7 +29,7 @@ namespace Bifoql.Expressions
             return $"({InnerExpression.ToString()})";
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => InnerExpression.NeedsAsync(variables);
+        public override bool NeedsAsync(VariableScope variables) => InnerExpression.NeedsAsync(variables);
 
         public override bool ReferencesRootVariable => InnerExpression.ReferencesRootVariable;
     }

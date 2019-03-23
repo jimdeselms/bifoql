@@ -32,10 +32,10 @@ namespace Bifoql.Expressions
             return "$" + Name;
         }
 
-        public override Expr Simplify(IReadOnlyDictionary<string, IBifoqlObject> variables)
+        public override Expr Simplify(VariableScope scope)
         {
             IBifoqlObject result;
-            if (variables.TryGetValue(Name, out result))
+            if (scope.TryGetValue(Name, out result))
             {
                 return new LiteralExpr(Location, result);
             }
@@ -45,16 +45,16 @@ namespace Bifoql.Expressions
             }
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
+        protected override Expr SimplifyChildren(VariableScope scope)
         {
             // this can't be simplified.
             return this;
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables)
+        public override bool NeedsAsync(VariableScope scope)
         {
             // References to the root variable can't be simplified.
-            return Name != "" && !variables.ContainsKey(Name);
+            return Name == "" || !scope.ContainsKey(Name);
         }
 
         public override bool ReferencesRootVariable => Name == "";

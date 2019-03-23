@@ -20,7 +20,7 @@ namespace Bifoql.Expressions.Builtins
             _ifIsError = arguments[1];
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
+        protected override Expr SimplifyChildren(VariableScope variables)
         {
            return new IfErrorExpr(Location, new[] 
             { 
