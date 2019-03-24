@@ -511,6 +511,11 @@ namespace Bifoql
                 Match(tokens, "ID", ref i);
                 return new LiteralExpr(GetLocation(token), AsyncNull.Instance);
             }
+            else if (TokenIsId(token) && token.Text == "undefined")
+            {
+                Match(tokens, "ID", ref i);
+                return new LiteralExpr(GetLocation(token), AsyncUndefined.Instance);
+            }
             else if (TokenIsId(token))
             {
                 return ParseKeyExpr(tokens, null, ref i);

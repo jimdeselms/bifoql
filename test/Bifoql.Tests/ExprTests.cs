@@ -62,6 +62,7 @@ namespace Bifoql.Tests
             RunTest(expected: new [] { 2 }, input: new [] { 1, 2 }, query: "@[-1..]");
             RunTest(expected: new [] { 1 }, input: new [] { 1, 2 }, query: "@[..-1]");
             RunTest(expected: new [] { 1, 2 }, input: new [] { 0, 1, 2, 3 }, query: "@[-3..-1]");
+            RunTest(expected: new [] { 1, 2 }, input: new [] { 0, 1, 2, 3 }, query: "@[1..-1]");
         }
 
         [Fact]
@@ -786,6 +787,22 @@ namespace Bifoql.Tests
         public void UndefinedObjectResolvesToNull()
         {
             RunTest(expected: null, query: "[][0]");
+        }
+
+        [Fact]
+        public void Undefined()
+        {
+            // These demonstrate that undefined resolves to null,
+            // but if it's an array or map entry, then it causes the entry to be omitted.
+            RunTest(expected: null, query: "undefined");
+            RunTest(expected: new object[0], query: "[undefined]");
+            RunTest(expected: new [] { 5 }, query: "[undefined, 5]");
+            RunTest(expected: new {}, query: "{foo: undefined}");
+            RunTest(expected: new {x = 123}, query: "{foo: undefined, x: 123}");
+
+            // This shows that you can convert null into undefined to cause an element to
+            // be omitted from a list
+            RunTest(expected: new object[0], query: "[null ?? undefined]");
         }
 
         [Fact]
