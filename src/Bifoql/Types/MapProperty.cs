@@ -41,6 +41,8 @@ namespace Bifoql.Types
             return 33347234 ^ Name.GetHashCode() & Type.GetHashCode();
         }
 
+        public override bool IsCompound => true;
+        
         internal override string GetDocumentation(int indent)
         {
             return $"{FormatDocumentation(Documentation, indent)}{Indent(indent)}{Name}: {Type.GetDocumentation(indent)}";

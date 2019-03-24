@@ -24,6 +24,8 @@ namespace Bifoql.Types
                 : new OptionalType(type);
         }
 
+        public virtual bool IsCompound => false;
+
         public static BifoqlType ArrayOf(BifoqlType elementType)
         {
             return new ArrayType(elementType);

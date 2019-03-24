@@ -32,7 +32,14 @@ namespace Bifoql.Types
 
         internal override string GetDocumentation(int indent)
         {
-            return Type.GetDocumentation(indent) + "?";
+            if (Type.IsCompound)
+            {
+                return $"({Type.GetDocumentation(indent)})?";
+            }
+            else
+            {
+                return $"{Type.GetDocumentation(indent)}?";
+            }
         }
     }
 }
