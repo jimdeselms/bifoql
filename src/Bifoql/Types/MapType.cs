@@ -46,6 +46,8 @@ namespace Bifoql.Types
             return true;
         }
 
+        public override bool IsCompound => true;
+
         internal override BifoqlType GetKeyType(string key)
         {
             MapProperty type;
