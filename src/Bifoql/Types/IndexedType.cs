@@ -16,6 +16,8 @@ namespace Bifoql.Types
             Parameters = parameters;
         }
 
+        public override bool IsCompound => true;
+
         public override object ToObject()
         {
             return new 

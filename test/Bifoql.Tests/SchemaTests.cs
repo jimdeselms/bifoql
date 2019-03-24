@@ -117,6 +117,24 @@ namespace Bifoql.Tests
         }
 
         [Fact]
+        public void OptionalUnion()
+        {
+            var type = new Schema(BifoqlType.Optional(
+                BifoqlType.Union(BifoqlType.String, BifoqlType.Number, BifoqlType.Null)));
+
+            Assert.Equal("(string | number | null)?", type.BuildDocumentation());
+        }
+
+        [Fact]
+        public void ArrayOfUnion()
+        {
+            var type = new Schema(BifoqlType.ArrayOf(
+                BifoqlType.Union(BifoqlType.String, BifoqlType.Number, BifoqlType.Null)));
+
+            Assert.Equal("(string | number | null)[]", type.BuildDocumentation());
+        }
+
+        [Fact]
         public void NamedTypeTest()
         {
             var address = new BifoqlNamedType("Address", BifoqlType.Map(BifoqlType.Property("street", BifoqlType.String)));
@@ -145,6 +163,7 @@ Person = {
 ";
             Assert.Equal(schema, s.BuildDocumentation());
         }
+
         [Fact]
         public void NamedTypeWithDocumentationTest()
         {
