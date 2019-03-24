@@ -36,6 +36,11 @@ namespace Bifoql.Tests
         public void KeyAsIndex()
         {
             RunTest("world", "{greeting: 'hello', name: 'world'}['name']");
+        }
+
+        [Fact]
+        public void ComplexKeyAsIndex()
+        {
             RunTest("world", "{greeting: 'hello', name: 'world'}['na'+'me']");
         }
 

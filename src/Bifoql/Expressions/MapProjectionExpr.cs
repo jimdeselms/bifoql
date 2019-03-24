@@ -17,7 +17,7 @@ namespace Bifoql.Expressions
             _projections = projections.ToList();
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
+        protected override Expr SimplifyChildren(VariableScope variables)
         {
             return new MapProjectionExpr(Location, _projections.Select(p => p.Simplify(variables)));
         }
@@ -108,7 +108,7 @@ namespace Bifoql.Expressions
             return "{" + projections + "}";
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => _projections.Any(a => a.NeedsAsync(variables));
+        public override bool NeedsAsync(VariableScope variables) => _projections.Any(a => a.NeedsAsync(variables));
         public override bool NeedsAsyncByItself => true;    
         public override bool ReferencesRootVariable => _projections.Any(p => p.ReferencesRootVariable);
     }

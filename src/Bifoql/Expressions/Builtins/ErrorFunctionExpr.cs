@@ -23,7 +23,7 @@ namespace Bifoql.Expressions
             return new AsyncError(this.Location, messageObj.ToString());
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
+        protected override Expr SimplifyChildren(VariableScope variables)
         {
             return new ErrorFunctionExpr(Location, new Expr[] { _message.Simplify(variables) } );
         }
@@ -33,7 +33,7 @@ namespace Bifoql.Expressions
             return $"<error: {_message}>";
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => _message.NeedsAsync(variables);
+        public override bool NeedsAsync(VariableScope variables) => _message.NeedsAsync(variables);
         public override bool ReferencesRootVariable => _message.ReferencesRootVariable;
     }
 }

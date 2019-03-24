@@ -94,6 +94,7 @@ namespace Bifoql
 
             var token = GetToken(tokens, i);
 
+            // TODO - precedence matters hers.
             if (token.Kind == "|")
             {
                 Match(tokens, "|", ref i);
@@ -297,8 +298,7 @@ namespace Bifoql
             var peek = GetToken(tokens, i);
             if (peek.Kind == "." || peek.Kind == "[" || peek.Kind == "(")
             {
-                var next = ParseChainRemainder(tokens, ref i);
-                return new ChainExpr(expr, next, toMultiple: false);
+                return ParseChainRemainder(tokens, expr, ref i);
             }
             else
             {
@@ -306,30 +306,30 @@ namespace Bifoql
             }
         }
 
-        private Expr ParseChainRemainder(IReadOnlyList<Token> tokens, ref int i)
+        private Expr ParseChainRemainder(IReadOnlyList<Token> tokens, Expr prev, ref int i)
         {
             var token = GetToken(tokens, i);
             Expr first = null;
             if (token.Kind == ".")
             {
                 Match(tokens, ".", ref i);
-                first = ParseKeyExpr(tokens, ref i);
+                first = ParseKeyExpr(tokens, prev, ref i);
             }
             else if (token.Kind == "[")
             {
-                first = ParseIndexExpr(tokens, ref i);
+                first = ParseIndexExpr(tokens, prev, ref i);
             }
             else if (token.Kind == "(")
             {
                 // Super gross; in retrospect, all expressions should just be self-contained, or this
                 // should at least work the same as the other chain expressions.
-                first = ParseIndexedLookup(tokens, new IdentityExpr(GetLocation(token)), ref i);
+                first = ParseIndexedLookup(tokens, prev, ref i);
             }
 
             var nextToken = GetToken(tokens, i);
             if (nextToken.Kind == "." || nextToken.Kind == "[" || nextToken.Kind == "(")
             {
-                return new ChainExpr(first, ParseChainRemainder(tokens, ref i), toMultiple: false);
+                return ParseChainRemainder(tokens, first, ref i);
             }
             else
             {
@@ -513,7 +513,7 @@ namespace Bifoql
             }
             else if (TokenIsId(token))
             {
-                return ParseKeyExpr(tokens, ref i);
+                return ParseKeyExpr(tokens, null, ref i);
             }
             else if (token.Kind == "[")
             {
@@ -521,7 +521,7 @@ namespace Bifoql
             }
             else if (token.Kind == "{")
             {
-                return ParseMapProjectionExpr(tokens, ref i);
+                return ParseMapProjectionExpr(tokens, null, ref i);
             }
             else if (token.Kind == "STRING")
             {
@@ -557,7 +557,7 @@ namespace Bifoql
             }
         }
 
-        private Expr ParseMapProjectionExpr(IReadOnlyList<Token> tokens, ref int i)
+        private Expr ParseMapProjectionExpr(IReadOnlyList<Token> tokens, Expr prev, ref int i)
         {
             var bracket = Match(tokens, "{", ref i);
 
@@ -615,7 +615,7 @@ namespace Bifoql
                         MatchOptional(tokens, "|", ref i);
 
                         var rhs = new ChainExpr(
-                            new KeyExpr(idLocation, id),
+                            new KeyExpr(idLocation, prev, id),
                             ParseExpr(tokens, ref i),
                             toMultiple: false);
 
@@ -629,7 +629,7 @@ namespace Bifoql
                         Match(tokens, "|<", ref i);
 
                         var rhs = new ChainExpr(
-                            new KeyExpr(idLocation, id),
+                            new KeyExpr(idLocation, prev, id),
                             ParseExpr(tokens, ref i),
                             toMultiple: true);
 
@@ -637,7 +637,7 @@ namespace Bifoql
                     }
                     else
                     {
-                        projection = new KeyValuePairExpr(idLocation, id, new KeyExpr(idLocation, id));
+                        projection = new KeyValuePairExpr(idLocation, id, new KeyExpr(idLocation, prev, id));
                     }
                 }
 
@@ -720,11 +720,11 @@ namespace Bifoql
             return new IdentityExpr(GetLocation(at));
         }
 
-        private static Expr ParseKeyExpr(IReadOnlyList<Token> tokens, ref int i)
+        private static Expr ParseKeyExpr(IReadOnlyList<Token> tokens, Expr prev, ref int i)
         {
             MatchOptional(tokens, ".", ref i);
             var token = MatchAny(tokens, new [] { "ID", "STRING" }, ref i);
-            return new KeyExpr(GetLocation(token), token.Text);
+            return new KeyExpr(GetLocation(token), prev, token.Text);
         }
 
         private Expr ParseArrayExpr(IReadOnlyList<Token> tokens, ref int i)
@@ -766,23 +766,25 @@ namespace Bifoql
             return new ArrayExpr(GetLocation(tok), exprs);
         }
 
-        private Expr ParseFilterExpr(IReadOnlyList<Token> tokens, ref int i)
-        {
-            var condition = ParseExpr(tokens, ref i);
-            return new FilterExpr(condition);
-        }
-
-        private Expr ParseIndexExpr(IReadOnlyList<Token> tokens, ref int i)
+        private Expr ParseIndexExpr(IReadOnlyList<Token> tokens, Expr prev, ref int i)
         {
             var openBracket = Match(tokens, "[", ref i);
 
             var next = GetToken(tokens, i);
+            if (next.Kind == "?")
+            {
+                Match(tokens, "?", ref i);
+                var condition = ParseExpr(tokens, ref i);
+                Match(tokens, "]", ref i);
+
+                return new FilterExpr(prev, condition);
+            }
             Expr projectionFilter = null;
             if (next.Kind == "STRING" && GetToken(tokens, i + 1).Kind == "]")
             {
                 Match(tokens, "STRING", ref i);
                 Match(tokens, "]", ref i);
-                projectionFilter = new KeyExpr(GetLocation(next), next.Text);
+                projectionFilter = new KeyExpr(GetLocation(next), prev, next.Text);
             }
             else if (next.Kind == "..")
             {
@@ -792,12 +794,12 @@ namespace Bifoql
                 if (next.Kind == "]")
                 {
                     Match(tokens, "]", ref i);
-                    projectionFilter = new SliceExpr(GetLocation(openBracket), null, null);
+                    projectionFilter = new SliceExpr(GetLocation(openBracket), prev, null, null);
                 }
                 else
                 {
                     var upperBound = ParseExpr(tokens, ref i);
-                    projectionFilter = new SliceExpr(GetLocation(openBracket), null, upperBound);
+                    projectionFilter = new SliceExpr(GetLocation(openBracket), prev, null, upperBound);
                 }
             }
             else
@@ -815,12 +817,12 @@ namespace Bifoql
                         upperBound = ParseExpr(tokens, ref i);
                     }
                     Match(tokens, "]", ref i);
-                    projectionFilter = new SliceExpr(GetLocation(openBracket), filter, upperBound);
+                    projectionFilter = new SliceExpr(GetLocation(openBracket), prev, filter, upperBound);
                 }
                 else
                 {
                     Match(tokens, "]", ref i);
-                    projectionFilter = new FilterExpr(filter);
+                    projectionFilter = new IndexExpr(GetLocation(openBracket), prev, filter);
                 }
             }
 

@@ -22,10 +22,15 @@ namespace Bifoql.Tests
         }
 
         [Fact]
-        public void DeferQueryFilter()
+        public void DeferredQueryWithIndex()
         {
             RunTest(1, new [] { 1 }, "remote[0]");
-            RunTest(new [] { 2 }, new [] { 1, 2 }, "remote[@ > 1]");
+        }
+
+        [Fact]
+        public void DeferQueryFilter()
+        {
+            RunTest(new [] { 2 }, new [] { 1, 2 }, "remote[? @ > 1]");
         }
 
         [Fact]
@@ -37,7 +42,13 @@ namespace Bifoql.Tests
         [Fact]
         public void DeferFunction()
         {
-            RunTest(5, 5.923d, "remote | floor(@)");
+            RunTest(50, 5.923d, "remote | floor(@) | @ * 10");
+        }
+
+        [Fact]
+        public void DeferArrayPipe()
+        {
+            RunTest(new [] { 10, 20 }, new [] { 1, 2 }, "remote |< @ * 10");
         }
 
         

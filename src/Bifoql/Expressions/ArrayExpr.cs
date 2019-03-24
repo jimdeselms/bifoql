@@ -18,7 +18,7 @@ namespace Bifoql.Expressions
             _exprs = exprs;
         }
 
-        protected override Expr SimplifyChildren(IReadOnlyDictionary<string, IBifoqlObject> variables)
+        protected override Expr SimplifyChildren(VariableScope variables)
         {
             return new ArrayExpr(Location, _exprs.Select(e => e.Simplify(variables)).ToList());
         }
@@ -61,7 +61,7 @@ namespace Bifoql.Expressions
             return $"[{string.Join(",", _exprs.Select(e => e.ToString()))}]";
         }
 
-        public override bool NeedsAsync(IReadOnlyDictionary<string, IBifoqlObject> variables) => _exprs.Any(a => a.NeedsAsync(variables));
+        public override bool NeedsAsync(VariableScope variables) => _exprs.Any(a => a.NeedsAsync(variables));
         public override bool ReferencesRootVariable => _exprs.Any(e => e.ReferencesRootVariable);
 
     }
