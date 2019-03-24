@@ -126,6 +126,24 @@ namespace Bifoql.Tests
         }
 
         [Fact]
+        public void OptionalDictionaryOfUnion()
+        {
+            var type = new Schema(BifoqlType.Optional(BifoqlType.DictionaryOf(
+                BifoqlType.Union(BifoqlType.String, BifoqlType.Number, BifoqlType.Null))));
+
+            Assert.Equal("(string => string | number | null)?", type.BuildDocumentation());
+        }
+
+        [Fact]
+        public void DictionaryOfOptionalUnion()
+        {
+            var type = new Schema(BifoqlType.DictionaryOf(BifoqlType.Optional(
+                BifoqlType.Union(BifoqlType.String, BifoqlType.Number, BifoqlType.Null))));
+
+            Assert.Equal("string => (string | number | null)?", type.BuildDocumentation());
+        }
+
+        [Fact]
         public void ArrayOfUnion()
         {
             var type = new Schema(BifoqlType.ArrayOf(

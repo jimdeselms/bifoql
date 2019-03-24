@@ -30,6 +30,8 @@ namespace Bifoql.Types
             return ValueType.GetHashCode() ^ 41425334;
         }
 
+        public override bool IsCompound => true;
+
         internal override BifoqlType GetElementType(int index)
         {
             return ValueType;
@@ -37,7 +39,7 @@ namespace Bifoql.Types
 
         internal override string GetDocumentation(int indent)
         {
-            return $"string => {ValueType.GetDocumentation(indent)}[]";
+            return $"string => {ValueType.GetDocumentation(indent)}";
         }
     }
 }
