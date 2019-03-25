@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace Bifoql.Tests
 {
-    public class ExprTests
+    public class ExprTests : ExprTestBase
     {
         [Fact]
         public void SimpleIdentity()
@@ -243,18 +243,18 @@ namespace Bifoql.Tests
         public void SortingAndSpecifyingKey()
         {
             RunTest(
-                expected: new [] { new {a="1"}, new {a="2"}, new{a="3"} }, 
+                expected: new [] { "1", "2", "3" }, 
                 input: new [] { new {a="2"}, new {a="3"}, new{a="1"} }, 
-                query: "sort_by(@, &a)");
+                query: "sort_by(@, &a).a");
         }
 
         [Fact]
         public void SortingAndSpecifyingKey2()
         {
             RunTest(
-                expected: new [] { new {a="1"}, new {a="2"}, new{a="3"} }, 
+                expected: new [] { "1", "2", "3" }, 
                 input: new [] { new {a="2"}, new {a="3"}, new{a="1"} }, 
-                query: "sort_by(@, &(a))");
+                query: "sort_by(@, &(a)).a");
         }
 
         [Fact]
@@ -863,75 +863,6 @@ namespace Bifoql.Tests
                 query: @"{ obj: [{ name: 'Fred', age: 20, shoeSize: 10 }, { name: 'Steve', age: 30, shoeSize: 11 }] } 
                     | { obj |< { age } }"
             );
-        }
-
-        [Fact]
-        public void IndexReferencingContextWithChain()
-        {
-            RunTest(
-                expected: "world",
-                query: "'hello' | $.index(key: @)",
-                input: new { foo="howdy", index = new Greeting() }.ToBifoqlObject());
-        }
-
-        [Fact]
-        public void IndexReferencingContext()
-        {
-            RunTest(
-                expected: "world",
-                query: "'hello' | $(key: @)",
-                input: new Greeting().ToBifoqlObject());
-        }
-
-        private class Greeting : IBifoqlIndexSync
-        {
-            public object Lookup(IIndexArgumentListSync args)
-            {
-                var id = args.TryGetStringParameter("key");
-                if (id == "hello")
-                {
-                    return "world";
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-
-        private static void RunTest(object expected, string query, object input=null, IReadOnlyDictionary<string, object> arguments=null, IReadOnlyDictionary<string, CustomFunction> customFunctions=null)
-        {
-            IBifoqlObject inputObj = input as IBifoqlObject;
-
-            if (inputObj == null)
-            {
-                var asyncObj = input?.ToBifoqlObject();
-                var inputJson = JsonConvert.SerializeObject(input);
-                var jobject = JsonConvert.DeserializeObject<object>(inputJson);
-                var originalJson = JsonConvert.SerializeObject(jobject);
-                inputObj = ObjectConverter.ToAsyncObject(jobject);
-            }
-
-            var result = Query(inputObj, query, arguments, customFunctions).Result;
-
-            var actualJson = JsonConvert.SerializeObject(result);
-
-            var expectedJson = JsonConvert.SerializeObject(JsonConvert.DeserializeObject<object>(JsonConvert.SerializeObject(expected)));
-
-            Assert.Equal(expectedJson, actualJson);
-        }
-
-        private static object ParseObj(string json)
-        {
-            return JsonConvert.DeserializeObject<object>(json);
-        }
-
-        private static async Task<object> Query(object o, string query, IReadOnlyDictionary<string, object> arguments, IReadOnlyDictionary<string, CustomFunction> customFunctions)
-        {
-            var queryObj = Bifoql.Query.Compile(query, customFunctions);
-            var asyncObj = o.ToBifoqlObject();
-
-            return await queryObj.Run(asyncObj, arguments);
         }
     }
 }

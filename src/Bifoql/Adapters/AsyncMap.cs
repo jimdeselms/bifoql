@@ -44,8 +44,7 @@ namespace Bifoql.Adapters
         {
             if (this == other) return true;
             
-            var otherDict
-             = other as IBifoqlMapInternal;
+            var otherDict = other as IBifoqlMapInternal;
             if (otherDict == null) return false;
             if (otherDict.Count != this.Count) return false;
 

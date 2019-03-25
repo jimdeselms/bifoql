@@ -30,7 +30,7 @@ namespace Bifoql.Expressions
 
         private async Task<IBifoqlObject> GetKeyFromObject(IBifoqlObject target, QueryContext context)
         {
-            var lookup = target as IBifoqlMapInternal;
+            var lookup = target as IBifoqlLookupInternal;
             if (lookup != null)
             {
                 Func<Task<IBifoqlObject>> value;

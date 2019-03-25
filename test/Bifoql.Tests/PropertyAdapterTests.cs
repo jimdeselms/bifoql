@@ -16,7 +16,7 @@ namespace Bifoql.Tests
         public void SimpleProperty()
         {
             var tc = new TestClass { String = "Hello" };
-            var obj = PropertyAdapter.Create<TestClass>(tc) as IBifoqlMapInternal;
+            var obj = PropertyAdapter.Create<TestClass>(tc) as IBifoqlLookupInternal;
 
             Assert.Equal("Hello", obj.TryGetValueAsString("String"));
         }
@@ -25,7 +25,7 @@ namespace Bifoql.Tests
         public void AsyncStringProperty()
         {
             var tc = new TestClass { AsyncString = (IBifoqlString)"Hello".ToBifoqlObject() };
-            var obj = PropertyAdapter.Create<TestClass>(tc) as IBifoqlMapInternal;
+            var obj = PropertyAdapter.Create<TestClass>(tc) as IBifoqlLookupInternal;
 
             Assert.Equal("Hello", obj.TryGetValueAsString("AsyncString"));
         }
@@ -236,7 +236,7 @@ namespace Bifoql.Tests
             var tc = new TestClass() { DictOfAsyncObjectTasks = dict };
             var obj = PropertyAdapter.Create<TestClass>(tc);
 
-            IBifoqlMapInternal lookup = (IBifoqlMapInternal)obj.TryGetValue("DictOfAsyncObjectTasks");
+            IBifoqlLookupInternal lookup = (IBifoqlLookupInternal)obj.TryGetValue("DictOfAsyncObjectTasks");
 
             Assert.Equal("ABC", lookup.TryGetValueAsString("a"));
         }
