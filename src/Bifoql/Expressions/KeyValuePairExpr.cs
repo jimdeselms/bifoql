@@ -27,7 +27,7 @@ namespace Bifoql.Expressions
 
        public override string ToString()
        {
-           return $"{Key}: {Value.ToString()}]";
+           return $"{Key}: {Value.ToString()}";
        }
 
         protected override Expr SimplifyChildren(VariableScope variables)
