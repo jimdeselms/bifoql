@@ -1,4 +1,4 @@
-namespace Bifoql.Tests
+namespace Bifoql.CommandLine
 {
     using System;
     using System.Collections;
