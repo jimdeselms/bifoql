@@ -15,7 +15,11 @@ namespace Bifoql
         IReadOnlyDictionary<string, Func<object>> Items { get; }
     }
 
-    public interface IBifoqlLookupSync
+    public interface IBifoqlLookupBase
+    {
+    }
+
+    public interface IBifoqlLookupSync : IBifoqlLookupBase
     {
         bool TryGetValue(string key, out Func<object> result);
     }
@@ -30,7 +34,7 @@ namespace Bifoql
         IReadOnlyDictionary<string, Func<Task<object>>> Items { get; }
     }
 
-    public interface IBifoqlLookup
+    public interface IBifoqlLookup : IBifoqlLookupBase
     {
         bool TryGetValue(string key, out Func<Task<object>> result);
     }

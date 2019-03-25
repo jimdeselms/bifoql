@@ -152,7 +152,7 @@ namespace Bifoql.Extensions
                 dict[key] = () => Task.FromResult(pair.Value.ToBifoqlObject(valueType));
             }
 
-                return toLookup ? (IBifoqlObject)new AsyncLookup(dict) : new AsyncMap(dict);
+            return toLookup ? (IBifoqlObject)new AsyncLookup(dict) : new AsyncMap(dict);
         }
 
         private static IBifoqlObject ConvertDynamicDict(DynamicDict dict, BifoqlType schema)

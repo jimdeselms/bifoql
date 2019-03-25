@@ -9,7 +9,7 @@ using Bifoql.Extensions;
 
 namespace Bifoql.Adapters
 {
-    internal class AsyncPureLookup : AsyncObjectBase, IBifoqlLookupInternal
+    internal class AsyncPureLookup : AsyncObjectBase, IBifoqlLookupInternal, IBifoqlLookup
     {
         private IBifoqlLookup _lookup;
 
@@ -59,9 +59,14 @@ namespace Bifoql.Adapters
                 return false;
             }
         }
+
+        public bool TryGetValue(string key, out Func<Task<object>> result)
+        {
+            return _lookup.TryGetValue(key, out result);
+        }
     }
 
-    internal class SyncPureLookup : AsyncObjectBase, IBifoqlLookupInternal
+    internal class SyncPureLookup : AsyncObjectBase, IBifoqlLookupInternal, IBifoqlLookupSync
     {
         private IBifoqlLookupSync _lookup;
 
@@ -110,6 +115,11 @@ namespace Bifoql.Adapters
                 value = null;
                 return false;
             }
+        }
+
+        public bool TryGetValue(string key, out Func<object> result)
+        {
+            return _lookup.TryGetValue(key, out result);
         }
     }
 
