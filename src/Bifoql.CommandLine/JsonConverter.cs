@@ -31,7 +31,7 @@ namespace Bifoql.CommandLine
                     dict[pair.Key] = () => Task.FromResult(ToAsyncObject(pair.Value, valueSchema));
                 }
 
-                return new AsyncLookup(dict, schema);
+                return new AsyncMap(dict, schema);
             }
 
             var jarr = j as JArray;
