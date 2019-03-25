@@ -196,7 +196,7 @@ namespace Bifoql.Lex
                             break;
                         }
 
-                        if (char.IsLetter(c))
+                        if (char.IsLetter(c) || c == '_')
                         {
                             state = State.InId;
                             curr += c;

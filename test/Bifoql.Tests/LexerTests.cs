@@ -11,6 +11,7 @@ namespace Bifoql.Tests
         [Theory]
         [InlineData("x", "ID/x:1,1,1,2")]
         [InlineData("x123_", "ID/x123_:1,1,1,6")]
+        [InlineData("__foo", "ID/__foo:1,1,1,6")]
         public void Id(string id, string expected) 
         {
             var lexer = new Lexer();
