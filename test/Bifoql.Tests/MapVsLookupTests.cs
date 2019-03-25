@@ -38,15 +38,61 @@ namespace Bifoql.Tests
             fred.Mother = martha;
             fred.Father = george;
 
+            var obj = fred.ToBifoqlObject();
+
             RunTest(
                 expected: "12345",
-                input: fred.ToBifoqlObject(),
+                input: obj,
                 query: "Address.ZipCode");
 
             RunTest(
                 expected: new { Name = "George", Address = new Address { Street = "2 Maple Street", ZipCode = "23456" } },
-                input: fred.ToBifoqlObject(),
+                input: obj,
                 query: "Father | { Name, Address }");
+        }
+
+        [Fact]
+        public void MapThatContainsLookup()
+        {
+            var george = new Person { Name = "George", Address = new Address { Street = "2 Maple Street", ZipCode = "23456" }};
+            var martha = new Person { Name = "Martha", Address = new Address { Street = "2 Maple Street", ZipCode = "23456" }};
+
+            var parents = new {
+                Father = george,
+                Mother = martha,
+                Name = "Steve"
+            };
+
+            RunTest(
+                expected: "George",
+                input: parents.ToBifoqlObject(),
+                query: "Father.Name");
+
+            RunTest(
+                expected: new { Name = "Steve" },
+                input: parents.ToBifoqlObject(),
+                query: "@");
+        }
+
+        [Fact]
+        public void ArrayWithLookup()
+        {
+            var address = new Address { Street = "2 Maple Street", ZipCode = "23456" };
+            var george = new Person { Name = "George", Address = address };
+
+            var obj = (new object[] { address, george }).ToBifoqlObject();
+
+            // We should only get the address, since george is a lookup.
+            RunTest(
+                expected: new object[] { new Address { Street = "2 Maple Street", ZipCode = "23456"}, null},
+                input: obj,
+                query: "@");
+
+            RunTest(
+                expected: "23456",
+                input: obj,
+                query: "@[0].ZipCode"
+            );
         }
 
         private class Person : IBifoqlLookupSync

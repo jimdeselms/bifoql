@@ -12,8 +12,8 @@ namespace Bifoql.Extensions
     {
         internal static Task<object> ToSimpleObject(this IBifoqlObject o)
         {
-            var lookup = o as IBifoqlMapInternal;
-            if (lookup != null) return ToSimpleObject(lookup);
+            var map = o as IBifoqlMapInternal;
+            if (map != null) return ToSimpleObject(map);
 
             var arr = o as IBifoqlArrayInternal;
             if (arr != null) return ToSimpleObject(arr);
@@ -33,6 +33,12 @@ namespace Bifoql.Extensions
             var err = o as IBifoqlError;
             if (err != null) return ToSimpleObject(err);
 
+            // Lookups can only be resolved through a query.
+            // Making this undefined means that lookups will also be
+            // excluded from dictionaries and arrays.
+            var lookup = o as IBifoqlLookupInternal;
+            if (lookup != null) return Task.FromResult<object>(AsyncUndefined.Instance);
+
             return Task.FromResult<object>(null);
         }
 
@@ -44,7 +50,7 @@ namespace Bifoql.Extensions
             {
                 var value = await pair.Value();
 
-                if (value == null || value is IBifoqlUndefined) continue;
+                if (value is IBifoqlUndefined || value is IBifoqlLookupBase) continue;
 
                 values[pair.Key] = await ToSimpleObject(value);
             }
@@ -59,6 +65,17 @@ namespace Bifoql.Extensions
             {
                 var asyncObj = await list[i]();
                 if (asyncObj is IBifoqlUndefined) continue;
+
+                // If you try to resolve a lookup, 
+                // we'll return null instead of hiding it so that we don't
+                // change the size of the array.
+                // This is different from maps, where we just hide lookup entries.
+                // 
+                // We could also make these situations an error.
+                if (asyncObj is IBifoqlLookupBase)
+                {
+                    asyncObj = AsyncNull.Instance;
+                }
 
                 tasks.Add(asyncObj.ToSimpleObject());
             }
