@@ -65,7 +65,7 @@ namespace Bifoql.Tests
                 ["age"] = 49
             };
 
-            RunTest(expected, "zip(['name', 'age'], ['Jim', 49])");
+            RunTest(expected, "zip(['name', 'age'], ['Jim', 49]) | { name, age }");
         }
 
         [Fact]

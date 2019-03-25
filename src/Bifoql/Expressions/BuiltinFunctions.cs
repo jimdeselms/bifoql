@@ -308,7 +308,7 @@ namespace Bifoql.Expressions
                 dict.Add(await key.Value, value);
             }
 
-            return dict.ToBifoqlObject();
+            return dict.ToBifoqlMap();
         }
 
         public static async Task<IBifoqlObject> ToNumber(Location location, QueryContext context, IBifoqlString str)
@@ -369,7 +369,7 @@ namespace Bifoql.Expressions
                 resultDict[key] = valueList[i];
             }
 
-            return new AsyncMap(resultDict);
+            return new AsyncLookup(resultDict);
         }
     }
 }

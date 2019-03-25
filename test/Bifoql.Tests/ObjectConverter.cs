@@ -69,7 +69,7 @@ namespace Bifoql.Tests
                 {
                     dict[pair.Key] = () => pair.Value;
                 }
-                return new AsyncMap(dict);
+                return new AsyncLookup(dict);
             }
 
             if (o is IDictionary<string, Func<IBifoqlObject>>)
@@ -78,7 +78,7 @@ namespace Bifoql.Tests
                 {
                     dict[pair.Key] = () => Task.FromResult(pair.Value());
                 }
-                return new AsyncMap(dict);
+                return new AsyncLookup(dict);
             }
 
             if (o is IDictionary<string, Func<object>>)
@@ -87,7 +87,7 @@ namespace Bifoql.Tests
                 {
                     dict[pair.Key] = () => Task.FromResult(ToAsyncObject(pair.Value()));
                 }
-                return new AsyncMap(dict);
+                return new AsyncLookup(dict);
             }
 
             foreach (DictionaryEntry pair in (IDictionary)o)
@@ -97,7 +97,7 @@ namespace Bifoql.Tests
                 dict[key] = () => Task.FromResult(ToAsyncObject(pair.Value, valueType));
             }
 
-            return new AsyncMap(dict, schema);
+            return new AsyncLookup(dict, schema);
         }
 
         private static IBifoqlObject ConvertDynamicDict(DynamicDict dict, BifoqlType schema)
@@ -110,7 +110,7 @@ namespace Bifoql.Tests
                 map[pair.Key] = () => Task.FromResult(ToAsyncObject(pair.Value, currSchema));
             }
 
-            return new AsyncMap(map, schema);
+            return new AsyncLookup(map, schema);
         }
 
         private static IBifoqlObject ConvertJToken(object j, BifoqlType schema)
@@ -125,7 +125,7 @@ namespace Bifoql.Tests
                     dict[pair.Key] = () => Task.FromResult(ToAsyncObject(pair.Value, valueSchema));
                 }
 
-                return new AsyncMap(dict, schema);
+                return new AsyncLookup(dict, schema);
             }
 
             var jarr = j as JArray;

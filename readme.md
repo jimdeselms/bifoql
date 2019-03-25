@@ -25,25 +25,12 @@ If you use Bifoql in your service, you can allow the client to request the entir
 Then, on the server side, you can build your response in such a way that only the bits of information that are actually requetsed will be returned; it's a win-win for the client and the server.
 
 ### Todo ###
-* Bubble up errors
-    * When evaluating an expression, if you find an error in the arguments, then just return that error.
-    * I think this is done, but I need some testing around it. I'm not sure that it works in every case.
-* Schema validation
-    * Now that we've got the basic idea of schema, we should be able to do validation on the schema... that basically means that I should be able to do a request, and if the response for that request doesn't match the schema, then it's a fail.
-* Schema propagation.
-    * If I have a service with a formally defined schema, but I return a subset of that object, I should get the appropriate schema, not just the inferred one. For example, if I have an array of a type, when I get an element from the array, I should just return the element type, rather than trying to infer it.
-    * If you can propagate down the "real" schema, then you could also build the inferred schema and compare them. THat's how validation would work.
-    * Maybe type inference itself is a bad idea?!
-* Formal index definition
-    * (This is basically satisfied by adding schema definition to indexes; I'm not going to mess with this.)
-    * I should able to return the precise list of known indexes on an object; this can be returned when showing the schema, or when the user tries to call a schema that doesn't exist.
-    * Each filter has:
-        * The set of parameters
-        * The type of each parameter
-* Timeouts, and timeout estimation
-* Fix distinct so that it's not terrible
-    * It's currently O(n^2)
-    * If objects had a "GetHashCode" method, then you could use that to build a hash of the objects.
-    * This means everything should actually implement an async GetHashCode so that I can sort objects and only have to do a deep conversion of objects that have the same hash code.
-* group by
-* sorting by multiple keys
+* Query validaton
+    * If an object has a schema, then we should be able to statically determine if the incoming query is compliant
+    * Need to think about how union types are going to work
+    * My original thinking on schema validation wasn't great; the thinking was that the schema validation would happen on the result, not the request.
+* Enum types
+* Add interfaces to make certain kinds of objects more performant for certain kinds of requests:
+    * Support true enumerable so that if you if you take a slice, you won't have to get the whole thing
+    * "ICountable" meaning that you can just get the count of something
+    * "ISortable" meaning that you can pre-sort the object instead of doing it in a dumb way (you could do the sort through a query for example.)

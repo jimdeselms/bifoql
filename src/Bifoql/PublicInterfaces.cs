@@ -15,6 +15,11 @@ namespace Bifoql
         IReadOnlyDictionary<string, Func<object>> Items { get; }
     }
 
+    public interface IBifoqlLookupSync
+    {
+        bool TryGetValue(string key, out Func<object> result);
+    }
+
     public interface IBifoqlArray
     {
         IReadOnlyList<Func<Task<object>>> Items { get; }
@@ -25,11 +30,19 @@ namespace Bifoql
         IReadOnlyDictionary<string, Func<Task<object>>> Items { get; }
     }
 
+    public interface IBifoqlLookup
+    {
+        bool TryGetValue(string key, out Func<Task<object>> result);
+    }
+
     public interface IBifoqlIndexSync
     {
         object Lookup(IIndexArgumentListSync args);
     }
 
+    /// <summary>
+    /// An object that allows you to pass arguments and get a result back.
+    /// </summary>
     public interface IBifoqlIndex
     {
         Task<object> Lookup(IIndexArgumentList args);
