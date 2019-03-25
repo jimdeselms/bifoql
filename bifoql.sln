@@ -12,6 +12,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bifoql.Tests", "test\Bifoql
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Runner", "test\Runner\Runner.csproj", "{26613096-F309-4330-9A2A-D0F7F87960C5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bifoql.CommandLine", "src\Bifoql.CommandLine\Bifoql.CommandLine.csproj", "{94F36114-ACCD-4673-A166-5D267CE39D2A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,18 @@ Global
 		{26613096-F309-4330-9A2A-D0F7F87960C5}.Release|x64.Build.0 = Release|Any CPU
 		{26613096-F309-4330-9A2A-D0F7F87960C5}.Release|x86.ActiveCfg = Release|Any CPU
 		{26613096-F309-4330-9A2A-D0F7F87960C5}.Release|x86.Build.0 = Release|Any CPU
+		{94F36114-ACCD-4673-A166-5D267CE39D2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94F36114-ACCD-4673-A166-5D267CE39D2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94F36114-ACCD-4673-A166-5D267CE39D2A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{94F36114-ACCD-4673-A166-5D267CE39D2A}.Debug|x64.Build.0 = Debug|Any CPU
+		{94F36114-ACCD-4673-A166-5D267CE39D2A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{94F36114-ACCD-4673-A166-5D267CE39D2A}.Debug|x86.Build.0 = Debug|Any CPU
+		{94F36114-ACCD-4673-A166-5D267CE39D2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94F36114-ACCD-4673-A166-5D267CE39D2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94F36114-ACCD-4673-A166-5D267CE39D2A}.Release|x64.ActiveCfg = Release|Any CPU
+		{94F36114-ACCD-4673-A166-5D267CE39D2A}.Release|x64.Build.0 = Release|Any CPU
+		{94F36114-ACCD-4673-A166-5D267CE39D2A}.Release|x86.ActiveCfg = Release|Any CPU
+		{94F36114-ACCD-4673-A166-5D267CE39D2A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,6 +80,7 @@ Global
 		{DB9BCFB7-FBB5-4644-AFDC-75E42051CAA0} = {8C24E3E9-1B9D-4C96-AE12-15963896B6D1}
 		{C89CB304-005E-48BD-8802-88FD0E786BEC} = {D687FBFA-F4AB-497A-8BD7-184A13DA7204}
 		{26613096-F309-4330-9A2A-D0F7F87960C5} = {D687FBFA-F4AB-497A-8BD7-184A13DA7204}
+		{94F36114-ACCD-4673-A166-5D267CE39D2A} = {8C24E3E9-1B9D-4C96-AE12-15963896B6D1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A282D895-16C9-4207-A90B-E2E297777A5B}
