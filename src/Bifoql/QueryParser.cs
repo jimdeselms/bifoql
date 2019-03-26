@@ -615,7 +615,15 @@ namespace Bifoql
                         Match(tokens, ":", ref i);
                         projection = new KeyValuePairExpr(idLocation, id, ParseExpr(tokens, ref i));
                     }
-                    else if (curr.Kind == "{" || curr.Kind == "|")
+                    else if (curr.Kind == "{")
+                    {
+                        var key = new KeyExpr(idLocation, prev, id);
+
+                        var rhs = ParseMapProjectionExpr(tokens, key, ref i);
+
+                        projection = new KeyValuePairExpr(idLocation, id, rhs);
+                    }
+                    else if (curr.Kind == "|")
                     {
                         // These are all equivalent:
                         // foo: foo | { a, b, c }
