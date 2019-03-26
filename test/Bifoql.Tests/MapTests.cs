@@ -69,5 +69,14 @@ namespace Bifoql.Tests
                 query: "[{x:1, y:2}, {x:2, y:3}] { x }"
             );
         }
+
+        [Fact]
+        public void NestedSimplifiedSyntax()
+        {
+            RunTest(
+                expected: new { a = new { b = new [] { new { c = 1 }, new { c = 2 }}}},
+                query: "{a: {b: [{c: 1}, {c: 2}]}} { a { b { c } } }"
+            );
+        }
     }
 }
