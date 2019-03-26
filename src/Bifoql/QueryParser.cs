@@ -296,7 +296,7 @@ namespace Bifoql
             var expr = ParseFunctionCallExpr(tokens, ref i);
 
             var peek = GetToken(tokens, i);
-            if (peek.Kind == "." || peek.Kind == "[" || peek.Kind == "(")
+            if (peek.Kind == "." || peek.Kind == "[" || peek.Kind == "(" || peek.Kind == "{")
             {
                 return ParseChainRemainder(tokens, expr, ref i);
             }
@@ -325,9 +325,13 @@ namespace Bifoql
                 // should at least work the same as the other chain expressions.
                 first = ParseIndexedLookup(tokens, prev, ref i);
             }
+            else if (token.Kind == "{")
+            {
+                first = ParseMapProjectionExpr(tokens, prev, ref i);
+            }
 
             var nextToken = GetToken(tokens, i);
-            if (nextToken.Kind == "." || nextToken.Kind == "[" || nextToken.Kind == "(")
+            if (nextToken.Kind == "." || nextToken.Kind == "[" || nextToken.Kind == "(" || nextToken.Kind == "{")
             {
                 return ParseChainRemainder(tokens, first, ref i);
             }
@@ -642,7 +646,7 @@ namespace Bifoql
                     }
                     else
                     {
-                        projection = new KeyValuePairExpr(idLocation, id, new KeyExpr(idLocation, prev, id));
+                        projection = new KeyValuePairExpr(idLocation, id, new KeyExpr(idLocation, null, id));
                     }
                 }
 
@@ -656,7 +660,7 @@ namespace Bifoql
                 }
             }
 
-            return new MapProjectionExpr(GetLocation(bracket), projections);
+            return new MapProjectionExpr(GetLocation(bracket), prev, projections);
         }
 
         private static Expr ParseLiteralStringExpr(IReadOnlyList<Token> tokens, ref int i)

@@ -10,19 +10,55 @@ namespace Bifoql.Expressions
 
     internal class MapProjectionExpr : Expr
     {
+        private readonly Expr _target;
         private readonly IReadOnlyList<Expr> _projections;
 
-        public MapProjectionExpr(Location location, IEnumerable<Expr> projections) : base(location)
+        public MapProjectionExpr(Location location, Expr target, IEnumerable<Expr> projections) : base(location)
         {
+            _target = target;
             _projections = projections.ToList();
         }
 
         protected override Expr SimplifyChildren(VariableScope variables)
         {
-            return new MapProjectionExpr(Location, _projections.Select(p => p.Simplify(variables)));
+            return new MapProjectionExpr(
+                Location,
+                _target?.Simplify(variables),
+                _projections.Select(p => p.Simplify(variables)));
         }
 
         protected override async Task<IBifoqlObject> DoApply(QueryContext context)
+        {
+            var target = _target == null
+                ? context
+                : context.ReplaceTarget(await _target.Apply(context));
+
+            // If this is the first expression in a chain, then we will not
+            // apply the map to every element of the array.
+            // In other words:
+            // [1, 2] | { x: @[0] + @[1] } => { x: 3 }
+            //
+            // But if we're applying the projection directly to a target,
+            // then we do want to apply the map to every element:
+            // [ { x:1, y: 2}, { x: 5, y: 10 }] { x } => [ {x:1}, {x:5}]
+            if (_target != null && target.QueryTarget is IBifoqlArrayInternal)
+            {
+                var result = new List<Func<Task<IBifoqlObject>>>();
+                foreach (var entry in ((IBifoqlArrayInternal)target.QueryTarget))
+                {
+                    var entryContext = target.ReplaceTarget(await entry());
+                    result.Add(() => ApplyToDict(entryContext));
+                }
+
+                return new AsyncArray(result);
+            }
+            else
+            {
+                return await ApplyToDict(target);
+            }
+        }
+
+        protected async Task<IBifoqlObject> ApplyToDict(QueryContext context)
         {
             try
             {
@@ -45,7 +81,6 @@ namespace Bifoql.Expressions
                 return new AsyncError(this.Location, ex.Message);
             }
         }
-
 
         private async Task Apply(QueryContext context, Dictionary<string, Func<Task<IBifoqlObject>>> dict)
         {

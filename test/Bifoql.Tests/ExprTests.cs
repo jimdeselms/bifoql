@@ -294,15 +294,6 @@ namespace Bifoql.Tests
         }
 
         [Fact]
-        public void MapProjection()
-        {
-            RunTest(
-                expected: new { greeting = "hello", name = "world" }, 
-                input: new [] { "hello", "world" },
-                query: "{greeting: @[0], name: @[1]}");
-        }
-
-        [Fact]
         public void NumberExpr()
         {
             RunTest(
@@ -840,29 +831,6 @@ namespace Bifoql.Tests
             };
 
             RunTest(expected: 6, query: "add3(1, 2, 3)", customFunctions: functions);
-        }
-
-        [Fact]
-        public void MapProjectionShorthand()
-        {
-            RunTest(
-                expected: new { obj = new { age = 20 }},
-                query: "{ obj: { name: 'Fred', age: 20, shoeSize: 10 } } | { obj { age } }"
-            );
-            RunTest(
-                expected: new { obj = new { age = 20 }},
-                query: "{ obj: { name: 'Fred', age: 20, shoeSize: 10 } } | { obj | { age } }"
-            );
-        }
-
-        [Fact]
-        public void MapProjectionArrayShorthand()
-        {
-            RunTest(
-                expected: new { obj = new [] { new { age = 20 }, new { age = 30 }}},
-                query: @"{ obj: [{ name: 'Fred', age: 20, shoeSize: 10 }, { name: 'Steve', age: 30, shoeSize: 11 }] } 
-                    | { obj |< { age } }"
-            );
         }
     }
 }
