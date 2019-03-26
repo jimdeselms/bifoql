@@ -6,22 +6,29 @@ namespace Bifoql.Expressions
     using Bifoql.Adapters;
     using System;
 
+    internal enum ChainBehavior
+    {
+        OneToOne,
+        ToMultiple,
+        ToMultipleIfArray
+    }
+
     internal class ChainExpr : Expr
     {
         private readonly Expr _first;
         private readonly Expr _next;
-        private readonly bool _toMultiple;
+        private readonly ChainBehavior _chainBehavior;
 
-        public ChainExpr(Expr first, Expr next, bool toMultiple) : base(first.Location)
+        public ChainExpr(Expr first, Expr next, ChainBehavior chainBehavior) : base(first.Location)
         {
             _first = first;
             _next = next;
-            _toMultiple = toMultiple;
+            _chainBehavior = chainBehavior;
         }
 
         protected override Expr SimplifyChildren(VariableScope variables)
         {
-            return new ChainExpr(_first?.Simplify(variables), _next?.Simplify(variables), _toMultiple);
+            return new ChainExpr(_first?.Simplify(variables), _next?.Simplify(variables), _chainBehavior);
         }
 
         protected override async Task<IBifoqlObject> DoApply(QueryContext context)
@@ -34,9 +41,9 @@ namespace Bifoql.Expressions
                 return DeferredQueryWrapper.AddToQuery(deferred, RightHandSideString());
             }
 
-            if (_toMultiple)
+            var array = result as IBifoqlArrayInternal;
+            if (_chainBehavior == ChainBehavior.ToMultiple || (array != null && _chainBehavior == ChainBehavior.ToMultipleIfArray))
             {
-                var array = result as IBifoqlArrayInternal;
                 if (array == null) return new AsyncError(this.Location, "pipe to multiple only works on an array");
 
                 var resultList = new List<Func<Task<IBifoqlObject>>>();
@@ -79,7 +86,9 @@ namespace Bifoql.Expressions
                 }
                 else
                 {
-                    var pipe = _toMultiple ? " |< " : " | ";
+                    var pipe = _chainBehavior == ChainBehavior.ToMultiple ? " |< "
+                        : _chainBehavior == ChainBehavior.OneToOne ? " | "
+                        : " ";
 
                     result += pipe + _next.ToString();
                 }

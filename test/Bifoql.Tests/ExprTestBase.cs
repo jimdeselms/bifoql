@@ -2,27 +2,42 @@ using System;
 using Xunit;
 using Bifoql;
 using Bifoql.Extensions;
-using Bifoql.Tests.Extensions;
+using Bifoql.Tests.Helpers;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Bifoql.Tests
 {
     public class ExprTestBase
     {
+        protected static async Task RunTestAsync(object expected, string query, object input=null, IReadOnlyDictionary<string, object> arguments=null, IReadOnlyDictionary<string, CustomFunction> customFunctions=null)
+        {
+            if (input is JToken)
+            {
+                input = Helpers.ObjectConverter.ToBifoqlObject(input);
+            }
+            
+            IBifoqlObject inputObj = input?.ToBifoqlObject();
+
+            var result = await Query(inputObj, query, arguments, customFunctions);
+
+            var actualJson = JsonConvert.SerializeObject(result);
+
+            var expectedJson = JsonConvert.SerializeObject(JsonConvert.DeserializeObject<object>(JsonConvert.SerializeObject(expected)));
+
+            Assert.Equal(expectedJson, actualJson);
+        }
+
         protected static void RunTest(object expected, string query, object input=null, IReadOnlyDictionary<string, object> arguments=null, IReadOnlyDictionary<string, CustomFunction> customFunctions=null)
         {
-            IBifoqlObject inputObj = input as IBifoqlObject;
-
-            if (inputObj == null)
+            if (input is JToken)
             {
-                var asyncObj = input?.ToBifoqlObject();
-                var inputJson = JsonConvert.SerializeObject(input);
-                var jobject = JsonConvert.DeserializeObject<object>(inputJson);
-                var originalJson = JsonConvert.SerializeObject(jobject);
-                inputObj = ObjectConverter.ToAsyncObject(jobject);
+                input = Helpers.ObjectConverter.ToBifoqlObject(input);
             }
+            
+            IBifoqlObject inputObj = input?.ToBifoqlObject();
 
             var result = Query(inputObj, query, arguments, customFunctions).Result;
 

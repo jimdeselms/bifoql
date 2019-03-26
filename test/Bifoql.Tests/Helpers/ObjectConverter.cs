@@ -1,4 +1,4 @@
-namespace Bifoql.Tests
+namespace Bifoql.Tests.Helpers
 {
     using System;
     using System.Collections;
@@ -6,11 +6,12 @@ namespace Bifoql.Tests
     using System.Threading.Tasks;
     using Bifoql.Adapters;
     using Bifoql.Types;
+    using Bifoql.Extensions;
     using Newtonsoft.Json.Linq;
 
     public static class ObjectConverter
     {
-        internal static IBifoqlObject ToAsyncObject(object o, BifoqlType schema=null)
+        internal static IBifoqlObject ToBifoqlObject(object o, BifoqlType schema=null)
         {
             if (o == null) return AsyncNull.Instance;
 
@@ -28,7 +29,7 @@ namespace Bifoql.Tests
                 foreach (var pair in jobj)
                 {
                     var valueSchema = schema?.GetKeyType(pair.Key);
-                    dict[pair.Key] = () => Task.FromResult(ToAsyncObject(pair.Value, valueSchema));
+                    dict[pair.Key] = () => Task.FromResult(ToBifoqlObject(pair.Value, valueSchema));
                 }
 
                 return new AsyncMap(dict, schema);
@@ -43,7 +44,7 @@ namespace Bifoql.Tests
                 foreach (var el in jarr)
                 {
                     var elementType = schema?.GetElementType(i++);
-                    arr.Add(() => Task.FromResult(ToAsyncObject(el, elementType)));
+                    arr.Add(() => Task.FromResult(ToBifoqlObject(el, elementType)));
                 }
 
                 return new AsyncArray(arr, schema);

@@ -50,7 +50,9 @@ namespace Bifoql.Adapters
             Func<Task<object>> result;
             if (_lookup.TryGetValue(key, out result))
             {
-                value = () => result().ContinueWith(r => r.ToBifoqlObject());
+                Task<object> resultTask = result();
+                var toBifoql = resultTask.ContinueWith(o => o.Result.ToBifoqlObject());
+                value = () => toBifoql;
                 return true;
             }
             else
