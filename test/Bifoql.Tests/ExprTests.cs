@@ -2,7 +2,7 @@ using System;
 using Xunit;
 using Bifoql;
 using Bifoql.Extensions;
-using Bifoql.Tests.Extensions;
+using Bifoql.Tests.Helpers;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Newtonsoft.Json;
@@ -203,13 +203,6 @@ namespace Bifoql.Tests
         public void ToNumber()
         {
             RunTest(3.14, query: "to_number('3.14')");
-        }
-
-        [Fact]
-        public void ToMap()
-        {
-            RunTest(expected: ParseObj("{afoo: 'ax', bfoo: 'bx'}"), query: "to_map(['a', 'b'], &(@ + 'foo'), &(@ + 'x'))");
-            RunTest(expected: "<error: (1, 13) argument arg2: expected IBifoqlExpression, got AsyncString instead.>", query: "to_map([1], 'a', 'b')");
         }
 
         [Fact]

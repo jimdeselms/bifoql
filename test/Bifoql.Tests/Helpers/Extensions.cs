@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 
-namespace Bifoql.Tests.Extensions
+namespace Bifoql.Tests.Helpers
 {
-    internal static class Helpers
+    internal static class Extensions
     {
         public static string TryGetString(this IBifoqlObject o)
         {

@@ -1,7 +1,7 @@
 using System;
 using Xunit;
 using Bifoql;
-using Bifoql.Tests.Extensions;
+using Bifoql.Tests.Helpers;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Newtonsoft.Json;

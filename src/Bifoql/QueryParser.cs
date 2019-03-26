@@ -100,14 +100,14 @@ namespace Bifoql
                 Match(tokens, "|", ref i);
 
                 var next = ParsePipe(tokens, i: ref i);
-                return new ChainExpr(expr, next, toMultiple: false);
+                return new ChainExpr(expr, next, ChainBehavior.OneToOne);
             }
             else if (token.Kind == "|<")
             {
                 Match(tokens, "|<", ref i);
 
                 var next = ParsePipe(tokens, i: ref i);
-                return new ChainExpr(expr, next, toMultiple: true);
+                return new ChainExpr(expr, next, ChainBehavior.ToMultiple);
             }
             else
             {
@@ -617,9 +617,16 @@ namespace Bifoql
                     }
                     else if (curr.Kind == "{")
                     {
-                        var key = new KeyExpr(idLocation, prev, id);
+                        // These are all equivalent:
+                        // foo: foo | { a, b, c }
+                        // foo | { a, b, c }
+                        // foo { a, b, c }
+                        MatchOptional(tokens, "|", ref i);
 
-                        var rhs = ParseMapProjectionExpr(tokens, key, ref i);
+                        var rhs = new ChainExpr(
+                            new KeyExpr(idLocation, prev, id),
+                            ParseExpr(tokens, ref i),
+                            ChainBehavior.ToMultipleIfArray);
 
                         projection = new KeyValuePairExpr(idLocation, id, rhs);
                     }
@@ -634,7 +641,7 @@ namespace Bifoql
                         var rhs = new ChainExpr(
                             new KeyExpr(idLocation, prev, id),
                             ParseExpr(tokens, ref i),
-                            toMultiple: false);
+                            ChainBehavior.OneToOne);
 
                         projection = new KeyValuePairExpr(idLocation, id, rhs);
                     }
@@ -648,7 +655,7 @@ namespace Bifoql
                         var rhs = new ChainExpr(
                             new KeyExpr(idLocation, prev, id),
                             ParseExpr(tokens, ref i),
-                            toMultiple: true);
+                            ChainBehavior.ToMultiple);
 
                         projection = new KeyValuePairExpr(idLocation, id, rhs);
                     }
@@ -657,7 +664,6 @@ namespace Bifoql
                         projection = new KeyValuePairExpr(idLocation, id, new KeyExpr(idLocation, null, id));
                     }
                 }
-
                 
                 projections.Add(projection);
 
