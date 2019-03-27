@@ -165,6 +165,12 @@ namespace Bifoql.Tests
                 input: lookup,
                 query: "@ | { a { b { c } } }"
             );
+
+            RunTest(
+                expected: ParseObj("{b: [{c: 1}, {c: 2}]}"),
+                input: lookup,
+                query: "a { b { c } }"
+            );
         }
 
         [Fact]
@@ -185,6 +191,27 @@ namespace Bifoql.Tests
         {
             RunTest(expected: ParseObj("{afoo: 'ax', bfoo: 'bx'}"), query: "to_map(['a', 'b'], &(@ + 'foo'), &(@ + 'x'))");
             RunTest(expected: "<error: (1, 13) argument arg2: expected IBifoqlExpression, got AsyncString instead.>", query: "to_map([1], 'a', 'b')");
+        }
+
+        [Fact]
+        public void NestedMapAndArray()
+        {
+            var obj = ParseObj("{ family: { children: [ { name: 'fred' }, { name: 'george' }] }}");
+
+            RunTest(
+                input: obj,
+                query: "family { children  { name }}",
+                expected: ParseObj("{children: [ { name: 'fred'}, { name: 'george'}]}"));
+
+            RunTest(
+                input: obj,
+                query: "{ family { children  { name }}}",
+                expected: ParseObj("{family: {children: [ { name: 'fred'}, { name: 'george'}]}}"));
+
+            RunTest(
+                input: obj,
+                query: "family.children { name }",
+                expected: ParseObj("[{name: 'fred'}, {name: 'george'}]"));
         }
     }
 }
