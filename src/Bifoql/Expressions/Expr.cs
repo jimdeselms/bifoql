@@ -18,7 +18,7 @@ namespace Bifoql.Expressions
 
         public virtual async Task<IBifoqlObject> Apply(QueryContext context, bool resolveDeferred=true)
         {
-            if (context.QueryTarget is ErrorExpr)
+            if (context.QueryTarget is IBifoqlError)
             {
                 return context.QueryTarget;
             }

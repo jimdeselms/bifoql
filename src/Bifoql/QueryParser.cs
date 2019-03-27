@@ -454,7 +454,6 @@ namespace Bifoql
                 case "eval": return new TypedFunctionCallExpr<IBifoqlExpression>(location, "eval", arguments, BuiltinFunctions.Eval);
                 case "flatten": return new TypedFunctionCallExpr<IBifoqlArrayInternal>(location, "flatten", arguments, BuiltinFunctions.Flatten);
                 case "floor": return new TypedFunctionCallExpr<IBifoqlNumber>(location, "floor", arguments, BuiltinFunctions.Floor);
-                case "if_error": return new IfErrorExpr(location, arguments);
                 case "join": return new TypedFunctionCallExpr<IBifoqlString, IBifoqlArrayInternal>(location, "join", arguments, BuiltinFunctions.Join);
                 case "keys": return new TypedFunctionCallExpr<IBifoqlMapInternal>(location, "keys", arguments, BuiltinFunctions.Keys);
                 case "length": return new TypedFunctionCallExpr<IBifoqlObject>(location, "length", arguments, BuiltinFunctions.Length);

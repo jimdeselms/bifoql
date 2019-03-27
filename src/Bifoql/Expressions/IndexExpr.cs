@@ -25,6 +25,9 @@ namespace Bifoql.Expressions
                 ? context.QueryTarget
                 : await _target.Apply(context, resolveDeferred: false);
 
+            // Propagate errors
+            if (target is IBifoqlError) return target;
+
             var index = await _index.Apply(context);
 
             var lookup = target as IBifoqlMapInternal;

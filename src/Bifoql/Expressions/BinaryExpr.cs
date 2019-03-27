@@ -25,26 +25,27 @@ namespace Bifoql.Expressions
 
         protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
-            var leftHandValue = await LeftHandSide.Apply(context);
+            var lhs = await LeftHandSide.Apply(context);
 
             if (Operator == "??")
             {
-                if (leftHandValue == null || leftHandValue is IBifoqlNull || leftHandValue is IBifoqlError || leftHandValue is IBifoqlUndefined)
+                if (lhs == null || lhs is IBifoqlNull || lhs is IBifoqlError || lhs is IBifoqlUndefined)
                 {
                     return await RightHandSide.Apply(context);
                 }
                 else
                 {
-                    return leftHandValue;
+                    return lhs;
                 }
             }
 
-            if (leftHandValue is IBifoqlError) return leftHandValue;
+            // Propagate error
+            if (lhs is IBifoqlError) return lhs;
             
             // Special case. If it's && or ||, then we might not have to evaluate the right hand side.
             if (Operator == "&&" || Operator == "||")
             {
-                var lhsBool = leftHandValue as IBifoqlBoolean;
+                var lhsBool = lhs as IBifoqlBoolean;
                 if (lhsBool == null) return new AsyncError(this.Location, "Can't evaluate boolean operator on non-boolean value");
 
                 var val = await lhsBool.Value;
@@ -71,8 +72,10 @@ namespace Bifoql.Expressions
             // Another special case; if we have "==" and they are both literally the same object, then it's true.
             if (Operator == "==" && LeftHandSide == RightHandSide) return new AsyncBoolean(true);
 
-            var lhs = await LeftHandSide.Apply(context);
             var rhs = await RightHandSide.Apply(context);
+            
+            // Propagate error
+            if (rhs is IBifoqlError) return rhs;
 
             switch (Operator)
             {

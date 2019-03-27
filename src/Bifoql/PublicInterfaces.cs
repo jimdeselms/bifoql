@@ -41,7 +41,7 @@ namespace Bifoql
 
     public interface IBifoqlIndexSync
     {
-        object Lookup(IIndexArgumentListSync args);
+        object Lookup(IIndexArgumentList args);
     }
 
     /// <summary>
