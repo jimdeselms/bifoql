@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Bifoql
 {
-    public interface IIndexArgumentListSync
+    public interface IIndexArgumentList
     {
         double? TryGetNumberParameter(string key);
         string TryGetStringParameter(string key);
@@ -17,34 +17,42 @@ namespace Bifoql
         string[] TryGetStringArrayParameter(string key);
     }
 
-    public interface IIndexArgumentList
+    public class IndexArgumentList : IIndexArgumentList
     {
-        Task<double?> TryGetNumberParameter(string key);
-        Task<string> TryGetStringParameter(string key);
-        Task<bool?> TryGetBooleanParameter(string key);
-        Task<double[]> TryGetNumberArrayParameter(string key);
-        Task<string[]> TryGetStringArrayParameter(string key);
-    }
+        private readonly IReadOnlyDictionary<string, object> _entries;
+        internal IBifoqlError ErrorResult { get; }
 
-    public class IndexArgumentList : IIndexArgumentListSync, IIndexArgumentList
-    {
-        private readonly IReadOnlyDictionary<string, Expr> _entries;
-        private readonly QueryContext _context;
+        internal static async Task<IndexArgumentList> Create(IReadOnlyDictionary<string, Expr> entries, QueryContext context)
+        {
+            var values = new Dictionary<string, object>();
 
-        internal IndexArgumentList(IReadOnlyDictionary<string, Expr> entries, QueryContext context)
+            foreach (var pair in entries)
+            {
+                var value = await pair.Value.Apply(context);
+                if (value is IBifoqlError)
+                {
+                    // This mechanism is a little clunky; this list is kind of a union type where the value is either an error or
+                    // a list. Not gonna overthink it for now.
+                    return new IndexArgumentList(null, (IBifoqlError)value);
+                }
+                values[pair.Key] = await value.ToSimpleObject();
+            }
+
+            return new IndexArgumentList(values, null);
+        }
+
+        private IndexArgumentList(IReadOnlyDictionary<string, object> entries, IBifoqlError errorResult)
         {
             _entries = entries;
-            _context = context;
+            ErrorResult = errorResult;
         }
 
-        public async Task<double?> TryGetNumberParameter(string key)
+        public double? TryGetNumberParameter(string key)
         {
-            Expr entry;
+            object entry;
             if (_entries.TryGetValue(key, out entry))
             {
-                var asyncObj = await entry.Apply(_context);
-                var value = await asyncObj.ToSimpleObject();
-                return Convert.ToDouble(value);
+                return Convert.ToDouble(entry);
             }
             else
             {
@@ -52,14 +60,12 @@ namespace Bifoql
             }
         }
 
-        public async Task<string> TryGetStringParameter(string key)
+        public string TryGetStringParameter(string key)
         {
-            Expr entry;
+            object entry;
             if (_entries.TryGetValue(key, out entry))
             {
-                var asyncObj = await entry.Apply(_context);
-                var value = await asyncObj.ToSimpleObject();
-                return (string)value;
+                return (string)entry;
             }
             else
             {
@@ -67,14 +73,12 @@ namespace Bifoql
             }
         }
 
-        public async Task<bool?> TryGetBooleanParameter(string key)
+        public bool? TryGetBooleanParameter(string key)
         {
-            Expr entry;
+            object entry;
             if (_entries.TryGetValue(key, out entry))
             {
-                var asyncObj = await entry.Apply(_context);
-                var value = await asyncObj.ToSimpleObject();
-                return (bool)value;
+                return Convert.ToBoolean(entry);
             }
             else
             {
@@ -82,50 +86,12 @@ namespace Bifoql
             }
         }
 
-        public async Task<double[]> TryGetNumberArrayParameter(string key)
+        public double[] TryGetNumberArrayParameter(string key)
         {
-            var param = await TryGetParameter(key) as IBifoqlArrayInternal;
-            if (param == null)
-            {
-                return null;
-            }
-
-            var result = new List<double>();
-            foreach (var obj in param)
-            {
-                var val = await (await obj()).ToSimpleObject();
-                result.Add(Convert.ToDouble(val));
-            }
-
-            return result.ToArray();
-        }
-
-        public async Task<string[]> TryGetStringArrayParameter(string key)
-        {
-            var param = await TryGetParameter(key) as IBifoqlArrayInternal;
-            if (param == null)
-            {
-                return null;
-            }
-
-            var result = new List<string>();
-            foreach (var obj in param)
-            {
-                var val = await (await obj()).ToSimpleObject();
-                if (!(val is string)) return null;
-                result.Add((string)val);
-            }
-
-            return result.ToArray();
-        }
-
-        private async Task<IBifoqlObject> TryGetParameter(string key)
-        {
-            Expr entry;
+            object entry;
             if (_entries.TryGetValue(key, out entry))
             {
-                var asyncObj = await entry.Apply(_context);
-                return asyncObj;
+                return (double[])entry;
             }
             else
             {
@@ -133,30 +99,17 @@ namespace Bifoql
             }
         }
 
-        // Note that the synchronous interface will block the current thread.
-        double? IIndexArgumentListSync.TryGetNumberParameter(string key)
+        public string[] TryGetStringArrayParameter(string key)
         {
-            return TryGetNumberParameter(key).Result;
-        }
-
-        string IIndexArgumentListSync.TryGetStringParameter(string key)
-        {
-            return TryGetStringParameter(key).Result;
-        }
-
-        bool? IIndexArgumentListSync.TryGetBooleanParameter(string key)
-        {
-            return TryGetBooleanParameter(key).Result;
-        }
-
-        double[] IIndexArgumentListSync.TryGetNumberArrayParameter(string key)
-        {
-            return TryGetNumberArrayParameter(key).Result;
-        }
-
-        string[] IIndexArgumentListSync.TryGetStringArrayParameter(string key)
-        {
-            return TryGetStringArrayParameter(key).Result;
+            object entry;
+            if (_entries.TryGetValue(key, out entry))
+            {
+                return (string[])entry;
+            }
+            else
+            {
+                return null;
+            }
         }
     } 
 }

@@ -26,6 +26,10 @@ namespace Bifoql.Expressions
         protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
             var condition = await _condition.Apply(context);
+
+            // Propagate error
+            if (condition is IBifoqlError) return condition;
+
             var boolExpr = condition as IBifoqlBoolean;
             if (boolExpr == null) return new AsyncError(this.Location, "Ternary expression must have boolean condition");
 

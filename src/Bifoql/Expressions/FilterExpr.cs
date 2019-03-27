@@ -30,6 +30,9 @@ namespace Bifoql.Expressions
                 ? context.QueryTarget
                 : await Target.Apply(context, resolveDeferred: false);
 
+            // Propagate errors.
+            if (target is IBifoqlError) return target;
+
             var deferred = target as IBifoqlDeferredQueryInternal;
             if (deferred != null)
             {   

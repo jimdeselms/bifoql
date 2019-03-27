@@ -30,6 +30,9 @@ namespace Bifoql.Expressions
 
         private async Task<IBifoqlObject> GetKeyFromObject(IBifoqlObject target, QueryContext context)
         {
+            // Propagate errors.
+            if (target is IBifoqlError) return target;
+
             var lookup = target as IBifoqlLookupInternal;
             if (lookup != null)
             {

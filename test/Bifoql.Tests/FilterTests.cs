@@ -36,7 +36,7 @@ namespace Bifoql.Tests
                     all.Add(new Dictionary<string, object> { ["name"] = currName, ["length"] = (double)currName.Length});
                 }
 
-                var name = await filter.TryGetStringParameter("name");
+                var name = filter.TryGetStringParameter("name");
                 if (name != null)
                 {
                     return all.Where(e => (string)e["name"] == name);
@@ -56,7 +56,7 @@ namespace Bifoql.Tests
                 _names = new HashSet<string>(names);
             }
 
-            public object Lookup(IIndexArgumentListSync filter)
+            public object Lookup(IIndexArgumentList filter)
             {
                 var all = new List<Dictionary<string, object>>();
                 foreach (var currName in _names)

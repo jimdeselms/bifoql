@@ -31,7 +31,7 @@ namespace Bifoql.Tests
         
         protected class Greeting : IBifoqlIndexSync
         {
-            public object Lookup(IIndexArgumentListSync args)
+            public object Lookup(IIndexArgumentList args)
             {
                 var id = args.TryGetStringParameter("key");
                 if (id == "hello")

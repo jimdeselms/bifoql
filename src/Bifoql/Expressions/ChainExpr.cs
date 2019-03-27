@@ -35,6 +35,9 @@ namespace Bifoql.Expressions
         {
             var result = await _first.Apply(context, resolveDeferred: false);
 
+            // Propagate errors.
+            if (result is IBifoqlError) return result;
+
             var deferred = result as IBifoqlDeferredQueryInternal;
             if (deferred != null)
             {

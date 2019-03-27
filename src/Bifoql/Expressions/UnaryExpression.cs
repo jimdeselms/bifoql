@@ -24,6 +24,10 @@ namespace Bifoql.Expressions
         protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
             var value = await _innerExpression.Apply(context);
+
+            // Propagate error.
+            if (value is IBifoqlError) return value;
+            
             if (_operator == "-")
             {
                 var num = value as IBifoqlNumber;

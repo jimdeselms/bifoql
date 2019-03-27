@@ -30,15 +30,6 @@ namespace Bifoql.Tests
         }
 
         [Fact]
-        public void SimpleObjectButNotIdentity()
-        {
-            RunTest(
-                expected: "<error: (1, 1) key expression must be applied to array or map>", 
-                input: 5, 
-                query: "notIdentity");
-        }
-
-        [Fact]
         public void GetNthItemInArray()
         {
             RunTest(
@@ -475,12 +466,6 @@ namespace Bifoql.Tests
         }
 
         [Fact]
-        public void DivByZero()
-        {
-            RunTest(expected: "<error: (1, 1) division by zero>", query: "5 / 0");
-        }
-
-        [Fact]
         public void StringAndArrayConcatenation()
         {
             RunTest(expected: "Hello world", query: "'Hello' + ' world'");
@@ -624,15 +609,6 @@ namespace Bifoql.Tests
         }
 
         [Fact]
-        public void ErrorFunction()
-        {
-            RunTest(
-                expected: "<error: (1, 1) test>",
-                query: "error('test')"
-            );
-        }
-
-        [Fact]
         public void EvalTestWithExprInVariable()
         {
             RunTest(
@@ -647,36 +623,6 @@ namespace Bifoql.Tests
             RunTest(
                 expected: 10,
                 query: "5 | eval(&(@ * 2))"
-            );
-        }
-
-        [Fact]
-        public void ErrorFunctionNotString()
-        {
-            // TODO: We want to serialize the object here, but I don't want to depend on Newtonsoft.
-            RunTest(
-                expected: "<error: (1, 1) System.Object[]>",
-//                expected: "<error: (1, 1) [1,2]>",
-                query: "error([1, 2])"
-            );
-        }
-
-        [Fact]
-        public void MatchError()
-        {
-            RunTest(
-                expected: "<error: (1, 6) expected one of ID, STRING>",
-                query: " @ . 7"
-            );
-        }
-
-        [Fact]
-        public void MatchEndOfFile()
-        {
-            // This should really give the line/column, but apparently flexilex's eof doesnt have that.
-            RunTest(
-                expected: "<error: (1, 5) expected one of ID, STRING>",
-                query: " @ ."
             );
         }
 
@@ -696,12 +642,6 @@ namespace Bifoql.Tests
         public void NullCoalesceWhenNotNull()
         {
             RunTest(expected: 5, query: "[5][0] ?? 6");
-        }
-
-        [Fact]
-        public void NullCoalesceWhenError()
-        {
-            RunTest(expected: 6, query: "{a: 1}.b ?? 6");
         }
 
         [Fact]
@@ -748,7 +688,7 @@ namespace Bifoql.Tests
         [Fact]
         public void IfError()
         {
-            RunTest(expected: 5, query: "if_error(error('x'), 5)");
+            RunTest(expected: 5, query: "error('x') ?? 5");
         }
 
         [Fact]
