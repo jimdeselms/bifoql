@@ -187,6 +187,54 @@ namespace Bifoql.Tests
         }
 
         [Fact]
+        public void PropertyWithFilter()
+        {
+            RunTest(
+                expected: ParseObj("{ people: [{name: 'fred'}] }"),
+                query: "{people: [{name: 'fred'}, {name: 'steve'}]} | { people: people[? name == 'fred'] }"
+            );
+
+            RunTest(
+                expected: ParseObj("{ people: ['fred'] }"),
+                query: "{people: [{name: 'fred'}, {name: 'steve'}]} | { people: people[? name == 'fred'].name }"
+            );
+
+            RunTest(
+                expected: ParseObj("{ people: [{name: 'fred'}] }"),
+                query: "{people: [{name: 'fred'}, {name: 'steve'}]} | { people[? name == 'fred'] }"
+            );
+
+            RunTest(
+                expected: ParseObj("{ people: ['fred'] }"),
+                query: "{people: [{name: 'fred'}, {name: 'steve'}]} | { people[? name == 'fred'].name }"
+            );
+        }
+
+        [Fact]
+        public void PropertyWithIndexOrSlice()
+        {
+            RunTest(
+                expected: ParseObj("{ nums: 1 }"),
+                query: "{nums: [1, 2, 3, 4]} | { nums: nums[0] }"
+            );
+
+            RunTest(
+                expected: ParseObj("{ nums: [2, 3] }"),
+                query: "{nums: [1, 2, 3, 4]} | { nums: nums[1..-1] }"
+            );
+
+            RunTest(
+                expected: ParseObj("{ nums: 1 }"),
+                query: "{nums: [1, 2, 3, 4]} | { nums[0] }"
+            );
+
+            RunTest(
+                expected: ParseObj("{ nums: [2, 3] }"),
+                query: "{nums: [1, 2, 3, 4]} | { nums[1..-1] }"
+            );
+        }
+
+        [Fact]
         public void ToMap()
         {
             RunTest(expected: ParseObj("{afoo: 'ax', bfoo: 'bx'}"), query: "to_map(['a', 'b'], &(@ + 'foo'), &(@ + 'x'))");

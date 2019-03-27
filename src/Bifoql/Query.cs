@@ -19,8 +19,7 @@ namespace Bifoql
 
         public static Query Compile(string query, IReadOnlyDictionary<string, CustomFunction> customFunctions=null)
         {
-            var parser = new QueryParser(customFunctions);
-            var expr = parser.Parse(query);
+            var expr = QueryParser.Parse(query, customFunctions);
             var simplified = expr.Simplify(VariableScope.Empty);
 
             return new Query(simplified);

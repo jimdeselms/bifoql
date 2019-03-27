@@ -95,6 +95,18 @@ namespace Bifoql.Tests
             );
         }
 
+        [Fact]
+        public void MapWithArrayOfMaps()
+        {
+            var obj = new MockSyncLookup("arr", new MockSyncArray(new MockSyncLookup("v", "this/foo")));
+
+            RunTest(
+                input: obj,
+                query: @"$x = { arr: [ { v: 'this/foo' }, { v: 'this/bar' } ] }; $x.arr { v }",
+                expected: new [] { new { v = "this/foo"}, new { v = "this/bar"} });
+        }
+
+
         private class Person : IBifoqlLookupSync
         {
             public object Mother { get; set; }
