@@ -4,7 +4,7 @@
     <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
 
     <PackageId>Bifoql</PackageId>
-    <Version>0.0.30</Version>
+    <Version>0.0.31</Version>
     <Authors>Jim DeSelms</Authors>
     <Company>Jim DeSelms</Company>
 

@@ -94,7 +94,7 @@ namespace Bifoql
 
             var token = GetToken(tokens, i);
 
-            // TODO - precedence matters hers.
+            // TODO - precedence probably matters here?
             if (token.Kind == "|")
             {
                 Match(tokens, "|", ref i);
@@ -327,7 +327,8 @@ namespace Bifoql
             }
             else if (token.Kind == "{")
             {
-                first = ParseMapProjectionExpr(tokens, prev, ref i);
+                var map = ParseMapProjectionExpr(tokens, null, ref i);
+                first = new ChainExpr(prev, map, ChainBehavior.ToMultipleIfArray);
             }
 
             var nextToken = GetToken(tokens, i);
