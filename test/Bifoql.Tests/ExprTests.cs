@@ -187,7 +187,7 @@ namespace Bifoql.Tests
             RunTest(
                 expected: 123, 
                 input: new[] {123, 234}, 
-                query: "@[?@ == 123][0]");
+                query: "@[? @ == 123][0]");
         }
 
         [Fact]
