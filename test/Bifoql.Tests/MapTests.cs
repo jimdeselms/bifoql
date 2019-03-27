@@ -213,5 +213,18 @@ namespace Bifoql.Tests
                 query: "family.children { name }",
                 expected: ParseObj("[{name: 'fred'}, {name: 'george'}]"));
         }
+
+        [Fact]
+        public void MapWithArrayOfMapsFromVariable()
+        {
+            RunTest(
+                query: @"$x = {
+                    arr: [
+                        { val: 'this/foo' },
+                        ]
+                    }; $x",
+                expected: new { arr = new [] { new { val = "this/foo" }}});
+        }
+
     }
 }
