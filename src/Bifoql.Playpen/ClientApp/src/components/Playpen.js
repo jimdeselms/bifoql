@@ -14,6 +14,13 @@ export class Playpen extends Component {
     this.setState({ query: event.target.value });
   }
 
+  handleKeyPress(target) {
+    // If you hit Ctrl-enter, it'll submit it without pressing the button.
+    if (target.ctrlKey && target.key == 'Enter') {
+        this.runQuery();
+    }
+  }
+
   runQuery() {
     this.setState({ loading: false });
     var body = {
@@ -36,13 +43,17 @@ export class Playpen extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { input: "{ name: 'Fred' }", query: 'name', response: '', loading: false };
+    const initialInput = this.props.input || "{ name: 'Fred' }";
+    const initialQuery = this.props.query || "name";
+
+    this.state = { input: initialInput, query: 'name', initialQuery };
     this.runQuery();
 
     this.changeQuery = this.changeQuery.bind(this);
     this.changeInput = this.changeInput.bind(this);
     this.runQuery = this.runQuery.bind(this);
-  }
+    this.handleKeyPress = this.handleKeyPress.bind(this);
+  } 
 
   renderResults(input, query, response) {
     return (
@@ -50,15 +61,14 @@ export class Playpen extends Component {
           <div className='playpen-inputs'>
               <div className='playpen-input'>
                 <div>Input (JSON)</div>
-                <textarea onBlur={this.runQuery} onChange={this.changeInput} value={this.state.input}></textarea>
+                <textarea onBlur={this.runQuery} onKeyDown={this.handleKeyPress} onChange={this.changeInput} value={this.state.input}></textarea>
               </div>
               <div className='playpen-query'>
                 <div>Query</div>
-                <textarea onBlur={this.runQuery} onChange={this.changeQuery} value={this.state.query}></textarea>
+                <textarea onBlur={this.runQuery} onKeyDown={this.handleKeyPress} onChange={this.changeQuery} value={this.state.query}></textarea>
               </div>
           </div>
           <div className='playpen-output'>
-            <button onClick={this.runQuery}>Run your Bifoql query</button>
             <div>Result</div>
             <pre>{response}</pre>
           </div>
@@ -67,14 +77,12 @@ export class Playpen extends Component {
   }
 
   render() {
-    let contents = this.state.loading
-      ? <p><em>Loading...</em></p>
-      : this.renderResults(this.state.input, this.state.query, this.state.response);
+    let contents = this.renderResults(this.state.input, this.state.query, this.state.response);
 
     return (
       <div>
         <h1>Playpen</h1>
-        <p>You can edit the input data or query</p>
+        <p>You can edit the input data or query below. The input should be in JSON format. Submit your query with Ctrl-Enter, or by clicking outside of the text box.</p>
         {contents}
       </div>
     );
