@@ -1,8 +1,8 @@
 ### Bifoql ###
 
-Bifoql is a library for ASynchronous Object Queries
+Bifoql is the BIg Freaking Object Query Language.
 
-Similar to JSON, Bifoql objects can be strings, arrays, or hash tables of objects.
+Similar to JSON, Bifoql objects can be strings, arrays, or hash tables of objects; it can also contain indexes which allow you to quickly search for specific objects.
 
 The big difference is that when you iterate over the members of an array or look things up in a dictionary, you're doing it asynchronously.
 

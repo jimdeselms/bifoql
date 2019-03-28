@@ -2,3 +2,5 @@
 .vscode
 obj
 bin
+node_modules
+bifoql.sln.DotSettings.user
