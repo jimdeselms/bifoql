@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
-import SplitterLayout from 'react-splitter-layout';
-import 'react-splitter-layout/lib/index.css';
+import CodeMirror from 'react-codemirror';
+
 import './Playpen.css';
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/mode/javascript/javascript';
 
 export class Playpen extends Component {
   displayName = Playpen.name;
 
-  changeInput(event) {
-    this.setState({ input: event.target.value });
+  changeInput(newText) {
+    this.setState({ input: newText });
   }
 
-  changeQuery(event) {
-    this.setState({ query: event.target.value });
+  changeQuery(newText) {
+    this.setState({ query: newText });
   }
 
   handleKeyPress(target) {
@@ -56,18 +58,27 @@ export class Playpen extends Component {
   } 
 
   renderResults(input, query, response) {
+    const options = { 
+      mode: 'javascript',
+      lineNumbers: true,
+      extraKeys: {
+        'Ctrl-O': this.handleKeyPress
+      },
+      blur: this.runQuery,
+      keyHandled: this.RunQuery,
+    };
+
     return (
         <div className='playpen-container'>
-          <div className='playpen-inputs'>
-              <div className='playpen-input'>
-                <div>Input (JSON)</div>
-                <textarea onBlur={this.runQuery} onKeyDown={this.handleKeyPress} onChange={this.changeInput} value={this.state.input}></textarea>
-              </div>
-              <div className='playpen-query'>
-                <div>Query</div>
-                <textarea onBlur={this.runQuery} onKeyDown={this.handleKeyPress} onChange={this.changeQuery} value={this.state.query}></textarea>
-              </div>
+          <div className='playpen-input'>
+            <div>Input (JSON)</div>
+            <CodeMirror options={options} onFocusChange={this.runQuery} onChange={this.changeInput} value={this.state.input}></CodeMirror>
           </div>
+          <div className='playpen-query'>
+            <div>Query</div>
+            <CodeMirror options={options} onFocusChange={this.runQuery} onChange={this.changeQuery} value={this.state.query}></CodeMirror>
+          </div>
+          <button onClick={this.runQuery}>Run query</button>
           <div className='playpen-output'>
             <div>Result</div>
             <pre>{response}</pre>
