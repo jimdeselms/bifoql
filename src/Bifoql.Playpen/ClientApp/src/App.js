@@ -4,7 +4,7 @@ import { Layout } from './components/Layout';
 import { Home } from './components/Home';
 import { FetchData } from './components/FetchData';
 import { Counter } from './components/Counter';
-import { Sandbox } from './components/Sandbox';
+import { Playpen } from './components/Playpen';
 
 export default class App extends Component {
   displayName = App.name
@@ -15,7 +15,7 @@ export default class App extends Component {
         <Route exact path='/' component={Home} />
         <Route path='/counter' component={Counter} />
         <Route path='/fetchdata' component={FetchData} />
-        <Route path='/sandbox' component={Sandbox} />
+        <Route path='/playpen' component={Playpen} />
       </Layout>
     );
   }

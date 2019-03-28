@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Bifoql;
+using Bifoql.Playpen.Helpers;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace Bifoql.Playpen.Controllers
 {
@@ -21,15 +25,14 @@ namespace Bifoql.Playpen.Controllers
         }
 
         [HttpPost("[action]")]
-        public IEnumerable<WeatherForecast> WeatherForecasts([FromBody]BifoqlRequest bifoql)
+        public async Task<object> WeatherForecasts([FromBody]BifoqlRequest bifoql)
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                DateFormatted = bifoql?.Query ?? "@",
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            });
+            object input = bifoql.Input == null
+                ? null
+                : ObjectConverter.ToBifoqlObject(JsonConvert.DeserializeObject<object>(bifoql.Input));
+
+            var query = Bifoql.Query.Compile(bifoql.Query ?? "@");
+            return JsonConvert.SerializeObject(await query.Run(input));
         }
 
         public class WeatherForecast

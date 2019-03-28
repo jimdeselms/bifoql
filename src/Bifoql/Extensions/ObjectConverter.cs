@@ -8,7 +8,7 @@ using Bifoql.Types;
 
 namespace Bifoql.Extensions
 {
-    public static class ObjectConverter
+    internal static class ObjectConverter
     {
         internal static Task<object> ToSimpleObject(this IBifoqlObject o)
         {
