@@ -45,7 +45,7 @@ export class Playpen extends Component {
 
   constructor(props) {
     super(props);
-    const initialInput = this.props.input || "{ name: 'Fred' }";
+    const initialInput = this.props.input;
     const initialQuery = this.props.query || "name";
 
     this.state = { input: initialInput, query: initialQuery };
@@ -70,14 +70,14 @@ export class Playpen extends Component {
 
     const containerClass = this.props.compact ? 'playpen-container-compact' : 'playpen-container';
 
-    var input = this.props.hideInput
-      ? undefined
-      : (
+    var input = this.props.input
+      ? (
           <div className='playpen-input'>
             <div>Input (JSON)</div>
             <CodeMirror keyHandled={this.runQuery} options={options} onFocusChange={this.runQuery} onChange={this.changeInput} value={this.state.input}></CodeMirror>
           </div>
-        );
+        )
+      : undefined;
 
     return (
         <div className={containerClass}>

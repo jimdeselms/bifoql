@@ -12,7 +12,11 @@ namespace Bifoql.Playpen.Model
             object obj = null;
             switch (key)
             {
-                case "person": obj = new { byId = new PersonLookup(), byRange = new PersonIndex() }; break;
+                case "person": obj = new 
+                { 
+                    byId = new PersonLookup(), 
+                    byRange = new PersonIndex() 
+                }; break;
                 default: obj = null; break;
             }
 
@@ -39,7 +43,7 @@ namespace Bifoql.Playpen.Model
             var result = new List<RandomPerson>();
             for (int i = 0; i < take; i++)
             {
-                var person = PersonRepository.Get(i);
+                var person = PersonRepository.Get(i + startAt);
                 if (person == null)
                 {
                     break;
@@ -77,10 +81,10 @@ namespace Bifoql.Playpen.Model
                 _persons[i] = new RandomPerson(i);
             }
 
-            for (int i = 0; i < RandomPerson.MAX_PERSON/5; i++)
+            for (int i = 0; i < RandomPerson.MAX_PERSON/5; i+=2)
             {
-                var spouse1 = RandomPicker.Pick(i, 0, RandomPerson.MAX_PERSON-1);
-                var spouse2 = RandomPicker.Pick(i+1, 0, RandomPerson.MAX_PERSON-1);
+                var spouse1 = RandomPicker.Pick(i, 0, RandomPerson.MAX_PERSON/2);
+                var spouse2 = RandomPicker.Pick(i+1, 0, RandomPerson.MAX_PERSON/2 + RandomPerson.MAX_PERSON/2);
 
                 _persons[spouse1].spouse = _persons[spouse2];
                 _persons[spouse2].spouse = _persons[spouse1];

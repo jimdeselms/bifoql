@@ -19,9 +19,10 @@ export const Home = () => (
     If you think of your service as being a massive JSON object, then your queries filter it down into something neat and tidy.
   </p>
   <p>
-    Here's a quick example. Imagine that you have a library service, and you just want to get the names of all the books
+    I have a database with thousands of people in it, and I just want to know if they're married. There's a bunch of other
+    information that I could get, but all I want to know is if they're married.
 
-    <Playpen input={bookJson} query="books.name" compact={true} />
+    <Playpen query="person.byId(id: 232).isMarried" compact={true} />
 
     Pretty neat, eh?
   </p>
