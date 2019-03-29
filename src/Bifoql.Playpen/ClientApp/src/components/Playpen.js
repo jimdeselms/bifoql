@@ -5,6 +5,8 @@ import './Playpen.css';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/mode/javascript/javascript';
 
+import 'codemirror/addon/display/rulers.js';
+
 export class Playpen extends Component {
   displayName = Playpen.name;
 
@@ -45,8 +47,8 @@ export class Playpen extends Component {
 
   constructor(props) {
     super(props);
-    const initialInput = this.props.input;
-    const initialQuery = this.props.query || "name";
+    const initialInput = this.props.input ? this.props.input : this.props.fullSize ? '{ person: { name: "Fred"}}' : "";
+    const initialQuery = this.props.query ? this.props.query : this.props.fullSize ? 'person.name' : "";
 
     this.state = { input: initialInput, query: initialQuery };
     this.runQuery();
@@ -58,6 +60,12 @@ export class Playpen extends Component {
   } 
 
   renderResults(input, query, response) {
+    var space = "          ";
+    var rulers = [];
+      for (var i = 1; i <= 10; i++) {
+        rulers.push({color: "#ddd", column: i * 10, lineStyle: "dashed"});
+      };
+      
     const options = { 
       mode: 'javascript',
       lineNumbers: true,
@@ -68,9 +76,9 @@ export class Playpen extends Component {
       keyHandled: this.RunQuery,
     };
 
-    const containerClass = this.props.compact ? 'playpen-container-compact' : 'playpen-container';
+    const containerClass = this.props.fullSize ? 'playpen-container' : 'playpen-container-compact';
 
-    var input = this.props.input
+    var input = this.state.input
       ? (
           <div className='playpen-input'>
             <div>Input (JSON)</div>
@@ -81,16 +89,16 @@ export class Playpen extends Component {
 
     return (
         <div className={containerClass}>
-          { this.props.compact ? <strong className='playpen-header'>Bifoql playpen</strong> : <h1>Bifoql playpen</h1> }
+          { this.props.fullSize ? <h1>Bifoql playpen</h1> : undefined }
           <p className='playpen-helptext'>You can edit the input data or query below. The input should be in JSON format. Submit your query with Ctrl-Enter, or by clicking outside of the text box.</p>
           { input }
           <div className='playpen-query'>
-            <div>Query</div>
+            { this.props.fullSize ? <div>Query</div> : undefined }
             <CodeMirror keyHandled={this.runQuery} options={options} onFocusChange={this.runQuery} onChange={this.changeQuery} value={this.state.query}></CodeMirror>
           </div>
           <div className='playpen-output'>
-            <button onClick={this.runQuery}>Run query</button>
-            <pre>{response}</pre>
+            {/* <CodeMirror keyHandled={this.runQuery} options={ {...options, readOnly: true} } value={this.state.response}></CodeMirror> */}
+            <pre onClick={this.runQuery}>{response}</pre>
           </div>
       </div>
     );

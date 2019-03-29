@@ -491,20 +491,24 @@ namespace Bifoql
 
                 var lookupArguments = new Dictionary<string, Expr>();
 
-                while (true)
+                // We don't have to have any arguments at all.
+                if (GetToken().Kind != ")")
                 {
-                    var variable = Match("ID");
-                    Match(":");
-                    var value = ParseExpr();
-
-                    lookupArguments.Add(variable.Text, value);
-
-                    if (GetToken().Kind == ")")
+                    while (true)
                     {
-                        break;
-                    }
+                        var variable = Match("ID");
+                        Match(":");
+                        var value = ParseExpr();
 
-                    Match(",");
+                        lookupArguments.Add(variable.Text, value);
+
+                        if (GetToken().Kind == ")")
+                        {
+                            break;
+                        }
+
+                        Match(",");
+                    }
                 }
 
                 Match(")");

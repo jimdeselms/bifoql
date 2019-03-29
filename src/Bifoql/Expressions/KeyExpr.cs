@@ -43,7 +43,7 @@ namespace Bifoql.Expressions
                 }
                 else
                 {
-                    return AsyncUndefined.Instance;
+                    return new AsyncError(Location, $"key '{_key}' not found");
                 }
             }
 

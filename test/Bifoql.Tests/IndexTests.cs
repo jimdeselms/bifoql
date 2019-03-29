@@ -29,14 +29,29 @@ namespace Bifoql.Tests
                 input: new Greeting().ToBifoqlObject());
         }
         
+        [Fact]
+        public void IndexWithDefaultValue()
+        {
+            RunTest(
+                expected: "bar",
+                query: "$()",
+                input: new Greeting().ToBifoqlObject());
+        }
+        
         protected class Greeting : IBifoqlIndexSync
         {
             public object Lookup(IIndexArgumentList args)
             {
                 var id = args.TryGetStringParameter("key");
+                id = id ?? "foo";
+
                 if (id == "hello")
                 {
                     return "world";
+                }
+                else if (id == "foo")
+                {
+                    return "bar";
                 }
                 else
                 {

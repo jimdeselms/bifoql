@@ -12,10 +12,11 @@ namespace Bifoql.Playpen.Model
             object obj = null;
             switch (key)
             {
-                case "person": obj = new 
+                case "customer": obj = new 
                 { 
-                    byId = new PersonLookup(), 
-                    byRange = new PersonIndex() 
+                    byId = new CustomerIndexById(), 
+                    byRange = new CustomerIndexByRange(),
+                    all = new CustomerIndexAll(),
                 }; break;
                 default: obj = null; break;
             }
@@ -33,69 +34,53 @@ namespace Bifoql.Playpen.Model
         }
     }
 
-    internal class PersonIndex : IBifoqlIndexSync
+    internal class CustomerIndexAll : IBifoqlIndexSync
     {
         public object Lookup(IIndexArgumentList args)
         {
-            int startAt = (int?)args.TryGetNumberParameter("startAt") ?? 0;
-            int take = (int?)args.TryGetNumberParameter("take") ?? 20;
-
-            var result = new List<RandomPerson>();
-            for (int i = 0; i < take; i++)
+            var result = new List<Customer>();
+            for (int i = 0; i < Customer.CUSTOMER_COUNT; i++)
             {
-                var person = PersonRepository.Get(i + startAt);
-                if (person == null)
+                var customer = Customer.Get(i);
+                if (customer == null)
                 {
                     break;
                 }
-                result.Add(person);
+                result.Add(customer);
             }
             return result;
         }
     }
 
-    internal class PersonLookup : IBifoqlIndexSync
+    internal class CustomerIndexByRange : IBifoqlIndexSync
+    {
+        public object Lookup(IIndexArgumentList args)
+        {
+            int startAt = (int?)args.TryGetNumberParameter("startAt") ?? 0;
+            int take = (int?)args.TryGetNumberParameter("take") ?? int.MaxValue;
+
+            var result = new List<Customer>();
+            for (int i = 0; i < take; i++)
+            {
+                var customer = Customer.Get(i);
+                if (customer == null)
+                {
+                    break;
+                }
+                result.Add(customer);
+            }
+            return result;
+        }
+    }
+
+    internal class CustomerIndexById : IBifoqlIndexSync
     {
         public object Lookup(IIndexArgumentList args)
         {
             int? id = (int?)args.TryGetNumberParameter("id");
-            if (id.HasValue && id.Value < RandomPerson.MAX_PERSON)
+            if (id.HasValue)
             {
-                return PersonRepository.Get(id.Value);
-            }
-            else
-            {
-                return null;
-            }
-        }
-    }
-    internal class PersonRepository
-    {
-        private static RandomPerson[] _persons;
-
-        static PersonRepository()
-        {
-            _persons = new RandomPerson[RandomPerson.MAX_PERSON];
-            for (int i = 0; i < RandomPerson.MAX_PERSON; i++)
-            {
-                _persons[i] = new RandomPerson(i);
-            }
-
-            for (int i = 0; i < RandomPerson.MAX_PERSON/5; i+=2)
-            {
-                var spouse1 = RandomPicker.Pick(i, 0, RandomPerson.MAX_PERSON/2);
-                var spouse2 = RandomPicker.Pick(i+1, 0, RandomPerson.MAX_PERSON/2 + RandomPerson.MAX_PERSON/2);
-
-                _persons[spouse1].spouse = _persons[spouse2];
-                _persons[spouse2].spouse = _persons[spouse1];
-            }
-        }
-
-        public static RandomPerson Get(int i)
-        {
-            if (i < _persons.Length)
-            {
-                return _persons[i];
+                return Customer.Get(id.Value);
             }
             else
             {

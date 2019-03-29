@@ -30,6 +30,15 @@ namespace Bifoql.Tests
         }
 
         [Fact]
+        public void KeyNotFound()
+        {
+            RunTest(
+                expected: "<error: (1, 7) key 'b' not found>",
+                query: "{a:1}.b"
+            );
+        }
+
+        [Fact]
         public void GetNthItemInArray()
         {
             RunTest(
@@ -695,16 +704,14 @@ namespace Bifoql.Tests
         public void UndefinedObjectIsOmittedFromArrayProjection()
         {
             RunTest(expected: new object[] { 5 }, query: "[ 5, [][0] ]");
-            RunTest(expected: new object[] { 5 }, query: "[ 5, {}.x ]");
-            RunTest(expected: new object[] { 5 }, query: "[ 5, {}['x'] ]");
+            RunTest(expected: new object[] { 5 }, query: "[ 5, undefined ]");
         }
 
         [Fact]
         public void UndefinedObjectIsOmittedFromMapProjection()
         {
             RunTest(expected: new { x=5 }, query: "{x: 5, y: [][1] }");
-            RunTest(expected: new { x=5 }, query: "{x: 5, y: {}.foo }");
-            RunTest(expected: new { x=5 }, query: "{x: 5, y: {}['foo'] }");
+            RunTest(expected: new { x=5 }, query: "{x: 5, y: undefined }");
         }
 
         [Fact]
