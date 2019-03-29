@@ -34,3 +34,8 @@ Then, on the server side, you can build your response in such a way that only th
     * Support true enumerable so that if you if you take a slice, you won't have to get the whole thing
     * "ICountable" meaning that you can just get the count of something
     * "ISortable" meaning that you can pre-sort the object instead of doing it in a dumb way (you could do the sort through a query for example.)
+
+### bugs ###
+* You need to be able to have an index with zero parameters
+* Need a better message when you can't find a key on an object
+

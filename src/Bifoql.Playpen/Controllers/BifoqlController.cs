@@ -7,6 +7,7 @@ using Bifoql;
 using Bifoql.Playpen.Helpers;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using Bifoql.Playpen.Model;
 
 namespace Bifoql.Playpen.Controllers
 {
@@ -24,11 +25,13 @@ namespace Bifoql.Playpen.Controllers
             public string Input;
         }
 
+        private static readonly TestModel TEST_MODEL = new TestModel();
+
         [HttpPost("[action]")]
         public async Task<object> WeatherForecasts([FromBody]BifoqlRequest bifoql)
         {
-            object input = bifoql.Input == null
-                ? null
+            object input = string.IsNullOrWhiteSpace(bifoql.Input)
+                ? (object)TEST_MODEL
                 : ObjectConverter.ToBifoqlObject(JsonConvert.DeserializeObject<object>(bifoql.Input));
 
             var query = Bifoql.Query.Compile(bifoql.Query ?? "@");

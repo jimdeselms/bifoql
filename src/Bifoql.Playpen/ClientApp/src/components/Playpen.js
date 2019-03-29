@@ -48,7 +48,7 @@ export class Playpen extends Component {
     const initialInput = this.props.input || "{ name: 'Fred' }";
     const initialQuery = this.props.query || "name";
 
-    this.state = { input: initialInput, query: 'name', initialQuery };
+    this.state = { input: initialInput, query: initialQuery };
     this.runQuery();
 
     this.changeQuery = this.changeQuery.bind(this);
@@ -68,19 +68,28 @@ export class Playpen extends Component {
       keyHandled: this.RunQuery,
     };
 
-    return (
-        <div className='playpen-container'>
+    const containerClass = this.props.compact ? 'playpen-container-compact' : 'playpen-container';
+
+    var input = this.props.hideInput
+      ? undefined
+      : (
           <div className='playpen-input'>
             <div>Input (JSON)</div>
-            <CodeMirror options={options} onFocusChange={this.runQuery} onChange={this.changeInput} value={this.state.input}></CodeMirror>
+            <CodeMirror keyHandled={this.runQuery} options={options} onFocusChange={this.runQuery} onChange={this.changeInput} value={this.state.input}></CodeMirror>
           </div>
+        );
+
+    return (
+        <div className={containerClass}>
+          { this.props.compact ? <strong className='playpen-header'>Bifoql playpen</strong> : <h1>Bifoql playpen</h1> }
+          <p className='playpen-helptext'>You can edit the input data or query below. The input should be in JSON format. Submit your query with Ctrl-Enter, or by clicking outside of the text box.</p>
+          { input }
           <div className='playpen-query'>
             <div>Query</div>
-            <CodeMirror options={options} onFocusChange={this.runQuery} onChange={this.changeQuery} value={this.state.query}></CodeMirror>
+            <CodeMirror keyHandled={this.runQuery} options={options} onFocusChange={this.runQuery} onChange={this.changeQuery} value={this.state.query}></CodeMirror>
           </div>
-          <button onClick={this.runQuery}>Run query</button>
           <div className='playpen-output'>
-            <div>Result</div>
+            <button onClick={this.runQuery}>Run query</button>
             <pre>{response}</pre>
           </div>
       </div>
@@ -88,14 +97,6 @@ export class Playpen extends Component {
   }
 
   render() {
-    let contents = this.renderResults(this.state.input, this.state.query, this.state.response);
-
-    return (
-      <div>
-        <h1>Playpen</h1>
-        <p>You can edit the input data or query below. The input should be in JSON format. Submit your query with Ctrl-Enter, or by clicking outside of the text box.</p>
-        {contents}
-      </div>
-    );
+    return this.renderResults(this.state.input, this.state.query, this.state.response);
   }
 }
