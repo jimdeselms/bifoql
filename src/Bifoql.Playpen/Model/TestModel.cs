@@ -62,7 +62,7 @@ namespace Bifoql.Playpen.Model
             var result = new List<Customer>();
             for (int i = 0; i < take; i++)
             {
-                var customer = Customer.Get(i);
+                var customer = Customer.Get(i + startAt);
                 if (customer == null)
                 {
                     break;

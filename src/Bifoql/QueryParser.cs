@@ -321,6 +321,19 @@ namespace Bifoql
                 var innerExpression = ParseUnaryExpr();
                 return new UnaryExpr(GetLocation(token), "-", innerExpression);
             }
+            else if (token.Kind == "*")
+            {
+                Match("*");
+
+                // This is a little gross; the evaluation expression should probaby be a real 
+                // expression, but we have the function handy so might as well just use it.
+                var innerExpression = ParseUnaryExpr();
+                return new TypedFunctionCallExpr<IBifoqlExpression>(
+                    GetLocation(token), 
+                    "eval", 
+                    new List<Expr> {innerExpression}, 
+                    BuiltinFunctions.Eval);
+            }
             else
             {
                 return ParseChain();
@@ -398,7 +411,6 @@ namespace Bifoql
             "distinct",
             "ends_with",
             "error",
-            "eval",
             "flatten",
             "floor",
             "if_error",
@@ -451,7 +463,6 @@ namespace Bifoql
                 case "distinct": return new TypedFunctionCallExpr<IBifoqlArrayInternal>(location, "distinct", arguments, BuiltinFunctions.Distinct);
                 case "ends_with": return new BinaryExpr(arguments[0], "ends_with", arguments[1]);
                 case "error": return new ErrorFunctionExpr(location, arguments);
-                case "eval": return new TypedFunctionCallExpr<IBifoqlExpression>(location, "eval", arguments, BuiltinFunctions.Eval);
                 case "flatten": return new TypedFunctionCallExpr<IBifoqlArrayInternal>(location, "flatten", arguments, BuiltinFunctions.Flatten);
                 case "floor": return new TypedFunctionCallExpr<IBifoqlNumber>(location, "floor", arguments, BuiltinFunctions.Floor);
                 case "join": return new TypedFunctionCallExpr<IBifoqlString, IBifoqlArrayInternal>(location, "join", arguments, BuiltinFunctions.Join);

@@ -18,14 +18,24 @@ export class NavMenu extends Component {
         </Navbar.Header>
         <Navbar.Collapse>
           <Nav>
-            <LinkContainer to={'/'} exact>
+            <LinkContainer to={'/queries'} exact>
               <NavItem>
-                <Glyphicon glyph='home' /> Home
+                Writing queries
+              </NavItem>
+            </LinkContainer>
+            <LinkContainer to={'/integrating'} exact>
+              <NavItem>
+                Integrating with Bifoql
+              </NavItem>
+            </LinkContainer> 
+            <LinkContainer to={'/vsgraphql'} exact>
+              <NavItem>
+                Why not GraphQL?
               </NavItem>
             </LinkContainer>
             <LinkContainer to={'/playpen'}>
               <NavItem>
-                <Glyphicon glyph='th-list' /> Try it out!
+                Try it out!
               </NavItem>
             </LinkContainer>
           </Nav>

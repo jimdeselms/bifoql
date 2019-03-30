@@ -622,7 +622,7 @@ namespace Bifoql.Tests
         {
             RunTest(
                 expected: 50,
-                query: "$five = 5; $timesTen = &(@ * 10); $five | eval($timesTen)"
+                query: "$five = 5; $timesTen = &(@ * 10); $five | *$timesTen"
             );
         }
 
@@ -631,7 +631,7 @@ namespace Bifoql.Tests
         {
             RunTest(
                 expected: 10,
-                query: "5 | eval(&(@ * 2))"
+                query: "5 | *&(@ * 2)"
             );
         }
 

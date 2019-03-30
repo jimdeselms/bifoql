@@ -32,7 +32,8 @@ export class Playpen extends Component {
       input: this.state.input
   };
 
-  fetch('api/Bifoql/WeatherForecasts', { 
+  if (!this.props.readOnly) {
+    fetch('api/Bifoql/WeatherForecasts', { 
       method: 'POST', 
       body: JSON.stringify(body),
       headers: {
@@ -43,6 +44,7 @@ export class Playpen extends Component {
     .then(data => {
       this.setState({ response: data, loading: false });
     });
+  }
 }
 
   constructor(props) {
@@ -72,6 +74,7 @@ export class Playpen extends Component {
       extraKeys: {
         'Ctrl-O': this.handleKeyPress
       },
+      readOnly: this.props.readOnly,
       blur: this.runQuery,
       keyHandled: this.RunQuery,
     };
@@ -87,6 +90,14 @@ export class Playpen extends Component {
         )
       : undefined;
 
+    var output = this.props.readOnly
+        ? undefined
+        : (
+          <div className='playpen-output'>
+            <pre onClick={this.runQuery}>{response}</pre>
+          </div>
+        );
+
     return (
         <div className={containerClass}>
           { this.props.fullSize ? <h1>Bifoql playpen</h1> : undefined }
@@ -96,10 +107,7 @@ export class Playpen extends Component {
             { this.props.fullSize ? <div>Query</div> : undefined }
             <CodeMirror keyHandled={this.runQuery} options={options} onFocusChange={this.runQuery} onChange={this.changeQuery} value={this.state.query}></CodeMirror>
           </div>
-          <div className='playpen-output'>
-            {/* <CodeMirror keyHandled={this.runQuery} options={ {...options, readOnly: true} } value={this.state.response}></CodeMirror> */}
-            <pre onClick={this.runQuery}>{response}</pre>
-          </div>
+          { output }
       </div>
     );
   }
