@@ -130,7 +130,6 @@ namespace Bifoql
 
             var token = GetToken();
 
-            // TODO - precedence probably matters here?
             if (token.Kind == "|")
             {
                 Match("|");

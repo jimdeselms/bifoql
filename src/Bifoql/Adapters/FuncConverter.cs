@@ -69,6 +69,7 @@ namespace Bifoql.Adapters
 
             // Garsh this is hacky, but it won't block the thread, and it allows us to convert any Task<T> to a Task<IBifoqlObject>
             // I don't know what the performance characteristics of this are, but I have a feeling they're not that bad.
+            // TODO - I believe there's a better way using dymamic, but I'm not going to worry about it for now.
             await ((Task)task);
 
             var resultProperty = task.GetType().GetProperty("Result").GetGetMethod();

@@ -107,7 +107,6 @@ namespace Bifoql.Tests
         [Fact]
         public async Task NestedDict()
         {
-            // TODO... I shouldn't have to "ToAsyncObject" the inner anonymous dict.
             var dict = new AsyncDictThatBlowsUp();
             var anon = new Dictionary<string, object>{
                 ["foo"] = (new Dictionary<string, object> { ["bar"] = dict })

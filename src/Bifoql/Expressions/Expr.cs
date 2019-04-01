@@ -29,22 +29,7 @@ namespace Bifoql.Expressions
                 // service. For example, let's say that I have another REST service that provides a BifoQL
                 // endpoint. I can take this query and pass it along to that endpoint and get the result back.
                 var deferred = ((IBifoqlDeferredQueryInternal)context.QueryTarget);
-                var query = this.ToString();
-
-                // Super cheesy.
-                // TODO
-                if (this is KeyExpr)
-                {
-                    query = "@." + query;
-                }
-                else if (this is FilterExpr || this is IndexedLookupExpr)
-                {
-                    query = "@" + query;
-                }
-                else
-                {
-                    query = "@ | " + query;
-                }
+                var query = "@ | " + this.ToString();
 
                 var bifoqlObject = await deferred.EvaluateQuery(query);
                 return bifoqlObject.ToBifoqlObject();
