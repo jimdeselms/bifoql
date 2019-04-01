@@ -28,7 +28,7 @@ namespace Bifoql.Tests
                 _names = new HashSet<string>(names);
             }
 
-            public async Task<object> Lookup(IIndexArgumentList filter)
+            public Task<object> Lookup(IIndexArgumentList filter)
             {
                 var all = new List<Dictionary<string, object>>();
                 foreach (var currName in _names)
@@ -39,10 +39,10 @@ namespace Bifoql.Tests
                 var name = filter.TryGetStringParameter("name");
                 if (name != null)
                 {
-                    return all.Where(e => (string)e["name"] == name);
+                    return Task.FromResult<object>(all.Where(e => (string)e["name"] == name));
                 }
 
-                return new AsyncError("Not found");
+                return Task.FromResult<object>(new AsyncError("Not found"));
             }
         }
 

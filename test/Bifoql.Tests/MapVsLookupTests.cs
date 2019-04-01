@@ -31,9 +31,9 @@ namespace Bifoql.Tests
         [Fact]
         public void LookupWithMap()
         {
-            var fred = new Person { Name = "Fred", Address = new Address { Street = "1 Main Street", ZipCode = "12345" }};
-            var george = new Person { Name = "George", Address = new Address { Street = "2 Maple Street", ZipCode = "23456" }};
-            var martha = new Person { Name = "Martha", Address = new Address { Street = "2 Maple Street", ZipCode = "23456" }};
+            var fred = new Person { Name = "Fred", Address = new Address("1 Main Street", "12345" ) };
+            var george = new Person { Name = "George", Address = new Address("2 Maple Street", "23456" ) };
+            var martha = new Person { Name = "Martha", Address = new Address("2 Maple Street", "23456" ) };
 
             fred.Mother = martha;
             fred.Father = george;
@@ -46,7 +46,7 @@ namespace Bifoql.Tests
                 query: "Address.ZipCode");
 
             RunTest(
-                expected: new { Name = "George", Address = new Address { Street = "2 Maple Street", ZipCode = "23456" } },
+                expected: new { Name = "George", Address = new { Street = "2 Maple Street", ZipCode = "23456" } },
                 input: obj,
                 query: "Father | { Name, Address }");
         }
@@ -54,8 +54,8 @@ namespace Bifoql.Tests
         [Fact]
         public void MapThatContainsLookup()
         {
-            var george = new Person { Name = "George", Address = new Address { Street = "2 Maple Street", ZipCode = "23456" }};
-            var martha = new Person { Name = "Martha", Address = new Address { Street = "2 Maple Street", ZipCode = "23456" }};
+            var george = new Person { Name = "George", Address = new Address("2 Maple Street", "23456" ) };
+            var martha = new Person { Name = "Martha", Address = new Address("2 Maple Street", "23456" ) };
 
             var parents = new {
                 Father = george,
@@ -68,8 +68,9 @@ namespace Bifoql.Tests
                 input: parents.ToBifoqlObject(),
                 query: "Father.Name");
 
+            // Since we're not requesting any fields, we'll get an empty object back.
             RunTest(
-                expected: new { Name = "Steve" },
+                expected: new { },
                 input: parents.ToBifoqlObject(),
                 query: "@");
         }
@@ -77,14 +78,14 @@ namespace Bifoql.Tests
         [Fact]
         public void ArrayWithLookup()
         {
-            var address = new Address { Street = "2 Maple Street", ZipCode = "23456" };
+            var address = new Address("2 Maple Street", "23456");
             var george = new Person { Name = "George", Address = address };
 
             var obj = (new object[] { address, george }).ToBifoqlObject();
 
             // We should only get the address, since george is a lookup.
             RunTest(
-                expected: new object[] { new Address { Street = "2 Maple Street", ZipCode = "23456"}, null},
+                expected: new object[] { new { Street = "2 Maple Street", ZipCode = "23456" }, null},
                 input: obj,
                 query: "@");
 
@@ -107,7 +108,7 @@ namespace Bifoql.Tests
         }
 
 
-        private class Person : IBifoqlLookupSync
+        internal class Person : IBifoqlLookupSync
         {
             public object Mother { get; set; }
             public object Father { get; set; }
@@ -133,10 +134,23 @@ namespace Bifoql.Tests
             }
         }
 
-        private class Address
+        internal class Address : IBifoqlMapSync
         {
-            public string Street { get; set; }
-            public string ZipCode { get; set; }
+            public string _street { get; set; }
+            public string _zipCode { get; set; }
+
+            public Address(string street, string zipCode)
+            {
+                _street = street;
+                _zipCode = zipCode;
+            }
+
+            public IReadOnlyDictionary<string, Func<object>> Items => new Dictionary<string, Func<object>>
+            {
+                ["Street"] = () => _street,
+                ["ZipCode"] = () => _zipCode
+            };
         }
     }
+
 }

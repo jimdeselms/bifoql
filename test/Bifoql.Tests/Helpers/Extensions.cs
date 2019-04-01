@@ -24,7 +24,7 @@ namespace Bifoql.Tests.Helpers
             return o.TryGetValue(key).TryGetString();
         }
 
-        public static object TryGetValueAsNumber(this IBifoqlObject o, string key)
+        public static double TryGetValueAsNumber(this IBifoqlObject o, string key)
         {
             return o.TryGetValue(key).TryGetNumber();
         }

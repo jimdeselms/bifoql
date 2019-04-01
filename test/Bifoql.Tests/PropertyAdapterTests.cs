@@ -22,6 +22,51 @@ namespace Bifoql.Tests
         }
 
         [Fact]
+        public void SimpleNumber()
+        {
+            var tc = new TestClass { Number = 123.0 };
+            var obj = PropertyAdapter.Create<TestClass>(tc) as IBifoqlLookupInternal;
+
+            Assert.Equal(123.0, obj.TryGetValueAsNumber("Number"));
+        }
+
+        [Fact]
+        public void SimpleInteger()
+        {
+            var tc = new TestClass { Integer = 456 };
+            var obj = PropertyAdapter.Create<TestClass>(tc) as IBifoqlLookupInternal;
+
+            Assert.Equal(456, (int)obj.TryGetValueAsNumber("Integer"));
+        }
+
+        [Fact]
+        public void SimpleNamedType()
+        {
+            var tc = new TestClass { NamedType = new Person { Name = "Bill" }};
+            var obj = PropertyAdapter.Create<TestClass>(tc) as IBifoqlLookupInternal;
+
+            Assert.Equal("Bill", obj.TryGetValue("NamedType").TryGetValueAsString("Name"));
+        }
+
+        [Fact]
+        public void SimpleNamedTypeTask()
+        {
+            var tc = new TestClass { NamedTypeTask = Task.FromResult(new Person { Name = "Bill" })};
+            var obj = PropertyAdapter.Create<TestClass>(tc) as IBifoqlLookupInternal;
+
+            Assert.Equal("Bill", obj.TryGetValue("NamedTypeTask").TryGetValueAsString("Name"));
+        }
+
+        [Fact]
+        public void SimpleObjectTask()
+        {
+            var tc = new TestClass { TaskObject = Task.FromResult<object>(new Person { Name = "Bill" })};
+            var obj = PropertyAdapter.Create<TestClass>(tc) as IBifoqlLookupInternal;
+
+            Assert.Equal("Bill", obj.TryGetValue("TaskObject").TryGetValueAsString("Name"));
+        }
+
+        [Fact]
         public void AsyncStringProperty()
         {
             var tc = new TestClass { AsyncString = (IBifoqlString)"Hello".ToBifoqlObject() };
@@ -31,48 +76,12 @@ namespace Bifoql.Tests
         }
 
         [Fact]
-        public void ObjectFunction()
+        public void SimpleObject()
         {
-            var tc = new TestClass { FuncObject = () => "Howdy" };
+            var tc = new TestClass { SimpleObject = new { Name = "Fred"} };
             var obj = PropertyAdapter.Create<TestClass>(tc);
 
-            Assert.Equal("Howdy", obj.TryGetValueAsString("FuncObject"));
-        }
-
-        [Fact]
-        public void AsyncFuncObjectFunction()
-        {
-            var tc = new TestClass { AsyncFuncObject = () => "Howdy".ToBifoqlObject() };
-            var obj = PropertyAdapter.Create<TestClass>(tc);
-
-            Assert.Equal("Howdy", obj.TryGetValueAsString("AsyncFuncObject"));
-        }
-
-        [Fact]
-        public void AsyncFuncTaskObjectFunction()
-        {
-            var tc = new TestClass { AsyncFuncTaskObject = () => Task.FromResult("Howdy".ToBifoqlObject()) };
-            var obj = PropertyAdapter.Create<TestClass>(tc);
-
-            Assert.Equal("Howdy", obj.TryGetValueAsString("AsyncFuncTaskObject"));
-        }
-
-        [Fact]
-        public void LazyObject()
-        {
-            var tc = new TestClass { LazyObject = new Lazy<object>(() => "Foo") };
-            var obj = PropertyAdapter.Create<TestClass>(tc);
-
-            Assert.Equal("Foo", obj.TryGetValueAsString("LazyObject"));
-        }
-
-        [Fact]
-        public void AsyncLazyObject()
-        {
-            var tc = new TestClass { AsyncLazyObject = new Lazy<IBifoqlObject>(() => "Foo".ToBifoqlObject()) };
-            var obj = PropertyAdapter.Create<TestClass>(tc);
-
-            Assert.Equal("Foo", obj.TryGetValueAsString("AsyncLazyObject"));
+            Assert.Equal("Fred", obj.TryGetValue("SimpleObject").TryGetValueAsString("Name"));
         }
 
         [Fact]
@@ -91,33 +100,6 @@ namespace Bifoql.Tests
             var obj = PropertyAdapter.Create<TestClass>(tc);
 
             Assert.Equal("HI", obj.TryGetValueAsString("AsyncTaskObject"));
-        }
-
-        [Fact]
-        public void FuncTaskObject()
-        {
-            var tc = new TestClass { FuncTaskObject = () => Task.FromResult<object>(12345) };
-            var obj = PropertyAdapter.Create<TestClass>(tc);
-
-            Assert.Equal(12345d, obj.TryGetValueAsNumber("FuncTaskObject"));
-        }
-
-        [Fact]
-        public void LazyTaskObject()
-        {
-            var tc = new TestClass { LazyTaskObject = new Lazy<Task<object>>(() => Task.FromResult<object>(12345)) };
-            var obj = PropertyAdapter.Create<TestClass>(tc);
-
-            Assert.Equal(12345d, obj.TryGetValueAsNumber("LazyTaskObject"));
-        }
-
-        [Fact]
-        public void AsyncLazyTaskObject()
-        {
-            var tc = new TestClass { AsyncLazyTaskObject = new Lazy<Task<IBifoqlObject>>(() => Task.FromResult<IBifoqlObject>("HI".ToBifoqlObject())) };
-            var obj = PropertyAdapter.Create<TestClass>(tc);
-
-            Assert.Equal("HI", obj.TryGetValueAsString("AsyncLazyTaskObject"));
         }
 
         [Fact]
@@ -172,48 +154,12 @@ namespace Bifoql.Tests
         }
 
         [Fact]
-        public void NullObjectFunction()
-        {
-            var tc = new TestClass();
-            var obj = PropertyAdapter.Create<TestClass>(tc);
-
-            Assert.Equal(AsyncNull.Instance, obj.TryGetValue("FuncObject"));
-        }
-
-        [Fact]
-        public void NullLazyObject()
-        {
-            var tc = new TestClass();
-            var obj = PropertyAdapter.Create<TestClass>(tc);
-
-            Assert.Equal(AsyncNull.Instance, obj.TryGetValue("LazyObject"));
-        }
-
-        [Fact]
         public void NullTaskObject()
         {
             var tc = new TestClass();
             var obj = PropertyAdapter.Create<TestClass>(tc);
 
             Assert.Equal(new AsyncError("task is null"), obj.TryGetValue("TaskObject"));
-        }
-
-        [Fact]
-        public void NullFuncTaskObject()
-        {
-            var tc = new TestClass();
-            var obj = PropertyAdapter.Create<TestClass>(tc);
-
-            Assert.Equal(new AsyncError("task is null"), obj.TryGetValue("FuncTaskObject"));
-        }
-
-        [Fact]
-        public void NullLazyTaskObject()
-        {
-            var tc = new TestClass();
-            var obj = PropertyAdapter.Create<TestClass>(tc);
-
-            Assert.Equal(new AsyncError("task is null"), obj.TryGetValue("LazyTaskObject"));
         }
 
         [Fact]
@@ -242,19 +188,6 @@ namespace Bifoql.Tests
         }
 
         [Fact]
-        public void InvalidTypeThrows()
-        {
-            try
-            {
-                PropertyAdapter.Create<HasInvalidReturnType>(null);
-                Assert.False(true);
-            }
-            catch
-            {
-            }
-        }
-
-        [Fact]
         public void NullIsAllowed()
         {
             PropertyAdapter.Create<TestClass>(null);
@@ -263,18 +196,17 @@ namespace Bifoql.Tests
         private class TestClass
         {
             public string String { get; set; }
-            public IList<string> GenericType { get; set; }
-            public Func<object> FuncObject { get; set; }
-            public Lazy<object> LazyObject { get; set; }
-            public Task<object> TaskObject { get; set;  }
-            public Func<Task<object>> FuncTaskObject { get; set; }
-            public Lazy<Task<object>> LazyTaskObject { get; set; }
+            public double Number { get; set; }
+            public int Integer{ get; set; }
 
+            public object SimpleObject { get; set; }
+
+            public Person NamedType { get; set; }
+            public Task<Person> NamedTypeTask { get; set; }
+            
+            public IList<string> GenericType { get; set; }
+            public Task<object> TaskObject { get; set;  }
             public IBifoqlString AsyncString { get; set; }
-            public Func<IBifoqlObject> AsyncFuncObject { get; set; }
-            public Func<Task<IBifoqlObject>> AsyncFuncTaskObject { get; set; }
-            public Lazy<IBifoqlObject> AsyncLazyObject { get; set; }
-            public Lazy<Task<IBifoqlObject>> AsyncLazyTaskObject { get; set; }
             public Task<IBifoqlObject> AsyncTaskObject { get; set; }
             public IList<IBifoqlObject> AsyncGenericType { get; set; }
             public IList<IList<IBifoqlObject>> NestedAsyncGenericType { get; set; }
@@ -284,6 +216,11 @@ namespace Bifoql.Tests
         private class HasInvalidReturnType
         {
             public Func<string> Foo { get; set; }
+        }
+
+        private class Person
+        {
+            public string Name { get; set; }
         }
     }
 }
