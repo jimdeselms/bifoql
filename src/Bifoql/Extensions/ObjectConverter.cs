@@ -37,7 +37,7 @@ namespace Bifoql.Extensions
             // Making this undefined means that lookups will also be
             // excluded from dictionaries and arrays.
             var lookup = o as IBifoqlLookupInternal;
-            if (lookup != null) return Task.FromResult<object>(AsyncUndefined.Instance);
+            if (lookup != null) return ToSimpleObject(new AsyncError("query must resolve to leaf nodes"));
 
             return Task.FromResult<object>(null);
         }

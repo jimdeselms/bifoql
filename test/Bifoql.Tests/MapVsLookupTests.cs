@@ -68,9 +68,9 @@ namespace Bifoql.Tests
                 input: parents.ToBifoqlObject(),
                 query: "Father.Name");
 
-            // Since we're not requesting any fields, we'll get an empty object back.
+            // Since we're not requesting any fields, we'll get an error back.
             RunTest(
-                expected: new { },
+                expected: "<error: query must resolve to leaf nodes>",
                 input: parents.ToBifoqlObject(),
                 query: "@");
         }
