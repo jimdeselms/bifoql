@@ -275,9 +275,17 @@ count(search(text: ''))`} />
   still putting on the server to filter the results down. But, if a client needs searching or filtering that doesn't already exist, your clients can get what they need without asking for more features.
 </aside>
 
-<p>GraphQL allows you to batch multiple requests together -- as does Bifoql -- however, it's not possible in GraphQL to feed the result of one query into another query. In Bifoql; there's nothing
-  preventing you from using the result of a query to feed another one:
-</p>
+<p>Here's a fun one. Let's say that I want to get three records by id. This takes advantage of a few concepts not covered in this article. The <code>|&lt;</code> operator is like a foreach; for each item on the left side,
+the right side is evaluated, using the <code>@</code> variable to represent the current context. Think of the <code>@</code> as the argument to a lambda function that takes a single argument. The <code>$</code> variable
+represents the root-level object. So far, whenever we're refrenced "human" or "search", we've been referencing it at the root level of our query, where the current context is the root-level object. Since we're 
+in the context of a pipe, however, the current context represents the current item in the list, so we have to explicitly say <code>$</code>. If we didn't, Bifoql would try to read the "human" property of off the number '1000', which wouldn't work.</p>
+
+<Playpen query={"['1000', '1002', '1004'] |< $.human(id: @) {id, name}"} />
+
+<p>And here's a more advanced example that takes advantage of one of Bifoql's built-in functions, <code>to_map</code>. <code>to_map</code> takes three parameters: an array of objects, 
+an expression that gets the key, and an expression that gets the value. The expression is a map of values.</p>
+
+<Playpen query={"(['1000', '1002', '1004'] |< $.human(id: @) {id, name}) | to_map(@, &id, &name)"} />
 
 <h2>Summary</h2>
 

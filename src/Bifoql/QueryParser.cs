@@ -427,7 +427,7 @@ namespace Bifoql
             "to_number",
             "to_map",
             // "type",
-            "unzip",
+            // "unzip",
             // "values",
             // "zip",
         };
@@ -467,7 +467,7 @@ namespace Bifoql
                 case "flatten": return new TypedFunctionCallExpr<IBifoqlArrayInternal>(location, "flatten", arguments, BuiltinFunctions.Flatten);
                 case "floor": return new TypedFunctionCallExpr<IBifoqlNumber>(location, "floor", arguments, BuiltinFunctions.Floor);
                 case "join": return new TypedFunctionCallExpr<IBifoqlString, IBifoqlArrayInternal>(location, "join", arguments, BuiltinFunctions.Join);
-                case "keys": return new TypedFunctionCallExpr<IBifoqlMapInternal>(location, "keys", arguments, BuiltinFunctions.Keys);
+                // case "keys": return new TypedFunctionCallExpr<IBifoqlMapInternal>(location, "keys", arguments, BuiltinFunctions.Keys);
                 case "max": return new TypedFunctionCallExpr<IBifoqlArrayInternal>(location, "max", arguments, BuiltinFunctions.Max);
                 case "max_by": return new TypedFunctionCallExpr<IBifoqlArrayInternal, IBifoqlExpression>(location, "max_by", arguments, BuiltinFunctions.MaxBy);
                 case "min": return new TypedFunctionCallExpr<IBifoqlArrayInternal>(location, "min", arguments, BuiltinFunctions.Min);
@@ -479,10 +479,10 @@ namespace Bifoql
                 case "sum": return new TypedFunctionCallExpr<IBifoqlArrayInternal>(location, "sum", arguments, BuiltinFunctions.Sum);
                 case "to_number": return new TypedFunctionCallExpr<IBifoqlString>(location, "to_number", arguments, BuiltinFunctions.ToNumber);
                 case "to_map": return new TypedFunctionCallExpr<IBifoqlArrayInternal, IBifoqlExpression, IBifoqlExpression>(location, "to_map", arguments, BuiltinFunctions.ToMap);
-                case "type": return new TypeExpr(location, arguments);
-                case "unzip": return new TypedFunctionCallExpr<IBifoqlMapInternal>(location, "unzip", arguments, BuiltinFunctions.Unzip);
+                // case "type": return new TypeExpr(location, arguments);
+                // case "unzip": return new TypedFunctionCallExpr<IBifoqlMapInternal>(location, "unzip", arguments, BuiltinFunctions.Unzip);
                 case "values": return new TypedFunctionCallExpr<IBifoqlMapInternal>(location, "values", arguments, BuiltinFunctions.Values);
-                case "zip": return new TypedFunctionCallExpr<IBifoqlArrayInternal, IBifoqlArrayInternal>(location, "zip", arguments, BuiltinFunctions.Zip);
+                // case "zip": return new TypedFunctionCallExpr<IBifoqlArrayInternal, IBifoqlArrayInternal>(location, "zip", arguments, BuiltinFunctions.Zip);
                 default:
                     return new ErrorExpr(location, $"Unknown function name {functionNameToken.Text}");
             }

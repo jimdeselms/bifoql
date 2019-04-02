@@ -86,16 +86,16 @@ namespace Bifoql.Tests
             RunTest(new List<object>{ 5 }, "[5,]");
         }
 
-        [Fact]
-        public void Unzip()
-        {
-            var expected = new object[] {
-                new object[] { "name", "age" },
-                new object[] { "Jim", 49 }
-            };
+        // [Fact]
+        // public void Unzip()
+        // {
+        //     var expected = new object[] {
+        //         new object[] { "name", "age" },
+        //         new object[] { "Jim", 49 }
+        //     };
 
-            RunTest(expected, "unzip({ name: 'Jim', age: 49 })");
-        }
+        //     RunTest(expected, "unzip({ name: 'Jim', age: 49 })");
+        // }
 
         // [Fact]
         // public void Keys()
