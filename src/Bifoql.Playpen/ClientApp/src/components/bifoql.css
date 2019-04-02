@@ -5,3 +5,12 @@
     margin-bottom: 20px;
     padding: 20px;
 }
+
+.bifoql-doc p {
+    margin: 0 0 20px;
+}
+
+.graphql-example {
+    margin-top: 10px;
+    margin-left: 35px;
+}

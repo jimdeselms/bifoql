@@ -5,33 +5,19 @@ using Bifoql;
 
 namespace Bifoql.Playpen.Model
 {
-    internal class TestModel : IBifoqlLookupSync
+    
+    internal class TestModel
     {
-        public bool TryGetValue(string key, out Func<object> result)
-        {
-            object obj = null;
-            switch (key)
-            {
-                case "customer": obj = new 
-                { 
-                    byId = new CustomerIndexById(), 
-                    byRange = new CustomerIndexByRange(),
-                    all = new CustomerIndexAll(),
-                }; break;
-                default: obj = null; break;
-            }
-
-            if (obj != null)
-            {
-                result = () => (object)obj;
-                return true;
-            }
-            else
-            {
-                result = null;
-                return false;
-            }
-        }
+        public object customer => new {
+                byId = new CustomerIndexById(), 
+                byRange = new CustomerIndexByRange(),
+                all = new CustomerIndexAll()
+            };
+        public object hero => new HeroIndex();
+        public object droid => new DroidIndex();
+        public object human => new HumanIndex();
+        public object starship => new StarshipIndex();
+        public object search => new SearchIndex();
     }
 
     internal class CustomerIndexAll : IBifoqlIndexSync

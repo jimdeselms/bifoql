@@ -35,3 +35,7 @@
 .playpen-container-compact .playpen-helptext {
     display: none;
 }
+
+.playpen-variable-error {
+    color: red;
+}

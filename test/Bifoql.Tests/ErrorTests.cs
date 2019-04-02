@@ -174,8 +174,8 @@ namespace Bifoql.Tests
         public void ErrorInFunction()
         {
             RunTest(
-                expected: "<error: (1, 8) test>",
-                query: "length(error('test'))"
+                expected: "<error: (1, 7) test>",
+                query: "count(error('test'))"
             );
             RunTest(
                 expected: "<error: (1, 6) test>",

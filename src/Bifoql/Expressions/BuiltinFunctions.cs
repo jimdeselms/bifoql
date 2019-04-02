@@ -128,7 +128,7 @@ namespace Bifoql.Expressions
             return Task.FromResult<IBifoqlObject>(new AsyncArray(keys));
         }
 
-        public static async Task<IBifoqlObject> Length(Location location, QueryContext context, IBifoqlObject value)
+        public static async Task<IBifoqlObject> Count(Location location, QueryContext context, IBifoqlObject value)
         {
             var str = value as IBifoqlString;
             if (str != null)

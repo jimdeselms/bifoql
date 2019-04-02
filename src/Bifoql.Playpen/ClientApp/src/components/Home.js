@@ -12,7 +12,7 @@ var bookJson = JSON.stringify({books: [
 
 export const Home = () => (
   <div className='bifoql-doc'>
-    <h1>Learning to write Bifoql queries</h1>
+    <h1>Bifoql</h1>
 
     <p>
       Bifoql stands for BIg Freaking Object Query Language. The idea is that you have service that exposes a "Big Freaking Object",

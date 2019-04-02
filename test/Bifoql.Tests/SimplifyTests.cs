@@ -56,17 +56,17 @@ namespace Bifoql.Tests
             TestToString("5 | $", "5 | $");
         }
 
-        [Fact]
-        public void Zip()
-        {
-            var expected = new Dictionary<string, object>
-            {
-                ["name"] = "Jim",
-                ["age"] = 49
-            };
+        // [Fact]
+        // public void Zip()
+        // {
+        //     var expected = new Dictionary<string, object>
+        //     {
+        //         ["name"] = "Jim",
+        //         ["age"] = 49
+        //     };
 
-            RunTest(expected, "zip(['name', 'age'], ['Jim', 49]) | { name, age }");
-        }
+        //     RunTest(expected, "zip(['name', 'age'], ['Jim', 49]) | { name, age }");
+        // }
 
         [Fact]
         public void EmptyDictionary()
@@ -97,22 +97,22 @@ namespace Bifoql.Tests
             RunTest(expected, "unzip({ name: 'Jim', age: 49 })");
         }
 
-        [Fact]
-        public void Keys()
-        {
-            var expected = new object[] { "name", "age" };
+        // [Fact]
+        // public void Keys()
+        // {
+        //     var expected = new object[] { "name", "age" };
 
-            RunTest(expected, "keys({ name: 'Jim', age: 49 })");
-        }
+        //     RunTest(expected, "keys({ name: 'Jim', age: 49 })");
+        // }
 
 
-        [Fact]
-        public void Values()
-        {
-            var expected = new object[] { "Jim", 49 };
+        // [Fact]
+        // public void Values()
+        // {
+        //     var expected = new object[] { "Jim", 49 };
 
-            RunTest(expected, "values({ name: 'Jim', age: 49 })");
-        }
+        //     RunTest(expected, "values({ name: 'Jim', age: 49 })");
+        // }
 
         [Fact]
         public void Equals()
@@ -120,18 +120,18 @@ namespace Bifoql.Tests
             RunTest(true, "null == null");
         }
 
-        [Fact]
-        public void Type()
-        {
-            RunTest("string", "type('hi')");
-            RunTest("number", "type(3.14)");
-            RunTest("number", "type(5)");
-            RunTest("null", "type(null)");
-            RunTest("boolean", "type(true)");
-            RunTest("boolean", "type(false)");
-            RunTest("array", "type([])");
-            RunTest("object", "type({})");
-        }
+        // [Fact]
+        // public void Type()
+        // {
+        //     RunTest("string", "type('hi')");
+        //     RunTest("number", "type(3.14)");
+        //     RunTest("number", "type(5)");
+        //     RunTest("null", "type(null)");
+        //     RunTest("boolean", "type(true)");
+        //     RunTest("boolean", "type(false)");
+        //     RunTest("array", "type([])");
+        //     RunTest("object", "type({})");
+        // }
 
         [Fact]
         public void Ceil()
@@ -156,10 +156,10 @@ namespace Bifoql.Tests
         }
 
         [Fact]
-        public void Length()
+        public void Count()
         {
-            RunTest(5, "length('hello')");
-            RunTest(3, "length([1, 2, 3])");
+            RunTest(5, "count('hello')");
+            RunTest(3, "count([1, 2, 3])");
         }
 
         [Fact]

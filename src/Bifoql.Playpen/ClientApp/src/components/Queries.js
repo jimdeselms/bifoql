@@ -11,17 +11,11 @@ var bookJson = JSON.stringify({books: [
 
 export const Queries = () => (
   <div className='bifoql-doc'>
-    <h1>Learning to write Bifoql queries</h1>
+    <h1>Bifoql queries</h1>
 
     <p>
-      Bifoql stands for BIg Freaking Object Query Language. The idea is that you have service that exposes a "Big Freaking Object",
-      and your clients send queries to filter that big object down and massage it into a smaller object that just gives
-      you exactly what you want.
-    </p>
-
-    <p>    
-      If you think of your service as being a massive JSON object, then your queries filter it down into something neat and tidy. However, it's more like a JSON
-      object that can have cyclic references and has the ability to call functions to look up other objects.
+      Bifoql allows service providers the ability to provide "kitchen sink" services which effectively return everything under the son. Bifoql clients then write queries to return
+      just the data they want.
     </p>
 
     <h2>Simple queries</h2>

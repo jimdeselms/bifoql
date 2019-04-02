@@ -412,10 +412,9 @@ namespace Bifoql
             "error",
             "flatten",
             "floor",
-            "if_error",
             "join",
-            "keys",
-            "length",
+            // "keys",
+            "count",
             "max",
             "max_by",
             "min",
@@ -427,16 +426,18 @@ namespace Bifoql
             "sum",
             "to_number",
             "to_map",
-            "type",
+            // "type",
             "unzip",
-            "values",
-            "zip",
+            // "values",
+            // "zip",
         };
 
         private Expr ParseFunctionCallExpr()
         {
             var id = GetToken();
-            if (id.Kind != "ID" || (!_builtinFunctionNames.Contains(id.Text) && !_customFunctions.ContainsKey(id.Text))) 
+            var following = GetToken(1);
+
+            if (following.Kind != "(" || id.Kind != "ID" || (!_builtinFunctionNames.Contains(id.Text) && !_customFunctions.ContainsKey(id.Text))) 
             {
                 return ParseIndexedLookup();
             }
@@ -459,6 +460,7 @@ namespace Bifoql
                 case "avg": return new TypedFunctionCallExpr<IBifoqlArrayInternal>(location, "avg", arguments, BuiltinFunctions.Avg);
                 case "ceil": return new TypedFunctionCallExpr<IBifoqlNumber>(location, "ceil", arguments, BuiltinFunctions.Ceil);
                 case "contains": return new BinaryExpr(arguments[0], "contains", arguments[1]);
+                case "count": return new TypedFunctionCallExpr<IBifoqlObject>(location, "count", arguments, BuiltinFunctions.Count);
                 case "distinct": return new TypedFunctionCallExpr<IBifoqlArrayInternal>(location, "distinct", arguments, BuiltinFunctions.Distinct);
                 case "ends_with": return new BinaryExpr(arguments[0], "ends_with", arguments[1]);
                 case "error": return new ErrorFunctionExpr(location, arguments);
@@ -466,7 +468,6 @@ namespace Bifoql
                 case "floor": return new TypedFunctionCallExpr<IBifoqlNumber>(location, "floor", arguments, BuiltinFunctions.Floor);
                 case "join": return new TypedFunctionCallExpr<IBifoqlString, IBifoqlArrayInternal>(location, "join", arguments, BuiltinFunctions.Join);
                 case "keys": return new TypedFunctionCallExpr<IBifoqlMapInternal>(location, "keys", arguments, BuiltinFunctions.Keys);
-                case "length": return new TypedFunctionCallExpr<IBifoqlObject>(location, "length", arguments, BuiltinFunctions.Length);
                 case "max": return new TypedFunctionCallExpr<IBifoqlArrayInternal>(location, "max", arguments, BuiltinFunctions.Max);
                 case "max_by": return new TypedFunctionCallExpr<IBifoqlArrayInternal, IBifoqlExpression>(location, "max_by", arguments, BuiltinFunctions.MaxBy);
                 case "min": return new TypedFunctionCallExpr<IBifoqlArrayInternal>(location, "min", arguments, BuiltinFunctions.Min);

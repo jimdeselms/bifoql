@@ -45,6 +45,9 @@ export const Integrating = () => (
         </ul>
     </p>
 
+    <h2>Implementing Bifoql interfaces</h2>
+
+    <p>You can also create Bifoql objects by implementing interfaces. This approach might give a little more flexibility. The interfaces are quite simple, and you can find them in <a href="https://github.com/jimdeselms/bifoql/blob/master/src/Bifoql/PublicInterfaces.cs">the Github repo.</a></p>
 </div>
 );
 

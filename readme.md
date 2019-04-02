@@ -36,6 +36,5 @@ Then, on the server side, you can build your response in such a way that only th
     * "ISortable" meaning that you can pre-sort the object instead of doing it in a dumb way (you could do the sort through a query for example.)
 
 ### bugs ###
-* You need to be able to have an index with zero parameters
 * Need a better message when you can't find a key on an object
 * Lookup up a key that doesn't exist should be an error.
