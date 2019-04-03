@@ -16,7 +16,7 @@ namespace Bifoql.Tests
         public void SimpleProperty()
         {
             var tc = new TestClass { String = "Hello" };
-            var obj = PropertyAdapter.Create<TestClass>(tc) as IBifoqlLookupInternal;
+            var obj = PropertyAdapter.Create<TestClass>(tc, null) as IBifoqlLookupInternal;
 
             Assert.Equal("Hello", obj.TryGetValueAsString("String"));
         }
@@ -25,7 +25,7 @@ namespace Bifoql.Tests
         public void SimpleNumber()
         {
             var tc = new TestClass { Number = 123.0 };
-            var obj = PropertyAdapter.Create<TestClass>(tc) as IBifoqlLookupInternal;
+            var obj = PropertyAdapter.Create<TestClass>(tc, null) as IBifoqlLookupInternal;
 
             Assert.Equal(123.0, obj.TryGetValueAsNumber("Number"));
         }
@@ -34,7 +34,7 @@ namespace Bifoql.Tests
         public void SimpleInteger()
         {
             var tc = new TestClass { Integer = 456 };
-            var obj = PropertyAdapter.Create<TestClass>(tc) as IBifoqlLookupInternal;
+            var obj = PropertyAdapter.Create<TestClass>(tc, null) as IBifoqlLookupInternal;
 
             Assert.Equal(456, (int)obj.TryGetValueAsNumber("Integer"));
         }
@@ -43,7 +43,7 @@ namespace Bifoql.Tests
         public void SimpleNamedType()
         {
             var tc = new TestClass { NamedType = new Person { Name = "Bill" }};
-            var obj = PropertyAdapter.Create<TestClass>(tc) as IBifoqlLookupInternal;
+            var obj = PropertyAdapter.Create<TestClass>(tc, null) as IBifoqlLookupInternal;
 
             Assert.Equal("Bill", obj.TryGetValue("NamedType").TryGetValueAsString("Name"));
         }
@@ -52,7 +52,7 @@ namespace Bifoql.Tests
         public void SimpleNamedTypeTask()
         {
             var tc = new TestClass { NamedTypeTask = Task.FromResult(new Person { Name = "Bill" })};
-            var obj = PropertyAdapter.Create<TestClass>(tc) as IBifoqlLookupInternal;
+            var obj = PropertyAdapter.Create<TestClass>(tc, null) as IBifoqlLookupInternal;
 
             Assert.Equal("Bill", obj.TryGetValue("NamedTypeTask").TryGetValueAsString("Name"));
         }
@@ -61,7 +61,7 @@ namespace Bifoql.Tests
         public void SimpleObjectTask()
         {
             var tc = new TestClass { TaskObject = Task.FromResult<object>(new Person { Name = "Bill" })};
-            var obj = PropertyAdapter.Create<TestClass>(tc) as IBifoqlLookupInternal;
+            var obj = PropertyAdapter.Create<TestClass>(tc, null) as IBifoqlLookupInternal;
 
             Assert.Equal("Bill", obj.TryGetValue("TaskObject").TryGetValueAsString("Name"));
         }
@@ -70,7 +70,7 @@ namespace Bifoql.Tests
         public void AsyncStringProperty()
         {
             var tc = new TestClass { AsyncString = (IBifoqlString)"Hello".ToBifoqlObject() };
-            var obj = PropertyAdapter.Create<TestClass>(tc) as IBifoqlLookupInternal;
+            var obj = PropertyAdapter.Create<TestClass>(tc, null) as IBifoqlLookupInternal;
 
             Assert.Equal("Hello", obj.TryGetValueAsString("AsyncString"));
         }
@@ -79,7 +79,7 @@ namespace Bifoql.Tests
         public void SimpleObject()
         {
             var tc = new TestClass { SimpleObject = new { Name = "Fred"} };
-            var obj = PropertyAdapter.Create<TestClass>(tc);
+            var obj = PropertyAdapter.Create<TestClass>(tc, null);
 
             Assert.Equal("Fred", obj.TryGetValue("SimpleObject").TryGetValueAsString("Name"));
         }
@@ -88,7 +88,7 @@ namespace Bifoql.Tests
         public void TaskObject()
         {
             var tc = new TestClass { TaskObject = Task.FromResult<object>(12345) };
-            var obj = PropertyAdapter.Create<TestClass>(tc);
+            var obj = PropertyAdapter.Create<TestClass>(tc, null);
 
             Assert.Equal(12345d, obj.TryGetValueAsNumber("TaskObject"));
         }
@@ -97,7 +97,7 @@ namespace Bifoql.Tests
         public void AsyncTaskObject()
         {
             var tc = new TestClass { AsyncTaskObject = Task.FromResult<IBifoqlObject>("HI".ToBifoqlObject()) };
-            var obj = PropertyAdapter.Create<TestClass>(tc);
+            var obj = PropertyAdapter.Create<TestClass>(tc, null);
 
             Assert.Equal("HI", obj.TryGetValueAsString("AsyncTaskObject"));
         }
@@ -108,7 +108,7 @@ namespace Bifoql.Tests
             var list = new List<string> { "Hi" };
 
             var tc = new TestClass { GenericType = list };
-            var obj = PropertyAdapter.Create<TestClass>(tc);
+            var obj = PropertyAdapter.Create<TestClass>(tc, null);
 
             var listObj = (IBifoqlArrayInternal)obj.TryGetValue("GenericType");
             var hi = listObj[0]().Result.TryGetString();
@@ -121,7 +121,7 @@ namespace Bifoql.Tests
             var list = new List<IBifoqlObject> { "Hi".ToBifoqlObject() };
 
             var tc = new TestClass { AsyncGenericType = list };
-            var obj = PropertyAdapter.Create<TestClass>(tc);
+            var obj = PropertyAdapter.Create<TestClass>(tc, null);
 
             var listObj = (IBifoqlArrayInternal)obj.TryGetValue("AsyncGenericType");
             var hi = listObj[0]().Result.TryGetString();
@@ -135,7 +135,7 @@ namespace Bifoql.Tests
             var listOfList = new List<IList<IBifoqlObject>> { list };
 
             var tc = new TestClass { NestedAsyncGenericType = listOfList };
-            var obj = PropertyAdapter.Create<TestClass>(tc);
+            var obj = PropertyAdapter.Create<TestClass>(tc, null);
 
             var listObj = (IBifoqlArrayInternal)obj.TryGetValue("NestedAsyncGenericType");
             var innerListObj = (IBifoqlArrayInternal)await listObj[0]();
@@ -148,7 +148,7 @@ namespace Bifoql.Tests
         public void NullSimpleProperty()
         {
             var tc = new TestClass();
-            var obj = PropertyAdapter.Create<TestClass>(tc);
+            var obj = PropertyAdapter.Create<TestClass>(tc, null);
 
             Assert.Equal(AsyncNull.Instance, obj.TryGetValue("String"));
         }
@@ -157,7 +157,7 @@ namespace Bifoql.Tests
         public void NullTaskObject()
         {
             var tc = new TestClass();
-            var obj = PropertyAdapter.Create<TestClass>(tc);
+            var obj = PropertyAdapter.Create<TestClass>(tc, null);
 
             Assert.Equal(new AsyncError("task is null"), obj.TryGetValue("TaskObject"));
         }
@@ -166,7 +166,7 @@ namespace Bifoql.Tests
         public void NullSimpleGenericType()
         {
             var tc = new TestClass();
-            var obj = PropertyAdapter.Create<TestClass>(tc);
+            var obj = PropertyAdapter.Create<TestClass>(tc, null);
 
             Assert.Equal(AsyncNull.Instance, obj.TryGetValue("GenericType"));
         }
@@ -180,7 +180,7 @@ namespace Bifoql.Tests
             };
 
             var tc = new TestClass() { DictOfAsyncObjectTasks = dict };
-            var obj = PropertyAdapter.Create<TestClass>(tc);
+            var obj = PropertyAdapter.Create<TestClass>(tc, null);
 
             IBifoqlLookupInternal lookup = (IBifoqlLookupInternal)obj.TryGetValue("DictOfAsyncObjectTasks");
 
@@ -190,7 +190,7 @@ namespace Bifoql.Tests
         [Fact]
         public void NullIsAllowed()
         {
-            PropertyAdapter.Create<TestClass>(null);
+            PropertyAdapter.Create<TestClass>(null, null);
         }
 
         private class TestClass

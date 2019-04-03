@@ -43,7 +43,7 @@ namespace Bifoql.Extensions
 
             if (o is IEnumerable) return ConvertList(o, schema);
 
-            return PropertyAdapter.Create(o, o.GetType());
+            return PropertyAdapter.Create(o, o.GetType(), defaultValue);
         }
 
         internal static Func<Task<IBifoqlObject>> GetDefaultValue(object o)

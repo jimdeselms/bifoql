@@ -12,12 +12,12 @@ namespace Bifoql.Adapters
         private static ConcurrentDictionary<Type, PropertyAdapterInstanceBuilder> _builders 
             = new ConcurrentDictionary<Type, PropertyAdapterInstanceBuilder>();
 
-        public static IBifoqlObject Create<T>(T o)
+        public static IBifoqlObject Create<T>(T o, Func<Task<IBifoqlObject>> defaultValue)
         {
-            return Create(o, typeof(T));
+            return Create(o, typeof(T), defaultValue);
         }
         
-        public static IBifoqlObject Create(object o, Type type)
+        public static IBifoqlObject Create(object o, Type type, Func<Task<IBifoqlObject>> defaultValue)
         {
             PropertyAdapterInstanceBuilder builder;
             if (!_builders.TryGetValue(type, out builder))
@@ -26,7 +26,7 @@ namespace Bifoql.Adapters
                 _builders[type] = builder;
             }
 
-            return builder.Create(o);
+            return builder.Create(o, defaultValue);
         }
 
         private class PropertyAdapterInstanceBuilder
@@ -53,13 +53,13 @@ namespace Bifoql.Adapters
 
             public IEnumerable<string> Keys => _getters.Keys;
 
-            public IBifoqlObject Create(object @object)
+            public IBifoqlObject Create(object @object, Func<Task<IBifoqlObject>> defaultValue)
             {
                 var getters = _getters.ToDictionary(
                     p => p.Key,
                     p => (Func<Task<IBifoqlObject>>)(() => p.Value(@object)));
 
-                return new AsyncLookup(getters, null);
+                return new AsyncLookup(getters, defaultValue);
             }
        }
     }

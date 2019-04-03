@@ -49,6 +49,29 @@ namespace Bifoql.Tests
                 expected: "howdy",
                 query: "@.x");
         }
+
+        [Fact]
+        public void PocoWithDefaultValue()
+        {
+            RunTest(
+                input: new MyPoco(),
+                expected: 999,
+                query: "@");
+            RunTest(
+                input: new MyPoco(),
+                expected: "Bill",
+                query: "@.Name");
+        }
+
+        private class MyPoco : IDefaultValueSync
+        {
+            public string Name { get { return "Bill"; }}
+
+            public object GetDefaultValue()
+            {
+                return 999;
+            }
+        }
         
         protected class IndexWithDefaultValue : IBifoqlIndexSync, IDefaultValueSync
         {
