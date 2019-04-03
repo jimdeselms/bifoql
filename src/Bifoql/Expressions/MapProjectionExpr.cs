@@ -74,7 +74,7 @@ namespace Bifoql.Expressions
                     newDict[pair.Key] = pair.Value;
                 }
 
-                return new AsyncMap(newDict);
+                return new AsyncMap(newDict, null);
             }
             catch (Exception ex)
             {

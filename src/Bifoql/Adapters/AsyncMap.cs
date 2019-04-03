@@ -9,7 +9,7 @@ using Bifoql.Extensions;
 
 namespace Bifoql.Adapters
 {
-    internal class AsyncMap : AsyncObjectBase, IBifoqlMapInternal
+    internal class AsyncMap : AsyncObjectWithDefaultValueBase, IBifoqlMapInternal
     {
         private readonly BifoqlType _type;
 
@@ -23,7 +23,9 @@ namespace Bifoql.Adapters
 
         public Func<Task<IBifoqlObject>> this[string key] => _getters[key];
 
-        public AsyncMap(IReadOnlyDictionary<string, Func<Task<IBifoqlObject>>> getters, BifoqlType type=null)
+        public AsyncMap(IReadOnlyDictionary<string, Func<Task<IBifoqlObject>>> getters, 
+            Func<Task<IBifoqlObject>> defaultValue,
+            BifoqlType type=null) : base(defaultValue)
         {
             _getters = getters;
             _type = type;

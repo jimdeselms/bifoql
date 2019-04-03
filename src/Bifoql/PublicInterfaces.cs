@@ -29,6 +29,16 @@ namespace Bifoql
         IReadOnlyList<Func<Task<object>>> Items { get; }
     }
 
+    public interface IDefaultValue
+    {
+        Task<object> GetDefaultValue();
+    }
+
+    public interface IDefaultValueSync
+    {
+        object GetDefaultValue();
+    }
+
     public interface IBifoqlMap
     {
         IReadOnlyDictionary<string, Func<Task<object>>> Items { get; }

@@ -9,11 +9,12 @@ using Bifoql.Extensions;
 
 namespace Bifoql.Adapters
 {
-    internal class AsyncPureLookup : AsyncObjectBase, IBifoqlLookupInternal, IBifoqlLookup
+    internal class AsyncPureLookup : AsyncObjectWithDefaultValueBase, IBifoqlLookupInternal, IBifoqlLookup
     {
         private IBifoqlLookup _lookup;
 
-        public AsyncPureLookup(IBifoqlLookup lookup)
+        public AsyncPureLookup(IBifoqlLookup lookup, Func<Task<IBifoqlObject>> defaultValue)
+            : base(defaultValue)
         {
             _lookup = lookup;
         }
@@ -68,11 +69,12 @@ namespace Bifoql.Adapters
         }
     }
 
-    internal class SyncPureLookup : AsyncObjectBase, IBifoqlLookupInternal, IBifoqlLookupSync
+    internal class SyncPureLookup : AsyncObjectWithDefaultValueBase, IBifoqlLookupInternal, IBifoqlLookupSync
     {
         private IBifoqlLookupSync _lookup;
 
-        public SyncPureLookup(IBifoqlLookupSync lookup)
+        public SyncPureLookup(IBifoqlLookupSync lookup, Func<Task<IBifoqlObject>> defaultValue)
+            : base(defaultValue)
         {
             _lookup = lookup;
         }
@@ -125,7 +127,7 @@ namespace Bifoql.Adapters
         }
     }
 
-    internal class AsyncLookup : AsyncObjectBase, IBifoqlLookupInternal//IBifoqlMapInternal
+    internal class AsyncLookup : AsyncObjectWithDefaultValueBase, IBifoqlLookupInternal//IBifoqlMapInternal
     {
         private readonly BifoqlType _type;
 
@@ -139,7 +141,9 @@ namespace Bifoql.Adapters
 
         public Func<Task<IBifoqlObject>> this[string key] => _getters[key];
 
-        public AsyncLookup(IReadOnlyDictionary<string, Func<Task<IBifoqlObject>>> getters, BifoqlType type=null)
+        public AsyncLookup(IReadOnlyDictionary<string, Func<Task<IBifoqlObject>>> getters, 
+            Func<Task<IBifoqlObject>> defaultValue,
+            BifoqlType type=null) : base(defaultValue)
         {
             _getters = getters;
             _type = type;

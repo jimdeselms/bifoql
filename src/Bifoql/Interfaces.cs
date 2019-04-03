@@ -10,11 +10,16 @@ namespace Bifoql
         Task<bool> IsEqualTo(IBifoqlObject o);
     }
 
+    internal interface IBifoqlHasDefaultValue
+    {
+        Func<Task<IBifoqlObject>> GetDefaultValue();
+    }
+
     internal interface IBifoqlMapInternal : IBifoqlObject, IBifoqlLookupInternal, IReadOnlyDictionary<string, Func<Task<IBifoqlObject>>>
     {
     }
 
-    internal interface IBifoqlLookupInternal : IBifoqlObject
+    internal interface IBifoqlLookupInternal : IBifoqlObject, IBifoqlHasDefaultValue
     {
         Func<Task<IBifoqlObject>> this[string key] { get; }
         bool ContainsKey(string key);
@@ -35,7 +40,7 @@ namespace Bifoql
         Task<IBifoqlObject> Evaluate(QueryContext context);
     }
 
-    internal interface IBifoqlIndexInternal : IBifoqlObject
+    internal interface IBifoqlIndexInternal : IBifoqlObject, IBifoqlHasDefaultValue
     {
         Task<object> Lookup(IndexArgumentList elements);
     }

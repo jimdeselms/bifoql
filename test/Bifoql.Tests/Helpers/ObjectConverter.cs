@@ -32,7 +32,7 @@ namespace Bifoql.Tests.Helpers
                     dict[pair.Key] = () => Task.FromResult(ToBifoqlObject(pair.Value, valueSchema));
                 }
 
-                return new AsyncMap(dict, schema);
+                return new AsyncMap(dict, null, schema);
             }
 
             var jarr = j as JArray;
