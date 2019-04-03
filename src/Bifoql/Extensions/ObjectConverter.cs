@@ -12,6 +12,12 @@ namespace Bifoql.Extensions
     {
         internal static Task<object> ToSimpleObject(this IBifoqlObject o)
         {
+            var defaultVal = (o as IBifoqlHasDefaultValue)?.GetDefaultValue();
+            if (defaultVal != null)
+            {
+                return ToSimpleObject(defaultVal);
+            }
+
             var map = o as IBifoqlMapInternal;
             if (map != null) return ToSimpleObject(map);
 
@@ -40,6 +46,12 @@ namespace Bifoql.Extensions
             if (lookup != null) return ToSimpleObject(new AsyncError("query must resolve to leaf nodes"));
 
             return Task.FromResult<object>(null);
+        }
+
+        private static async Task<object> ToSimpleObject(Func<Task<IBifoqlObject>> defaultValue)
+        {
+            var obj = await defaultValue();
+            return await obj.ToSimpleObject();
         }
 
         private static async Task<object> ToSimpleObject(IBifoqlMapInternal lookup)

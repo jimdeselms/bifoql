@@ -369,7 +369,7 @@ namespace Bifoql.Expressions
                 resultDict[key] = valueList[i];
             }
 
-            return new AsyncLookup(resultDict);
+            return new AsyncLookup(resultDict, null);
         }
     }
 }

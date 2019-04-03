@@ -223,6 +223,11 @@ namespace Bifoql.Tests
                 throw new NotImplementedException();
             }
 
+            public Func<Task<IBifoqlObject>> GetDefaultValue()
+            {
+                return null;
+            }
+
             public IEnumerator<KeyValuePair<string, Func<Task<IBifoqlObject>>>> GetEnumerator()
             {
                 throw new NotImplementedException();

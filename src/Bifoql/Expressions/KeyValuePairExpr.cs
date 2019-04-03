@@ -22,7 +22,7 @@ namespace Bifoql.Expressions
                 [Key] = () => Value.Apply(context)
             };
 
-            return Task.FromResult<IBifoqlObject>(new AsyncLookup(dict));
+            return Task.FromResult<IBifoqlObject>(new AsyncLookup(dict, null));
         }
 
        public override string ToString()

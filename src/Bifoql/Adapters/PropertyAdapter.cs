@@ -59,7 +59,7 @@ namespace Bifoql.Adapters
                     p => p.Key,
                     p => (Func<Task<IBifoqlObject>>)(() => p.Value(@object)));
 
-                return new AsyncLookup(getters);
+                return new AsyncLookup(getters, null);
             }
        }
     }

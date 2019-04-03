@@ -41,7 +41,7 @@ namespace Bifoql
             {
                 foreach (var pair in arguments)
                 {
-                    variables = variables.AddVariable(pair.Key.TrimStart('$'), pair.Value.ToBifoqlObject());
+                    variables = variables.AddVariable(pair.Key.TrimStart('$').ToLower(), pair.Value.ToBifoqlObject());
                 }
             }
 
