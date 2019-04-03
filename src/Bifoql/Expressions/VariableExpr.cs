@@ -17,7 +17,7 @@ namespace Bifoql.Expressions
         protected override Task<IBifoqlObject> DoApply(QueryContext context)
         {
             IBifoqlObject value;
-            if (context.Variables.TryGetValue(Name, out value))
+            if (context.Variables.TryGetValue(Name.ToLower(), out value))
             {
                 return Task.FromResult(value);
             }

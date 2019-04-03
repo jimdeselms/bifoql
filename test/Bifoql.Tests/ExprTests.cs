@@ -505,6 +505,19 @@ namespace Bifoql.Tests
         }
 
         [Fact]
+        public void VariableCaseInsensitivity()
+        {
+            var args = new Dictionary<string, object>() { ["x"] = 2};
+            RunTest(expected: 2, query: "$x", arguments: args);
+            RunTest(expected: 2, query: "$X", arguments: args);
+
+            var argsUppercase = new Dictionary<string, object>() { ["X"] = 2};
+            RunTest(expected: 2, query: "$x", arguments: argsUppercase);
+            RunTest(expected: 2, query: "$X", arguments: argsUppercase);
+        }
+        
+
+        [Fact]
         public void VariableScopingWithArray()
         {
             RunTest(

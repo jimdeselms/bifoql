@@ -44,6 +44,7 @@ namespace Bifoql
 
         public VariableScope AddVariable(string key, IBifoqlObject value)
         {
+            key = key.ToLower();
             if (ContainsKey(key))
             {
                 throw new Exception($"Variable {key} already defined");
