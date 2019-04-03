@@ -508,11 +508,19 @@ namespace Bifoql
                     while (true)
                     {
                         var variable = Match("ID");
-                        Match(":");
-                        var value = ParseExpr();
+                        var next = GetToken();
+                        if (next.Kind == ":")
+                        {
+                            Match(":");
+                            var value = ParseExpr();
 
-                        lookupArguments.Add(variable.Text, value);
-
+                            lookupArguments.Add(variable.Text, value);
+                        }
+                        else
+                        {
+                            var trueValue = new LiteralExpr(GetLocation(variable), new AsyncBoolean(true));
+                            lookupArguments.Add(variable.Text, trueValue);
+                        }
                         if (GetToken().Kind == ")")
                         {
                             break;

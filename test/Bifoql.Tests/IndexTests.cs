@@ -37,26 +37,48 @@ namespace Bifoql.Tests
                 query: "$()",
                 input: new Greeting().ToBifoqlObject());
         }
-        
+
+        [Fact]
+        public void IndexAcceptsIdByItselfAsBooleanTrue()
+        {
+            RunTest(
+                expected: "WORLD",
+                query: "$(key: 'hello', capitalize)",
+                input: new Greeting().ToBifoqlObject());
+            RunTest(
+                expected: "WORLD",
+                query: "$(capitalize, key: 'hello')",
+                input: new Greeting().ToBifoqlObject());
+            RunTest(
+                expected: "BAR",
+                query: "$(capitalize)",
+                input: new Greeting().ToBifoqlObject());
+        }        
         protected class Greeting : IBifoqlIndexSync
         {
             public object Lookup(IIndexArgumentList args)
             {
                 var id = args.TryGetStringParameter("key");
+                var capitalize = args.TryGetBooleanParameter("capitalize") == true;
+
                 id = id ?? "foo";
+
+                string result = null;
 
                 if (id == "hello")
                 {
-                    return "world";
+                    result = "world";
                 }
                 else if (id == "foo")
                 {
-                    return "bar";
+                    result = "bar";
                 }
                 else
                 {
-                    return null;
+                    result = null;
                 }
+
+                return capitalize ? result?.ToUpper() : result;
             }
         }
     }
