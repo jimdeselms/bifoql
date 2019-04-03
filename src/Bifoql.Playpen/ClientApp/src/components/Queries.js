@@ -43,16 +43,18 @@ export const Queries = () => (
   }
 }`} />
 
-    <p>This query asks for customer 232, and then it constructs a JSON snipped based on the requested values. I want the "phone" field, and then from the "address" field, I want the "zipCode."</p>
+    <p>This query asks for customer 232, and then it constructs a JSON snippet based on the requested values. I want the "phone" field, and then from the "address" field, I want the "zipCode."</p>
 
     <p>This is nice, but I might want to make it a little tidier:</p>
 
-    <Playpen query={`customer.byRange(startAt: 1000, take: 2)
+    <Playpen query={`customer.byRange(startAt: 123, take: 2)
 {
   name,
   street: address.street,
+  zip: addres.zip,
   dob { day, month }
 }`} />
+
 
     <p>Bifoql allows you to remap an object's fields and give them new names, or reach down into the object and grab fields. It makes for a more concise response.
     In this example, `zipCode: address.zipCode` means that we're getting the "zipCode" field from the customer's "address", and we're putting that into a new field called "zip".</p>
@@ -68,7 +70,7 @@ export const Queries = () => (
 
     <p>In addition to pulling fields off of objects, you can also request arrays of objects. In these queries, we'll use another index provided by our service, `byRange`.</p>
 
-    <Playpen query="customer.byRange(startAt: 1000, take: 5).dob.year" />
+    <Playpen query="customer.byRange(startAt: 200, take: 5).dob.year" />
 
     <p>In our test service, the <code>person</code> object exposes a <code>byRange</code> index which allows you to specify a starting point, and the number of customers to return.</p> <aside>Note that Bifoql
     doesn't natively do anything to limit the size of your result set; it's up to the implementor to put in limits to prevent clients from downloading too much data. (More on that later.)</aside>
@@ -180,18 +182,20 @@ export const Queries = () => (
 
     Bifoql has a number of built-in queries.
 
-    <h3>length</h3>
+    <h3>count</h3>
 
     You can use this to get the length of an array. 
-    <Playpen query="customer.all() [? starts_with(name, 'Linda')] | length(@)" />
+    <Playpen query="customer.all() [? starts_with(name, 'Linda')] | count(@)" />
 
-    <aside>Similar to filters and slices, <code>length</code> runs on the server, which allows the client to get a very tiny result.
+    <aside>Similar to filters and slices, <code>count</code> runs on the server, which allows the client to get a very tiny result.
     However, service designers should still limit their APIs so that they don't return too much data, as the server
     will still need to count that result set. Alternatively, the service can offer explicit APIs for getting counts, and
     these services can be implemented as efficiently as necessary.</aside>
 
     <h3>sort</h3>
-    This allows you to sort a result. Sort works on 
+    This allows you to sort a result. 
+
+    <h3>tbd</h3>
 </div>
 );
 

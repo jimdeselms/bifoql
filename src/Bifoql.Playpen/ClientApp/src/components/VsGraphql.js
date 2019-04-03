@@ -194,7 +194,7 @@ takes the value on the left side and pipes it into the left side.</p>
   supports this as well. Here's a GraphQL with variables:
 </p>
 
-<GraphqlExample code={`query HeroNameAndFriends($episode: Episode) {
+<GraphqlExample text={`query HeroNameAndFriends($episode: Episode) {
   hero(episode: $episode) {
     name
     friends {
@@ -245,7 +245,7 @@ takes the value on the left side and pipes it into the left side.</p>
   length: length ?? undefined
 }`} />
 
-<aside>The expression <code>height ?? undefined</code> will take the "height" property of the current object, and if that's null, it'll be an error. In Bifoql, if an expression resolves to null, undefined, or an
+<aside>The expression <code>height ?? undefined</code> will take the "height" property of the current object, and if that's not defined, it'll be an error. In Bifoql, if an expression resolves to null, undefined, or an
 error, it can be replaced with another value with the <code>??</code> operator. You can also use this technique to specify substitute values.</aside>
 
 <h2>Things you can't do with GraphQL</h2>
