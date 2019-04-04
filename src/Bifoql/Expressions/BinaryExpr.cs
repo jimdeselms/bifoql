@@ -4,6 +4,7 @@ namespace Bifoql.Expressions
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Bifoql.Adapters;
+    using Bifoql.Extensions;
 
     internal class BinaryExpr : Expr
     {
@@ -26,6 +27,7 @@ namespace Bifoql.Expressions
         protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
             var lhs = await LeftHandSide.Apply(context);
+            lhs = await lhs.GetDefaultValue();
 
             if (Operator == "??")
             {
@@ -60,6 +62,7 @@ namespace Bifoql.Expressions
 
                 // Okay, now we have to do the right hand side
                 var rightHandValue = await RightHandSide.Apply(context);
+                rightHandValue = await rightHandValue.GetDefaultValue();
                 if (rightHandValue is IBifoqlError) return rightHandValue;
                 
                 var rhsBool = rightHandValue as IBifoqlBoolean;
@@ -73,7 +76,7 @@ namespace Bifoql.Expressions
             if (Operator == "==" && LeftHandSide == RightHandSide) return new AsyncBoolean(true);
 
             var rhs = await RightHandSide.Apply(context);
-            
+            rhs = await rhs.GetDefaultValue();            
             // Propagate error
             if (rhs is IBifoqlError) return rhs;
 

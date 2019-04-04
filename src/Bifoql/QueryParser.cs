@@ -49,7 +49,7 @@ namespace Bifoql
                     operators: new [] { 
                         "|", "|<", "&", ".", "(", "[?", "[", "{", "}", "]", ")", ".", "@", "*", 
                         "?", ":", ",", "-", "+", "/", "%", "==", "!=", "&&", "||", "??", "..",
-                        "<", "<=", ">", ">=", "=", "$", ";", "..." },
+                        "<", "<=", ">", ">=", "=", "$", ";", "...", "!" },
                     charKind: "STRING",
                     charsMustBeOneChar: false,
                     backtickStringKind: "STRING",
@@ -332,6 +332,13 @@ namespace Bifoql
                     "eval", 
                     new List<Expr> {innerExpression}, 
                     BuiltinFunctions.Eval);
+            }
+            else if (token.Kind == "!")
+            {
+                Match("!");
+
+                var innerExpression = ParseUnaryExpr();
+                return new UnaryExpr(GetLocation(token), "!", innerExpression);
             }
             else
             {

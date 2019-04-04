@@ -4,6 +4,7 @@ namespace Bifoql.Expressions
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Bifoql.Adapters;
+    using Bifoql.Extensions;
 
     internal class UnaryExpr : Expr
     {
@@ -24,6 +25,7 @@ namespace Bifoql.Expressions
         protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
             var value = await _innerExpression.Apply(context);
+            value = await value.GetDefaultValue();
 
             // Propagate error.
             if (value is IBifoqlError) return value;
@@ -39,6 +41,33 @@ namespace Bifoql.Expressions
                 else
                 {
                     return new AsyncError(this.Location, "Can't take negative of non-number");
+                }
+            }
+            else if (_operator == "!")
+            {
+                var b = value as IBifoqlBoolean;
+                if (b != null)
+                {
+                    var val = await b.Value;
+                    return new AsyncBoolean(!val);
+                }
+                else if (value is IBifoqlNull || value is IBifoqlUndefined || value is IBifoqlError)
+                {
+                    return new AsyncBoolean(true);
+                }
+                else if (value is IBifoqlString)
+                {
+                    var val = await ((IBifoqlString)value).Value;
+                    return new AsyncBoolean(string.IsNullOrEmpty(val));
+                }
+                else if (value is IBifoqlArrayInternal)
+                {
+                    var count = ((IBifoqlArrayInternal)value).Count;
+                    return new AsyncBoolean(count == 0);
+                }
+                else
+                {
+                    return new AsyncBoolean(false);
                 }
             }
 

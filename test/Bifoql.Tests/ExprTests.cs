@@ -346,6 +346,47 @@ namespace Bifoql.Tests
                 expected: -5,
                 query: "-5"
             );
+            RunTest(
+                expected: -5,
+                query: "$i = 5; -$i"
+            );
+        }
+
+        [Fact]
+        public void Not()
+        {
+            RunTest(
+                expected: true,
+                query: "!false"
+            );
+            RunTest(
+                expected: false,
+                query: "!true"
+            );
+            RunTest(
+                expected: true,
+                query: "!null"
+            );
+            RunTest(
+                expected: true,
+                query: "!undefined"
+            );
+            RunTest(
+                expected: false,
+                query: "!'not boolean'"
+            );
+            RunTest(
+                expected: true,
+                query: "!''"
+            );
+            RunTest(
+                expected: false,
+                query: "![1]"
+            );
+            RunTest(
+                expected: true,
+                query: "![]"
+            );
         }
 
         [Fact]

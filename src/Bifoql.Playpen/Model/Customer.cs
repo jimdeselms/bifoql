@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Bifoql.Playpen.Model
 {
@@ -56,9 +57,21 @@ namespace Bifoql.Playpen.Model
                 case "dob": result = () => new RandomDate(random); break;
                 case "address": result = () => new Address(random.Next()); break;
                 case "phone": result = () => RandomPicker.Pick(random, 100, 999) + "-" + RandomPicker.Pick(random, 100, 999) + "-" + RandomPicker.Pick(random, 1000, 9999); break;
+                case "friends": result = () => PickFriends(random); break;
                 default: result = null; break;
             }
             return result != null;
+        }
+
+        private object PickFriends(Random r)
+        {
+            var count = r.Next(0,6);
+            var friends = new List<object>();
+            for (int i = 0; i < count; i++)
+            {
+                friends.Add(new Customer(r.Next(CUSTOMER_COUNT)));
+            }
+            return friends;
         }
     }
 

@@ -155,6 +155,64 @@ namespace Bifoql.Tests
                 query: "@ |< a");
         }
 
+        [Fact]
+        public void DefaultFromIndexInBinaryExpr()
+        {
+            RunTest(
+                input: new IndexWithDefaultValue(5),
+                expected: 10,
+                query: "@ * 2");
+            RunTest(
+                input: new IndexWithDefaultValue(5),
+                expected: 10,
+                query: "2 * @");
+            RunTest(
+                input: new IndexWithDefaultValue(true),
+                expected: true,
+                query: "@ && true");
+            RunTest(
+                input: new IndexWithDefaultValue(true),
+                expected: true,
+                query: "false || @");
+            RunTest(
+                input: new IndexWithDefaultValue(new { x= 5 }),
+                expected: 10,
+                query: "@.x * 2");
+            RunTest(
+                input: new IndexWithDefaultValue(new { x= 5 }),
+                expected: 10,
+                query: "2 * @.x");
+            RunTest(
+                input: new IndexWithDefaultValue(new { x= true }),
+                expected: true,
+                query: "@.x && true");
+            RunTest(
+                input: new IndexWithDefaultValue(new { x= true }),
+                expected: true,
+                query: "false || @.x");
+        }
+
+        [Fact]
+        public void DefaultFromIndexInUnaryExpr()
+        {
+            RunTest(
+                input: false,
+                expected: true,
+                query: "!@");
+            RunTest(
+                input: new IndexWithDefaultValue(100),
+                expected: -100,
+                query: "-(@)");
+            RunTest(
+                input: new IndexWithDefaultValue(new { a = false }),
+                expected: true,
+                query: "!(@.a)");
+            RunTest(
+                input: new IndexWithDefaultValue(new { a = 100 }),
+                expected: -100,
+                query: "-(@.a)");
+        }
+
         private class MyPoco : IDefaultValueSync
         {
             public string Name { get { return "Bill"; }}
