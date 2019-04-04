@@ -7,6 +7,8 @@ namespace Bifoql.Extensions
     using System.Threading.Tasks;
     using Bifoql.Adapters;
     using Bifoql.Types;
+    using System.Collections.ObjectModel;
+    using Bifoql.Expressions;
 
     public static class BifoqlExtensions
     {
@@ -16,10 +18,12 @@ namespace Bifoql.Extensions
 
             if (o == null) return AsyncNull.Instance;
 
-            var defaultValue = GetDefaultValue(o);
+            var defaultValue = GetDefaultValueFunc(o);
 
-            if (o is IBifoqlArray) return ConvertAsyncArray((IBifoqlArray)o);
-            if (o is IBifoqlArraySync) return ConvertSyncArray((IBifoqlArraySync)o);
+            IBifoqlObject result;
+
+            if (o is IBifoqlArray) result = ConvertAsyncArray((IBifoqlArray)o);
+            if (o is IBifoqlArraySync) result = ConvertSyncArray((IBifoqlArraySync)o);
 
             if (o is IBifoqlMap) return ConvertAsyncMap((IBifoqlMap)o, defaultValue);
             if (o is IBifoqlMapSync) return ConvertSyncMap((IBifoqlMapSync)o, defaultValue);
@@ -46,8 +50,45 @@ namespace Bifoql.Extensions
             return PropertyAdapter.Create(o, o.GetType(), defaultValue);
         }
 
-        internal static Func<Task<IBifoqlObject>> GetDefaultValue(object o)
+        internal static async Task<IBifoqlObject> GetDefaultValue(this IBifoqlObject o)
         {
+            var func = GetDefaultValueFunc(o);
+            return func == null
+                ? o
+                : await func();
+        }
+
+        internal static async Task<IBifoqlObject> GetDefaultValueFromIndex(this IBifoqlObject o)
+        {
+            var func = GetDefaultValueFromIndexFunc(o);
+            return func == null
+                ? o
+                : await func();
+        }
+
+        private static Func<Task<IBifoqlObject>> GetDefaultValueFunc(IBifoqlObject o)
+        {
+            var hasDefault = o as IBifoqlHasDefaultValue;
+            if (hasDefault != null)
+            {
+                return hasDefault.GetDefaultValue();
+            }
+            return null;
+        }
+
+        private static Func<Task<IBifoqlObject>> GetDefaultValueFunc(object o)
+        {
+            var fromIndex = GetDefaultValueFromIndexFunc(o);
+            if (fromIndex != null)
+            {
+                return fromIndex;
+            }
+
+            if (o is IBifoqlObject)
+            {
+                return GetDefaultValueFunc((IBifoqlObject)o);
+            }
+
             var defaultValue = o as IDefaultValue;
             if (defaultValue != null)
             {
@@ -66,6 +107,73 @@ namespace Bifoql.Extensions
             return null;
         }
 
+        private static Func<Task<IBifoqlObject>> GetDefaultValueFromIndexFunc(IBifoqlObject o)
+        {
+            if (o is IBifoqlIndexInternal)
+            {
+                if (o is IBifoqlHasDefaultValue)
+                {
+                    return ((IBifoqlHasDefaultValue)o).GetDefaultValue();
+                }
+
+                // Pass zero arguments to the index.
+                return async () => {
+                    var obj = await ((IBifoqlIndexInternal)o).Lookup(IndexArgumentList.CreateEmpty());
+                    return obj.ToBifoqlObject();
+                };
+            }
+
+            return null;
+        }
+
+        private static Func<Task<IBifoqlObject>> GetDefaultValueFromIndexFunc(object o)
+        {
+            if (o is IBifoqlObject)
+            {
+                return GetDefaultValueFromIndexFunc((IBifoqlObject)o);
+            }
+
+            // For a key, we want to get the default value only if the thing before it is an index; it doesn't
+            // make sense to look up keys on an index after all.
+            if (o is IBifoqlIndex || o is IBifoqlIndexSync)
+            {
+                // First, is there a default value?
+                if (o is IDefaultValue)
+                {
+                    var defaultValue = ((IDefaultValue)o).GetDefaultValue();
+                    if (defaultValue != null)
+                    {
+                        return async () => (await defaultValue).ToBifoqlObject();
+                    }
+                }
+                else if (o is IDefaultValueSync)
+                {
+                    var defaultValue = ((IDefaultValueSync)o).GetDefaultValue();
+                    if (defaultValue != null)
+                    {
+                        return () => Task.FromResult(defaultValue.ToBifoqlObject());
+                    }
+                } 
+                else if (o is IBifoqlIndex)
+                {
+                    return async () => {
+                        var value = await ((IBifoqlIndex)o).Lookup(IndexArgumentList.CreateEmpty());
+                        return value.ToBifoqlObject();
+                    };
+                }
+                else if (o is IBifoqlIndexSync)
+                {
+                    return () => {
+                        var value = ((IBifoqlIndexSync)o).Lookup(IndexArgumentList.CreateEmpty());
+                        return Task.FromResult(value.ToBifoqlObject());
+                    };
+                }
+
+                throw new Exception("UNEXPECTED");
+            }
+
+            return null;
+        }
         internal static IBifoqlObject ToBifoqlMap(this IDictionary dictionary)
         {
             return ConvertDictionary(dictionary, toLookup: false);

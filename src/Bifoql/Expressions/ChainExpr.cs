@@ -5,6 +5,7 @@ namespace Bifoql.Expressions
     using System.Collections.Generic;
     using Bifoql.Adapters;
     using System;
+    using Bifoql.Extensions;
 
     internal enum ChainBehavior
     {
@@ -35,6 +36,8 @@ namespace Bifoql.Expressions
         {
             var result = await _first.Apply(context, resolveDeferred: false);
 
+            result = await result.GetDefaultValue();
+
             // Propagate errors.
             if (result is IBifoqlError) return result;
 
@@ -53,7 +56,8 @@ namespace Bifoql.Expressions
 
                 foreach (var entry in array)
                 {
-                    var newContext = context.ReplaceTarget(await entry());
+                    var entryValue = await entry();
+                    var newContext = context.ReplaceTarget(entryValue);
                     resultList.Add(() => _next.Apply(newContext));
                 }
 

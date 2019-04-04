@@ -5,6 +5,7 @@ namespace Bifoql.Expressions
     using System.Collections.Generic;
     using System.Linq;
     using Bifoql.Adapters;
+    using Bifoql.Extensions;
 
     internal class FilterExpr : Expr
     {
@@ -29,6 +30,8 @@ namespace Bifoql.Expressions
             var target = Target == null
                 ? context.QueryTarget
                 : await Target.Apply(context, resolveDeferred: false);
+
+            target = await target.GetDefaultValueFromIndex();
 
             // Propagate errors.
             if (target is IBifoqlError) return target;

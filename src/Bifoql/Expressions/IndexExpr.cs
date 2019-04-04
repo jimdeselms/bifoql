@@ -5,6 +5,7 @@ namespace Bifoql.Expressions
     using System.Linq;
     using System.Threading.Tasks;
     using Bifoql.Adapters;
+    using Bifoql.Extensions;
 
     internal class IndexExpr : Expr
     {
@@ -24,6 +25,8 @@ namespace Bifoql.Expressions
             var target = _target == null
                 ? context.QueryTarget
                 : await _target.Apply(context, resolveDeferred: false);
+
+            target = await target.GetDefaultValueFromIndex();
 
             // Propagate errors
             if (target is IBifoqlError) return target;

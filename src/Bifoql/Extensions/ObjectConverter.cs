@@ -39,6 +39,9 @@ namespace Bifoql.Extensions
             var err = o as IBifoqlError;
             if (err != null) return ToSimpleObject(err);
 
+            var index = o as IBifoqlIndexInternal;
+            if (index != null) return ToSimpleObject(index);
+
             // Lookups can only be resolved through a query.
             // Making this undefined means that lookups will also be
             // excluded from dictionaries and arrays.
@@ -52,6 +55,20 @@ namespace Bifoql.Extensions
         {
             var obj = await defaultValue();
             return await obj.ToSimpleObject();
+        }
+
+        private static async Task<object> ToSimpleObject(IBifoqlIndexInternal index)
+        {
+            // TODO - index lookup probably should return IBifoqlObject, not object.
+            var resultWithZeroArgs = await index.Lookup(IndexArgumentList.CreateEmpty());
+            if (resultWithZeroArgs is IBifoqlObject)
+            {
+                return await ((IBifoqlObject)resultWithZeroArgs).ToSimpleObject();
+            }
+            else
+            {
+                return resultWithZeroArgs;
+            }
         }
 
         private static async Task<object> ToSimpleObject(IBifoqlMapInternal lookup)

@@ -15,15 +15,41 @@ namespace Bifoql.Tests
         public void IndexWithDefaultValueTest()
         {
             RunTest(
-                input: new { foo = new IndexWithDefaultValue() },
+                input: new { foo = new IndexWithDefaultValue("HI") },
                 expected: "HI",
                 query: "foo");
             RunTest(
-                input: new { foo = new IndexWithDefaultValue() },
+                input: new { foo = new IndexWithDefaultValue("HI") },
                 expected: "y",
                 query: "foo(id: 'x')");
         }
-        
+
+        [Fact]
+        public void IndexWithoutDefaultValueAssumesZeroParametersTest()
+        {
+            RunTest(
+                input: new { foo = new IndexWithoutDefaultValue("didntPassX") },
+                expected: "didntPassX",
+                query: "foo");
+            RunTest(
+                input: new { foo = new IndexWithoutDefaultValue("didntPassX") },
+                expected: "passedX",
+                query: "foo(id: 'x')");
+        }
+
+        [Fact]
+        public void IndexWithComplexDefaultValueTest()
+        {
+            RunTest(
+                input: new { foo = new IndexWithDefaultValue(new { a = 1, b = 2 }) },
+                expected: 2,
+                query: "foo.b");
+            RunTest(
+                input: new { foo = new IndexWithDefaultValue( new { a = 1, b = 2 }) },
+                expected: "y",
+                query: "foo(id: 'x')");
+        }
+
         [Fact]
         public void MapWithDefaultValueTest()
         {
@@ -41,11 +67,11 @@ namespace Bifoql.Tests
         public void LookupWithDefaultValueTest()
         {
             RunTest(
-                input: new LookupWithDefaultValue(),
+                input: new LookupWithDefaultValue(123),
                 expected: 123,
                 query: "@");
             RunTest(
-                input: new LookupWithDefaultValue(),
+                input: new LookupWithDefaultValue("howdy"),
                 expected: "howdy",
                 query: "@.x");
         }
@@ -63,6 +89,72 @@ namespace Bifoql.Tests
                 query: "@.Name");
         }
 
+        [Fact]
+        public void DefaultFromIndexBeforeKey()
+        {
+            RunTest(
+                input: new IndexWithoutDefaultValue(new { a = 'b'}),
+                expected: "b",
+                query: "@.a");
+            RunTest(
+                input: new IndexWithDefaultValue(new { a = 'b'}),
+                expected: "b",
+                query: "@.a");
+        }
+
+        [Fact]
+        public void DefaultFromIndexAfterBeforeArrayIndex()
+        {
+            RunTest(
+                input: new IndexWithoutDefaultValue(new [] { 5 }),
+                expected: 5,
+                query: "@[0]");
+            RunTest(
+                input: new IndexWithDefaultValue(new [] { 6 }),
+                expected: 6,
+                query: "@[0]");
+        }
+
+        [Fact]
+        public void DefaultFromIndexAfterBeforeFilter()
+        {
+            RunTest(
+                input: new IndexWithoutDefaultValue(new [] { new { a = 5} }),
+                expected: 5,
+                query: "@[? a == 5][0].a");
+            RunTest(
+                input: new IndexWithDefaultValue(new [] { new { a = 6} }),
+                expected: 6,
+                query: "@[? a == 6][0].a");
+        }
+
+
+        [Fact]
+        public void DefaultFromIndexAfterBeforeChain()
+        {
+            RunTest(
+                input: new IndexWithDefaultValue(new { a = "hello"}),
+                expected: "hello",
+                query: "@ | a");
+            RunTest(
+                input: new IndexWithoutDefaultValue(new { a = "hello"}),
+                expected: "hello",
+                query: "@ | a");
+        }
+
+        [Fact]
+        public void DefaultFromIndexAfterBeforeMultiChain()
+        {
+            RunTest(
+                input: new IndexWithDefaultValue(new [] { new { a = "hello"}, new { a = "goodbye" }}),
+                expected: new [] { "hello", "goodbye" },
+                query: "@ |< a");
+            RunTest(
+                input: new IndexWithoutDefaultValue(new [] { new { a = "hello"}, new { a = "goodbye" }}),
+                expected: new [] { "hello", "goodbye" },
+                query: "@ |< a");
+        }
+
         private class MyPoco : IDefaultValueSync
         {
             public string Name { get { return "Bill"; }}
@@ -73,11 +165,46 @@ namespace Bifoql.Tests
             }
         }
         
-        protected class IndexWithDefaultValue : IBifoqlIndexSync, IDefaultValueSync
+        internal class IndexWithDefaultValue : IBifoqlIndexSync, IDefaultValueSync
+        {
+            private readonly object _value;
+
+            public IndexWithDefaultValue(object value)
+            {
+                _value = value;
+            }
+            public object GetDefaultValue()
+            {
+                return _value;
+            }
+
+            public object Lookup(IIndexArgumentList args)
+            {
+                if (args.TryGetStringParameter("id") == "x") return "y";
+                return null;
+            }
+        }
+
+        internal class IndexWithoutDefaultValue : IBifoqlIndexSync
+        {
+            private readonly object _value;
+
+            public IndexWithoutDefaultValue(object value)
+            {
+                _value = value;
+            }
+            public object Lookup(IIndexArgumentList args)
+            {
+                if (args.TryGetStringParameter("id") == "x") return "passedX";
+                return _value;
+            }
+        }
+
+        protected class IndexWithComplexDefaultValue : IBifoqlIndexSync, IDefaultValueSync
         {
             public object GetDefaultValue()
             {
-                return "HI";
+                return new { a = 1, b = 2 };
             }
 
             public object Lookup(IIndexArgumentList args)
@@ -102,9 +229,15 @@ namespace Bifoql.Tests
 
         protected class LookupWithDefaultValue : IBifoqlLookupSync, IDefaultValueSync
         {
+            private readonly object _defaultValue;
+
+            internal LookupWithDefaultValue(object defaultValue)
+            {
+                _defaultValue = defaultValue;
+            }
             public object GetDefaultValue()
             {
-                return 123;
+                return _defaultValue;
             }
 
             public bool TryGetValue(string key, out Func<object> result)

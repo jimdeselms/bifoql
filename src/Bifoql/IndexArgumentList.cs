@@ -22,6 +22,11 @@ namespace Bifoql
         private readonly IReadOnlyDictionary<string, object> _entries;
         internal IBifoqlError ErrorResult { get; }
 
+        internal static IndexArgumentList CreateEmpty()
+        {
+            return new IndexArgumentList(new Dictionary<string, object>(), null);
+        }
+
         internal static async Task<IndexArgumentList> Create(IReadOnlyDictionary<string, Expr> entries, QueryContext context)
         {
             var values = new Dictionary<string, object>();
