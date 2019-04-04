@@ -10,16 +10,16 @@ namespace Bifoql.CommandLine
 
     public static class ObjectConverter
     {
-        internal static IBifoqlObject ToAsyncObject(object o, BifoqlType schema=null)
+        internal static IBifoqlObject ToAsyncObject(object o)
         {
             if (o == null) return AsyncNull.Instance;
 
-            if (o is JObject || o is JArray || o is JToken || o is JValue) return ConvertJToken(o, schema);
+            if (o is JObject || o is JArray || o is JToken || o is JValue) return ConvertJToken(o);
 
-            return Bifoql.Extensions.BifoqlExtensions.ToBifoqlObject(o, schema);
+            return Bifoql.Extensions.BifoqlExtensions.ToBifoqlObject(o);
         }
 
-        private static IBifoqlObject ConvertJToken(object j, BifoqlType schema)
+        private static IBifoqlObject ConvertJToken(object j)
         {
             var jobj = j as JObject;
             if (jobj != null)
@@ -27,11 +27,10 @@ namespace Bifoql.CommandLine
                 var dict = new Dictionary<string, Func<Task<IBifoqlObject>>>();
                 foreach (var pair in jobj)
                 {
-                    var valueSchema = schema?.GetKeyType(pair.Key);
-                    dict[pair.Key] = () => Task.FromResult(ToAsyncObject(pair.Value, valueSchema));
+                    dict[pair.Key] = () => Task.FromResult(ToAsyncObject(pair.Value));
                 }
 
-                return new AsyncMap(dict, schema);
+                return new AsyncMap(dict, null);
             }
 
             var jarr = j as JArray;
@@ -39,14 +38,12 @@ namespace Bifoql.CommandLine
             {
                 var arr = new List<Func<Task<IBifoqlObject>>>();
 
-                int i = 0;
                 foreach (var el in jarr)
                 {
-                    var elementType = schema?.GetElementType(i++);
-                    arr.Add(() => Task.FromResult(ToAsyncObject(el, elementType)));
+                    arr.Add(() => Task.FromResult(ToAsyncObject(el)));
                 }
 
-                return new AsyncArray(arr, schema);
+                return new AsyncArray(arr);
             }
 
             var jval = j as JValue;

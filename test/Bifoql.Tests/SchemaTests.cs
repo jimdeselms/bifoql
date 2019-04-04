@@ -88,10 +88,25 @@ namespace Bifoql.Tests
                 BifoqlType.Property("burger", BifoqlType.Tuple(BifoqlType.Boolean), "A tasty burger\nyum!"),
                 BifoqlType.Property("street", BifoqlType.String, "The street")));
 
-            System.IO.File.WriteAllText("d:\\foo.txt", type.BuildDocumentation());
             Assert.Equal(expected, type.BuildDocumentation());
         }
 
+        [Fact]
+        public void MapWithOverloadedLookups()
+        {
+            var expected =
+@"{
+    foo: string,
+    foo: (id: number) => string
+}";
+            var type = new Schema(BifoqlType.Map(
+                BifoqlType.Property("foo", BifoqlType.String),
+                BifoqlType.Property("foo", BifoqlType.Index(BifoqlType.String,
+                    BifoqlType.IndexParameter("id", BifoqlType.Number)
+                ))));
+
+            Assert.Equal(expected, type.BuildDocumentation());
+        }
         [Fact]
         public void OptionalTypes()
         {
@@ -103,9 +118,9 @@ namespace Bifoql.Tests
         {
             var type = new Schema(BifoqlType.Index(BifoqlType.String,
                 BifoqlType.IndexParameter("a", BifoqlType.Number, true),
-                BifoqlType.IndexParameter("b", BifoqlType.Boolean))
-            );
-            Assert.Equal("(a?: number, b: boolean) => string", type.BuildDocumentation());
+                BifoqlType.IndexParameter("b", BifoqlType.Boolean),
+                BifoqlType.IndexSwitch("c")));
+            Assert.Equal("(a?: number, b: boolean, c?: boolean) => string", type.BuildDocumentation());
         }
 
         [Fact]

@@ -25,7 +25,7 @@ namespace Bifoql
             return new Query(simplified);
         }
 
-        public async Task<object> Run(object queryTarget, IReadOnlyDictionary<string, object> arguments=null, bool validateSchema=false)
+        public async Task<object> Run(object queryTarget, IReadOnlyDictionary<string, object> arguments=null)
         {
             var obj = await GetResult(queryTarget, arguments);
 

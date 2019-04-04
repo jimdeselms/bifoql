@@ -7,14 +7,11 @@ namespace Bifoql.Adapters
     internal class AsyncIndex : AsyncObjectWithDefaultValueBase, IBifoqlIndexInternal
     {
         private readonly Func<IndexArgumentList, Task<object>> _lookup;
-        private readonly BifoqlType _schema;
 
         public AsyncIndex(Func<IndexArgumentList, Task<object>> lookup, 
-            Func<Task<IBifoqlObject>> defaultValue,
-            BifoqlType schema=null) : base(defaultValue)
+            Func<Task<IBifoqlObject>> defaultValue) : base(defaultValue)
         {
             _lookup = lookup;
-            _schema = schema;
         }
 
         public Task<bool> IsEqualTo(IBifoqlObject other)

@@ -6,12 +6,10 @@ namespace Bifoql.Adapters
     internal class AsyncBoolean : AsyncObjectBase, IBifoqlBoolean
     {
         public Task<bool> Value { get; }
-        private BifoqlType _schema;
 
-        public AsyncBoolean(bool value, BifoqlType schema=null)
+        public AsyncBoolean(bool value)
         {
             Value = Task.FromResult(value);
-            _schema = schema ?? BifoqlType.Boolean;
         }
 
         public async Task<bool> IsEqualTo(IBifoqlObject other)

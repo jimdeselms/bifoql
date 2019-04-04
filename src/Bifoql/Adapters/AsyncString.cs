@@ -6,12 +6,10 @@ namespace Bifoql.Adapters
     internal class AsyncString : AsyncObjectBase, IBifoqlString
     {
         public Task<string> Value { get; }
-        private readonly BifoqlType _schema;
 
-        public AsyncString(string value, BifoqlType schema=null)
+        public AsyncString(string value)
         {
             Value = Task.FromResult(value);
-            _schema = schema ?? BifoqlType.String;
         }
 
         public async Task<bool> IsEqualTo(IBifoqlObject other)

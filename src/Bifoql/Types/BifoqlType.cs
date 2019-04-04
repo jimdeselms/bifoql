@@ -48,8 +48,7 @@ namespace Bifoql.Types
 
         public static BifoqlType Map(params MapProperty[] pairs)
         {
-            var dict = pairs.ToDictionary(p => p.Name, p => p);
-            return new MapType(dict);
+            return new MapType(pairs);
         }
 
         public static MapProperty Property(string key, BifoqlType value, string documentation=null)
@@ -76,6 +75,11 @@ namespace Bifoql.Types
         public static IndexParameter IndexParameter(string name, BifoqlType type, bool optional=false)
         {
             return new IndexParameter(name, type, optional);
+        }
+ 
+        public static IndexParameter IndexSwitch(string name)
+        {
+            return new IndexParameter(name, BifoqlType.Boolean, optional: true);
         }
  
         public abstract object ToObject();

@@ -11,8 +11,6 @@ namespace Bifoql.Adapters
 {
     internal class AsyncMap : AsyncObjectWithDefaultValueBase, IBifoqlMapInternal
     {
-        private readonly BifoqlType _type;
-
         private readonly IReadOnlyDictionary<string, Func<Task<IBifoqlObject>>> _getters;
 
         public IEnumerable<string> Keys => _getters.Keys;
@@ -24,11 +22,9 @@ namespace Bifoql.Adapters
         public Func<Task<IBifoqlObject>> this[string key] => _getters[key];
 
         public AsyncMap(IReadOnlyDictionary<string, Func<Task<IBifoqlObject>>> getters, 
-            Func<Task<IBifoqlObject>> defaultValue,
-            BifoqlType type=null) : base(defaultValue)
+            Func<Task<IBifoqlObject>> defaultValue) : base(defaultValue)
         {
             _getters = getters;
-            _type = type;
         }
 
         public bool ContainsKey(string key) => _getters.ContainsKey(key);

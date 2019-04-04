@@ -8,9 +8,9 @@ namespace Bifoql.Types
 
     internal class MapType : BifoqlType
     {
-        public IReadOnlyDictionary<string, MapProperty> Properties { get; }
+        public IReadOnlyList<MapProperty> Properties { get; }
 
-        public MapType(IReadOnlyDictionary<string, MapProperty> properties)
+        public MapType(IReadOnlyList<MapProperty> properties)
         {
             Guard.ArgumentNotNull(properties, nameof(properties));
             Properties = properties;
@@ -18,57 +18,25 @@ namespace Bifoql.Types
 
         public override object ToObject()
         {
-            var dict = new Dictionary<string, object>();
+            var result = new List<object>();
 
             foreach (var prop in Properties)
             {
-                dict[prop.Key] = prop.Value.ToObject();
+                result.Add(new { name = prop.Name, value = prop.ToObject()});
             }
 
-            return dict;
-        }
-
-        public override bool Equals(object other)
-        {
-            var otherMap = other as MapType;
-            if (otherMap == null) return false;
-            if (Properties.Count != otherMap.Properties.Count) return false;
-
-            foreach (var pair in Properties)
-            {
-                MapProperty otherType;
-                if (!otherMap.Properties.TryGetValue(pair.Key, out otherType) || !otherType.Equals(pair.Value))
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return result;
         }
 
         public override bool IsCompound => true;
-
-        internal override BifoqlType GetKeyType(string key)
-        {
-            MapProperty type;
-            if (Properties.TryGetValue(key, out type))
-            {
-                return type;
-            }
-            else
-            {
-                return BifoqlType.Null;
-            }
-        }
 
         public override int GetHashCode()
         {
             var code = 939283;
 
-            foreach (var pair in Properties)
+            foreach (var prop in Properties)
             {
-                code ^= pair.Key.GetHashCode();
-                code ^= pair.Value.GetHashCode();
+                code ^= prop.GetHashCode();
             }
 
             return code;
@@ -82,12 +50,12 @@ namespace Bifoql.Types
             int i = 0;
             foreach (var prop in Properties)
             {
-                if (i > 0 && prop.Value.Documentation != null)
+                if (i > 0 && prop.Documentation != null)
                 {
                     builder.AppendLine();
                 }
                 var comma = ++i == Properties.Count ? "" : ",";
-                builder.AppendLine($"{prop.Value.GetDocumentation(indent+1)}{comma}");
+                builder.AppendLine($"{prop.GetDocumentation(indent+1)}{comma}");
             }
 
             builder.Append($"{Indent(indent)}}}");

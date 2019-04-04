@@ -6,12 +6,10 @@ namespace Bifoql.Adapters
     internal class AsyncNumber : AsyncObjectBase, IBifoqlNumber
     {
         public Task<double> Value { get; }
-        private BifoqlType _schema;
 
-        public AsyncNumber(double value, BifoqlType schema=null)
+        public AsyncNumber(double value)
         {
             Value = Task.FromResult(value);
-            _schema = schema ?? BifoqlType.Number;
         }
 
         public async Task<bool> IsEqualTo(IBifoqlObject other)
