@@ -700,6 +700,15 @@ namespace Bifoql
 
                         projection = new KeyValuePairExpr(idLocation, id, rhs);
                     }
+                    else if (curr.Kind == "(")
+                    {
+                        // key(a: 123)  =>  key: key(a:123)
+                        var keyExpr = new KeyExpr(idLocation, prev, id);
+                        var rhs = ParseChainRemainder(keyExpr);
+
+                        projection = new KeyValuePairExpr(idLocation, id, rhs);
+
+                    }
                     else if (curr.Kind == "[?")
                     {
                         // x[? filter] => x: x[? filter]

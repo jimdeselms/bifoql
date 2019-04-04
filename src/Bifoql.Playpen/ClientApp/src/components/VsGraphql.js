@@ -112,9 +112,17 @@ export const VsGraphql = () => (
   }
 }`}</pre>
 
-  <p>This example also demonstrates that GraphQL has enum data types. Bifoql could support this particular use case too, though it doesn't have a concept of enums (yet?) However, Bifoql
-    allows you to manipulate the results of your query, completely bypassing the need to have that conversion interface. In this example, we can create a variable, set it to the conversion
-    rate for meters to feet, and then multipy the result (Bifoql supports all sorts of arithmetic operations.) We can also rename the field to make it clear that it's now in feet:</p>
+  <p>This example also demonstrates that GraphQL has enum data types. Bifoql doesn't have enums (yet), but it can support this use case if "height" is an index that has a default argument, "inFeet".</p>
+    
+  <Playpen query={`human(id: "1000") {
+  name,
+  height(inFeet)
+}
+`}/>
+    
+    <p>But, let's say that the API designer didn't give me the option of asking for the height in feet? Bifoql allows me to create variables and manipulate the results of the query.
+      In this example, we can create a variable, set it to the conversion rate for meters to feet, and then multiply the result (Bifoql supports all sorts of arithmetic operations.) 
+      We can also rename the field to make it clear that it's now in feet:</p>
 
     <Playpen query={`$metersToFeet = 3.28084;
 human(id: "1000") {

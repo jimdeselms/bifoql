@@ -75,7 +75,31 @@ namespace Bifoql.Playpen.Model
             return null;
         }
     }
-    
+
+    public class Length : IBifoqlIndexSync, IDefaultValueSync
+    {
+        private readonly double _meters;
+
+        public Length(double meters)
+        {
+            _meters = meters;
+        }
+
+        public object GetDefaultValue()
+        {
+            return _meters;
+        }
+
+        public object Lookup(IIndexArgumentList args)
+        {
+            if (args.TryGetBooleanParameter("inFeet") == true)
+            {
+                return _meters * 3.28084;
+            }
+            return _meters;
+        }
+    }
+
     public static class StarWars
     {
         public static readonly Human LUKE;
@@ -98,19 +122,19 @@ namespace Bifoql.Playpen.Model
         {
             var all = new string[] { "NEWHOME", "EMPIRE", "JEDI" };
 
-            LUKE = new Human { id = "1000", name = "Luke Skywalker", height=1.72, appearsIn=all };
-            LEIA = new Human { id= "1003", name = "Leia Organa", height=1.5, appearsIn=all };
-            DARTH = new Human { id = "1001", name = "Darth Vader", height=2.02, appearsIn=all };
-            HAN = new Human { id = "1002", name = "Han Solo", height=1.8, appearsIn=all };
-            TARKIN = new Human { id = "1004", name = "Wilhuff Tarkin", height=1.8, appearsIn= new string[] { "NEWHOPE" } };
+            LUKE = new Human { id = "1000", name = "Luke Skywalker", height=new Length(1.72), appearsIn=all };
+            LEIA = new Human { id= "1003", name = "Leia Organa", height=new Length(1.5), appearsIn=all };
+            DARTH = new Human { id = "1001", name = "Darth Vader", height=new Length(2.02), appearsIn=all };
+            HAN = new Human { id = "1002", name = "Han Solo", height = new Length(1.8), appearsIn=all };
+            TARKIN = new Human { id = "1004", name = "Wilhuff Tarkin", height=new Length(1.8), appearsIn= new string[] { "NEWHOPE" } };
 
             C3P0 = new Droid { id="2000", name = "C-3P0", primaryFunction="Protocol", appearsIn=all };
             R2D2 = new Droid { id="2001", name = "R2-D2", primaryFunction="Astromech", appearsIn=all };
 
-            MILLENIUM_FALCON = new Starship { id = "3000", name = "Millenium Falcom", length= 34.37 };
-            X_WING = new Starship { id = "3001", name = "X-Wing", length= 12.5 };
-            TIE_ADVANCED_X1 = new Starship { id = "3002", name = "TIE Advanced x1", length= 9.2 };
-            IMPERIAL_SHUTTLE = new Starship { id = "3003", name = "Imperial Shuttle", length=20 };
+            MILLENIUM_FALCON = new Starship { id = "3000", name = "Millenium Falcom", length= new Length(34.37) };
+            X_WING = new Starship { id = "3001", name = "X-Wing", length= new Length(12.5) };
+            TIE_ADVANCED_X1 = new Starship { id = "3002", name = "TIE Advanced x1", length= new Length(9.2) };
+            IMPERIAL_SHUTTLE = new Starship { id = "3003", name = "Imperial Shuttle", length=new Length(20) };
 
             LUKE.friends = new object[] { HAN, LEIA, C3P0, R2D2 };
             LEIA.friends = new object[] { HAN, LUKE, C3P0, R2D2 };
@@ -143,7 +167,7 @@ namespace Bifoql.Playpen.Model
 
     public class Human : Entity
     {
-        public double height { get; set; }
+        public Length height { get; set; }
         public IReadOnlyList<string> appearsIn { get; set; }
     }
 
@@ -155,6 +179,6 @@ namespace Bifoql.Playpen.Model
 
     public class Starship : Entity
     {
-        public double length { get; set; }
+        public Length length { get; set; }
     }
 }

@@ -54,6 +54,15 @@ namespace Bifoql.Tests
         }
 
         [Fact]
+        public void IndexFollowingMapKeyShorthand()
+        {
+            RunTest(
+                input: new { x = new MockSyncIndex("foo", "bar", "baz") },
+                expected: new { x = "baz"},
+                query: @"@ { x(foo: 'bar') }");
+        }
+
+        [Fact]
         public void MapProjectionFollowingMap()
         {
             RunTest(
