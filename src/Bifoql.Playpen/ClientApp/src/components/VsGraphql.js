@@ -265,7 +265,7 @@ error, it can be replaced with another value with the <code>??</code> operator. 
 <p>Here's a query that uses a filter to get the names and heights of all characters who are taller than 1.75 meters. (Since some items in the list might not have a "height" property, the <code>??</code> converts
 the error into 'false', causing the test criteria to fail.)</p>
 
-<Playpen query={`search(text: '') [? height > 1.75 ?? false] { 
+<Playpen query={`search(text: '') [? height > 1.75] { 
   name, 
   height 
 }`} />

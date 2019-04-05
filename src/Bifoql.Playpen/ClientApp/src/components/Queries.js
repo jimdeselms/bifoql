@@ -51,7 +51,7 @@ export const Queries = () => (
 {
   name,
   street: address.street,
-  zip: addres.zip,
+  zip: address.zipCode,
   dob { day, month }
 }`} />
 
