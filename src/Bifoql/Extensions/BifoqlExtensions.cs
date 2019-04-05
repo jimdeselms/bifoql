@@ -20,10 +20,8 @@ namespace Bifoql.Extensions
 
             var defaultValue = GetDefaultValueFunc(o);
 
-            IBifoqlObject result;
-
-            if (o is IBifoqlArray) result = ConvertAsyncArray((IBifoqlArray)o);
-            if (o is IBifoqlArraySync) result = ConvertSyncArray((IBifoqlArraySync)o);
+            if (o is IBifoqlArray) return ConvertAsyncArray((IBifoqlArray)o);
+            if (o is IBifoqlArraySync) return ConvertSyncArray((IBifoqlArraySync)o);
 
             if (o is IBifoqlMap) return ConvertAsyncMap((IBifoqlMap)o, defaultValue);
             if (o is IBifoqlMapSync) return ConvertSyncMap((IBifoqlMapSync)o, defaultValue);

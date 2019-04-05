@@ -282,6 +282,5 @@ namespace Bifoql.Tests
                     }; $x",
                 expected: new { arr = new [] { new { val = "this/foo" }}});
         }
-
     }
 }
