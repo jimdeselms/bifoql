@@ -74,7 +74,7 @@ export const VsGraphql = () => (
     <p>We can do the same thing in Bifoql. One difference here is that the "hero" takes an empty parameter. Here, "hero" is is an <b>index</b>, meaning it's a way of looking up a result given a set of arguments. And in this
     implementation, this index takes an optional "episode" argument, with a default value of "NEWHOPE".</p>
 
-    <Playpen query={`hero() {
+    <Playpen query={`hero {
   name
 }`} />
 
@@ -82,7 +82,7 @@ export const VsGraphql = () => (
       very specific about how to structure your result. If the only bit of data we want is the name of our hero, we can use this query:
     </p>
 
-    <Playpen query="hero().name" />
+    <Playpen query="hero.name" />
 
     <p>
     Here's another GraphQL example. In this example, we're looking up a value based on an input. In this query, we get the name and height for a single Star Wars character:
@@ -104,7 +104,7 @@ export const VsGraphql = () => (
 
 <h2>Manipulating the results of a query</h2>
 
-  <p>Here's another GraphQL that shows how to convert a human's height into feet; this construct is built into the Star Wars character model defined in the tutorial</p>
+  <p>Here's another GraphQL query that shows how to convert a human's height into feet; this construct is built into the Star Wars character model defined in the tutorial</p>
   <pre className='graphql-example'>{`{
   human(id: "1000") {
     name
@@ -293,7 +293,8 @@ in the context of a pipe, however, the current context represents the current it
 <p>And here's a more advanced example that takes advantage of one of Bifoql's built-in functions, <code>to_map</code>. <code>to_map</code> takes three parameters: an array of objects, 
 an expression that gets the key, and an expression that gets the value. The expression is a map of values.</p>
 
-<Playpen query={"(['1000', '1002', '1004'] |< $.human(id: @) {id, name}) | to_map(@, &id, &name)"} />
+<Playpen query={`(['1000', '1002', '1004'] |< $.human(id: @) {id, name})
+    | to_map(@, &id, &name)`} />
 
 <h2>Summary</h2>
 

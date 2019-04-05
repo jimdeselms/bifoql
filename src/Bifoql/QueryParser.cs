@@ -888,9 +888,11 @@ namespace Bifoql
         {
             Match("[?");
             var condition = ParseExpr();
-            Match("]");
+            var end = Match("]");
 
-            return new FilterExpr(prev, condition);
+            var coalescedCondition = new BinaryExpr(condition, "??", new LiteralExpr(GetLocation(end), new AsyncBoolean(false)));
+
+            return new FilterExpr(prev, coalescedCondition);
         }
 
         private Expr ParseIndexExpr(Expr prev)
