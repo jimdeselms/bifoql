@@ -6,6 +6,7 @@ namespace Bifoql.Expressions
     using System.Linq;
     using Bifoql.Adapters;
     using Bifoql.Extensions;
+    using Bifoql.Visitors;
 
     internal class FilterExpr : Expr
     {
@@ -16,6 +17,13 @@ namespace Bifoql.Expressions
         {
             Target = target;
             Condition = condition;
+        }
+
+        internal override void Accept(ExprVisitor visitor)
+        {
+            visitor.Visit(this);
+            Target.Accept(visitor);
+            Condition.Accept(visitor);
         }
 
         protected override Expr SimplifyChildren(VariableScope variables)

@@ -3,6 +3,7 @@ namespace Bifoql.Expressions
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Bifoql.Adapters;
+    using Bifoql.Visitors;
 
     internal class ExpressionExpr : Expr
     {
@@ -27,6 +28,12 @@ namespace Bifoql.Expressions
         public override string ToString()
         {
             return $"({InnerExpression.ToString()})";
+        }
+
+        internal override void Accept(ExprVisitor visitor)
+        {
+            visitor.Visit(this);
+            InnerExpression.Accept(visitor);
         }
 
         public override bool NeedsAsync(VariableScope variables) => InnerExpression.NeedsAsync(variables);

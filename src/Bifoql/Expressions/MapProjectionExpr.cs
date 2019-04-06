@@ -7,6 +7,7 @@ namespace Bifoql.Expressions
     using System.Threading.Tasks;
     using Bifoql.Extensions;
     using Bifoql.Adapters;
+    using Bifoql.Visitors;
 
     internal class MapProjectionExpr : Expr
     {
@@ -17,6 +18,15 @@ namespace Bifoql.Expressions
         {
             _target = target;
             _projections = projections.ToList();
+        }
+
+        internal override void Accept(ExprVisitor visitor)
+        {
+            visitor.Visit(this);
+            foreach (var projection in _projections)
+            {
+                projection.Accept(visitor);
+            }
         }
 
         protected override Expr SimplifyChildren(VariableScope variables)

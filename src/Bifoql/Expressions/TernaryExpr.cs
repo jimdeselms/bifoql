@@ -4,6 +4,7 @@ namespace Bifoql.Expressions
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Bifoql.Adapters;
+    using Bifoql.Visitors;
 
     internal class TernaryExpr : Expr
     {
@@ -51,6 +52,14 @@ namespace Bifoql.Expressions
         public override bool NeedsAsync(VariableScope variables)
         {
             return _condition.NeedsAsync(variables) || _ifFalse.NeedsAsync(variables) || _ifTrue.NeedsAsync(variables);
+        }
+
+        internal override void Accept(ExprVisitor visitor)
+        {
+            visitor.Visit(this);
+            _condition.Accept(visitor);
+            _ifTrue.Accept(visitor);
+            _ifFalse.Accept(visitor);
         }
 
         public override bool ReferencesRootVariable => _condition.ReferencesRootVariable || _ifTrue.ReferencesRootVariable || _ifFalse.ReferencesRootVariable;

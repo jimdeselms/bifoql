@@ -5,6 +5,7 @@ namespace Bifoql.Expressions
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Bifoql.Adapters;
+    using Bifoql.Visitors;
 
     internal class AssignmentExpr : Expr
     {
@@ -61,6 +62,14 @@ namespace Bifoql.Expressions
                 return new AssignmentExpr(Location, Name, simplifiedValue, _pipedInto.Simplify(variables));
             }
         }
+
+        internal override void Accept(ExprVisitor visitor)
+        {
+            visitor.Visit(this);
+            _value.Accept(visitor);
+            _pipedInto.Accept(visitor);
+        }
+
 
         public override bool NeedsAsync(VariableScope variables) => true;
 

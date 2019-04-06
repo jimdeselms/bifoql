@@ -5,6 +5,7 @@ namespace Bifoql.Expressions
     using System.Threading.Tasks;
     using Bifoql.Adapters;
     using Bifoql.Extensions;
+    using Bifoql.Visitors;
 
     internal class IndexedLookupExpr : Expr
     {
@@ -15,6 +16,16 @@ namespace Bifoql.Expressions
         {
             _leftHandSide = leftHandSide;
             _arguments = arguments;
+        }
+
+        internal override void Accept(ExprVisitor visitor)
+        {
+            visitor.Visit(this);
+            _leftHandSide.Accept(visitor);
+            foreach (var arg in _arguments.Values)
+            {
+                arg.Accept(visitor);
+            }
         }
 
         protected override async Task<IBifoqlObject> DoApply(QueryContext context)

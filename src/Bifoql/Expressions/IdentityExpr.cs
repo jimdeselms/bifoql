@@ -2,6 +2,7 @@ namespace Bifoql.Expressions
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Bifoql.Visitors;
 
     internal class IdentityExpr : Expr
     {
@@ -17,6 +18,11 @@ namespace Bifoql.Expressions
         public override string ToString()
         {
             return "@";
+        }
+
+        internal override void Accept(ExprVisitor visitor)
+        {
+            visitor.Visit(this);
         }
 
         protected override Expr SimplifyChildren(VariableScope variables)

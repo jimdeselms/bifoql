@@ -6,6 +6,7 @@ namespace Bifoql.Expressions
     using System.Threading.Tasks;
     using Bifoql.Adapters;
     using Bifoql.Extensions;
+    using Bifoql.Visitors;
 
     internal abstract class Expr
     {
@@ -81,5 +82,7 @@ namespace Bifoql.Expressions
         }
 
         public abstract bool ReferencesRootVariable { get; }
+
+        internal abstract void Accept(ExprVisitor visitor);
     }
 }

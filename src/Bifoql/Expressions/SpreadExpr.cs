@@ -4,6 +4,7 @@ namespace Bifoql.Expressions
     using System.Threading.Tasks;
     using System.Collections.Generic;
     using Bifoql.Adapters;
+    using Bifoql.Visitors;
 
     internal class SpreadExpr : Expr
     {
@@ -30,6 +31,12 @@ namespace Bifoql.Expressions
         }
 
         public override bool NeedsAsync(VariableScope variables) => SpreadObject.NeedsAsync(variables);
+
+        internal override void Accept(ExprVisitor visitor)
+        {
+            visitor.Visit(this);
+            SpreadObject.Accept(visitor);
+        }
 
         public override bool ReferencesRootVariable => SpreadObject.ReferencesRootVariable;
     }

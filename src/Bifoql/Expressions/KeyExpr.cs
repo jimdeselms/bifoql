@@ -6,6 +6,7 @@ namespace Bifoql.Expressions
     using System.Threading.Tasks;
     using Bifoql.Adapters;
     using Bifoql.Extensions;
+    using Bifoql.Visitors;
 
     internal class KeyExpr : Expr
     {
@@ -30,6 +31,13 @@ namespace Bifoql.Expressions
 
             return await GetKeyFromObject(target, context);
         }
+
+        internal override void Accept(ExprVisitor visitor)
+        {
+            visitor.Visit(this);
+            _target?.Accept(visitor);
+        }
+
 
         private async Task<IBifoqlObject> GetKeyFromObject(IBifoqlObject target, QueryContext context)
         {

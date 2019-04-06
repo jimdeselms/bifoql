@@ -6,6 +6,7 @@ namespace Bifoql.Expressions
     using Bifoql.Adapters;
     using System;
     using Bifoql.Extensions;
+    using Bifoql.Visitors;
 
     internal enum ChainBehavior
     {
@@ -117,6 +118,14 @@ namespace Bifoql.Expressions
 
             return !_next.NeedsAsyncByItself && !_next.NeedsAsync(variables);
         }
+
+        internal override void Accept(ExprVisitor visitor)
+        {
+            visitor.Visit(this);
+            _first.Accept(visitor);
+            _next.Accept(visitor);
+        }
+
         public override bool ReferencesRootVariable => _first.ReferencesRootVariable || _next.ReferencesRootVariable;
     }
 }

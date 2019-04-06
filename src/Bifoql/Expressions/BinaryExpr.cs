@@ -5,6 +5,7 @@ namespace Bifoql.Expressions
     using System.Threading.Tasks;
     using Bifoql.Adapters;
     using Bifoql.Extensions;
+    using Bifoql.Visitors;
 
     internal class BinaryExpr : Expr
     {
@@ -305,6 +306,14 @@ namespace Bifoql.Expressions
         {
             return $"{LeftHandSide.ToString()} {Operator} {RightHandSide.ToString()}";
         }
+
+        internal override void Accept(ExprVisitor visitor)
+        {
+            visitor.Visit(this);
+            LeftHandSide.Accept(visitor);
+            RightHandSide.Accept(visitor);
+        }
+
 
         public override bool NeedsAsync(VariableScope variables) => LeftHandSide.NeedsAsync(variables) || RightHandSide.NeedsAsync(variables);
 

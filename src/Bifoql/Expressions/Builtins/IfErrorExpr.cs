@@ -8,11 +8,19 @@ namespace Bifoql.Expressions.Builtins
     using System.Threading.Tasks;
     using Bifoql.Adapters;
     using Bifoql.Extensions;
+    using Bifoql.Visitors;
 
     internal class IfErrorExpr : FunctionExpr
     {
         private Expr _obj;
         private Expr _ifIsError;
+
+        internal override void Accept(ExprVisitor visitor)
+        {
+            visitor.Visit(this);
+            _obj.Accept(visitor);
+            _ifIsError.Accept(visitor);
+        }
 
         public IfErrorExpr(Location location, IReadOnlyList<Expr> arguments) : base(location, arguments, "if_error")
         {

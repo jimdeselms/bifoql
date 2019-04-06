@@ -4,6 +4,7 @@ namespace Bifoql.Expressions
     using System.Threading.Tasks;
     using System.Collections.Generic;
     using Bifoql.Adapters;
+    using Bifoql.Visitors;
 
     internal class KeyValuePairExpr : Expr
     {
@@ -23,6 +24,10 @@ namespace Bifoql.Expressions
             };
 
             return Task.FromResult<IBifoqlObject>(new AsyncLookup(dict, null));
+        }
+        internal override void Accept(ExprVisitor visitor)
+        {
+            visitor.Visit(this);
         }
 
        public override string ToString()

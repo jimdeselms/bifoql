@@ -277,16 +277,6 @@ namespace Bifoql.Tests
         }
 
         [Fact]
-        public void PipeArrayToMany()
-        {
-            RunTest(
-                expected: new [] { 2, 4, 6, 8 },
-                input: new [] { 1, 2, 3, 4 },
-                query: "@ |< @*2"
-            );
-        }
-
-        [Fact]
         public void NumberExpr()
         {
             RunTest(
@@ -578,13 +568,6 @@ namespace Bifoql.Tests
         public void RootObjectVariable()
         {
             RunTest(expected: 5, input: 5, query: "$");
-        }
-
-        [Fact]
-        public void RootObjectVariableAfterPipe()
-        {
-
-            RunTest(expected: 5, input: 5, query: "2|$");
         }
 
         [Fact]

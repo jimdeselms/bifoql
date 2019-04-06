@@ -5,6 +5,7 @@ namespace Bifoql.Expressions
     using System.Threading.Tasks;
     using Bifoql.Adapters;
     using Bifoql.Extensions;
+    using Bifoql.Visitors;
 
     internal class UnaryExpr : Expr
     {
@@ -80,6 +81,13 @@ namespace Bifoql.Expressions
         }
 
         public override bool NeedsAsync(VariableScope scope) => _innerExpression.NeedsAsync(scope);
+
+        internal override void Accept(ExprVisitor visitor)
+        {
+            visitor.Visit(this);
+            _innerExpression.Accept(visitor);
+        }
+
         public override bool ReferencesRootVariable => _innerExpression.ReferencesRootVariable;
     }
 }

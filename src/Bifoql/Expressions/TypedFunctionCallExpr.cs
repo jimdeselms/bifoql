@@ -4,6 +4,7 @@ namespace Bifoql.Expressions
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Bifoql.Visitors;
 
     internal abstract class TypedFunctionCallExpr : Expr
     {
@@ -41,6 +42,15 @@ namespace Bifoql.Expressions
         {
             // Special case. If this is "eval", then we can't simplify this
             return Name == "eval" || Arguments.Any(a => a.NeedsAsync(variables));
+        }
+
+        internal override void Accept(ExprVisitor visitor)
+        {
+            visitor.Visit(this);
+            foreach (var arg in Arguments)
+            {
+                arg.Accept(visitor);
+            }
         }
 
         public override bool ReferencesRootVariable => Arguments.Any(a => a.ReferencesRootVariable);

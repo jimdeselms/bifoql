@@ -8,6 +8,7 @@ namespace Bifoql.Expressions
     using Bifoql.Adapters;
     using Bifoql.Extensions;
     using Bifoql.Types;
+    using Bifoql.Visitors;
 
     internal class ArrayExpr : Expr
     {
@@ -62,6 +63,16 @@ namespace Bifoql.Expressions
         }
 
         public override bool NeedsAsync(VariableScope variables) => _exprs.Any(a => a.NeedsAsync(variables));
+
+        internal override void Accept(ExprVisitor visitor)
+        {
+            visitor.Visit(this);
+            foreach (var expr in _exprs)
+            {
+                expr.Accept(visitor);
+            }
+        }
+
         public override bool ReferencesRootVariable => _exprs.Any(e => e.ReferencesRootVariable);
 
     }

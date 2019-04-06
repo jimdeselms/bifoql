@@ -5,6 +5,7 @@ namespace Bifoql.Expressions
     using System.Threading.Tasks;
     using Bifoql.Adapters;
     using Bifoql.Extensions;
+    using Bifoql.Visitors;
 
     internal class ErrorFunctionExpr : FunctionExpr
     {
@@ -32,6 +33,13 @@ namespace Bifoql.Expressions
         {
             return $"<error: {_message}>";
         }
+
+        internal override void Accept(ExprVisitor visitor)
+        {
+            visitor.Visit(this);
+            _message.Accept(visitor);
+        }
+
 
         public override bool NeedsAsync(VariableScope variables) => _message.NeedsAsync(variables);
         public override bool ReferencesRootVariable => _message.ReferencesRootVariable;

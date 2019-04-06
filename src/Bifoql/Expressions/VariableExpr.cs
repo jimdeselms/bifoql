@@ -4,6 +4,7 @@ namespace Bifoql.Expressions
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Bifoql.Adapters;
+    using Bifoql.Visitors;
 
     internal class VariableExpr : Expr
     {
@@ -55,6 +56,11 @@ namespace Bifoql.Expressions
         {
             // References to the root variable can't be simplified.
             return Name == "" || !scope.ContainsKey(Name);
+        }
+
+        internal override void Accept(ExprVisitor visitor)
+        {
+            visitor.Visit(this);
         }
 
         public override bool ReferencesRootVariable => Name == "";

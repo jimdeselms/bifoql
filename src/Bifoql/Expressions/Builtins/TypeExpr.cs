@@ -8,6 +8,7 @@ namespace Bifoql.Expressions.Builtins
     using System.Threading.Tasks;
     using Bifoql.Adapters;
     using Bifoql.Extensions;
+    using Bifoql.Visitors;
 
     internal class TypeExpr : FunctionExpr
     {
@@ -16,6 +17,12 @@ namespace Bifoql.Expressions.Builtins
         public TypeExpr(Location location, IReadOnlyList<Expr> arguments) : base(location, arguments, "type")
         {
             _obj = arguments[0];
+        }
+
+        internal override void Accept(ExprVisitor visitor)
+        {
+            visitor.Visit(this);
+            _obj.Accept(visitor);
         }
 
         protected override Expr SimplifyChildren(VariableScope variables)

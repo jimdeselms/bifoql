@@ -3,7 +3,8 @@ namespace Bifoql.Expressions
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    
+    using Bifoql.Visitors;
+
     internal class LiteralExpr : Expr
     {
         public IBifoqlObject Literal { get; }
@@ -52,6 +53,12 @@ namespace Bifoql.Expressions
         }
 
         public override bool NeedsAsync(VariableScope variables) => false;
+
+        internal override void Accept(ExprVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
+
         public override bool ReferencesRootVariable => false;
     }
 }

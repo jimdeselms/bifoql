@@ -6,6 +6,7 @@ namespace Bifoql.Expressions
     using System.Threading.Tasks;
     using Bifoql.Adapters;
     using Bifoql.Extensions;
+    using Bifoql.Visitors;
 
     internal class IndexExpr : Expr
     {
@@ -18,6 +19,13 @@ namespace Bifoql.Expressions
             _location = location;
             _target = target;
             _index = index;
+        }
+
+        internal override void Accept(ExprVisitor visitor)
+        {
+            visitor.Visit(this);
+            _target?.Accept(visitor);
+            _index.Accept(visitor);
         }
 
         protected override async Task<IBifoqlObject> DoApply(QueryContext context)

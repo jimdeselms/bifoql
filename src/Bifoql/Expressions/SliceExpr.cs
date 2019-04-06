@@ -4,6 +4,7 @@ namespace Bifoql.Expressions
     using System.Threading.Tasks;
     using System.Collections.Generic;
     using Bifoql.Adapters;
+    using Bifoql.Visitors;
 
     internal class SliceExpr : Expr
     {
@@ -103,6 +104,15 @@ namespace Bifoql.Expressions
                 || _lowerBound?.NeedsAsync(variables) == true
                 || _upperBound?.NeedsAsync(variables) == true;
         }
+
+        internal override void Accept(ExprVisitor visitor)
+        {
+            visitor.Visit(this);
+            _target?.Accept(visitor);
+            _upperBound?.Accept(visitor);
+            _lowerBound?.Accept(visitor);
+        }
+
         public override bool ReferencesRootVariable => 
             _target?.ReferencesRootVariable == true
             || _lowerBound?.ReferencesRootVariable == true

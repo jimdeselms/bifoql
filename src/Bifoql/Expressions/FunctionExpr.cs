@@ -3,7 +3,8 @@ namespace Bifoql.Expressions
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    
+    using Bifoql.Visitors;
+
     internal abstract class FunctionExpr : Expr
     {
         protected string Name { get; }
@@ -13,6 +14,15 @@ namespace Bifoql.Expressions
         {
             Arguments = arguments.ToList();
             Name = name;
+        }
+
+        internal override void Accept(ExprVisitor visitor)
+        {
+            visitor.Visit(this);
+            foreach (var arg in Arguments)
+            {
+                arg.Accept(visitor);
+            }
         }
 
         public override string ToString()
