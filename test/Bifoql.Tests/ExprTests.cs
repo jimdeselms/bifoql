@@ -536,14 +536,14 @@ namespace Bifoql.Tests
         }
 
         [Fact]
-        public void VariableCaseInsensitivity()
+        public void VariableCaseSensitivity()
         {
             var args = new Dictionary<string, object>() { ["x"] = 2};
             RunTest(expected: 2, query: "$x", arguments: args);
-            RunTest(expected: 2, query: "$X", arguments: args);
+            RunTest(expected: "<error: (1, 1) reference to undefined variable '$X'>", query: "$X", arguments: args);
 
             var argsUppercase = new Dictionary<string, object>() { ["X"] = 2};
-            RunTest(expected: 2, query: "$x", arguments: argsUppercase);
+            RunTest(expected: "<error: (1, 1) reference to undefined variable '$x'>", query: "$x", arguments: argsUppercase);
             RunTest(expected: 2, query: "$X", arguments: argsUppercase);
         }
         
@@ -710,7 +710,10 @@ namespace Bifoql.Tests
         [Fact]
         public void PassedVariable()
         {
-            RunTest(expected: 123, query: "$num", arguments: new Dictionary<string, object> { ["num"] = 123 });
+            RunTest(
+                expected: 123, 
+                query: "$num", 
+                arguments: new Dictionary<string, object> { ["num"] = 123 });
         }
 
         [Fact]

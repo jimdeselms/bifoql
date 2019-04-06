@@ -72,8 +72,7 @@ namespace Bifoql.Lex
             else
             {
                 _reservedWords = new HashSet<string>(
-                    reservedWords ?? new string[0],
-                    CaseInsensitiveComparer.Instance);
+                    reservedWords ?? new string[0]);
             }
 
             _operatorFragments = new HashSet<string>();
@@ -87,20 +86,6 @@ namespace Bifoql.Lex
                 {
                     _operatorFragments.Add(op.Substring(0, i));
                 }
-            }
-        }
-
-        private class CaseInsensitiveComparer : IEqualityComparer<string>
-        {
-            public static CaseInsensitiveComparer Instance => new CaseInsensitiveComparer();
-            public bool Equals(string x, string y)
-            {
-                return x.ToLower() == y.ToLower();
-            }
-
-            public int GetHashCode(string obj)
-            {
-                return obj.ToLower().GetHashCode();
             }
         }
 
@@ -359,7 +344,7 @@ namespace Bifoql.Lex
 
                             if (_reservedWords.Contains(curr))
                             {
-                                yield return new Token(curr.ToLower(), curr.ToLower(), lineStart, colStart, line, col);
+                                yield return new Token(curr, curr, lineStart, colStart, line, col);
                             }
                             else
                             {
@@ -381,7 +366,7 @@ namespace Bifoql.Lex
                         {
                             state = State.Start;
 
-                            yield return new Token(_variableKind, curr.ToLower(), lineStart, colStart, line, col);
+                            yield return new Token(_variableKind, curr, lineStart, colStart, line, col);
 
                             chars.Unwind();
                             col--;

@@ -89,7 +89,7 @@ namespace Bifoql.Tests
 
         private static Task<object> Query(object o, string query)
         {
-            var queryObj = Bifoql.Query.Compile(query);
+            var queryObj = Bifoql.Query.Compile(query, new string[0]);
             return queryObj.Run(o);
         }
     }

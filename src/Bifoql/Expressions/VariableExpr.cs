@@ -18,13 +18,13 @@ namespace Bifoql.Expressions
         protected override Task<IBifoqlObject> DoApply(QueryContext context)
         {
             IBifoqlObject value;
-            if (context.Variables.TryGetValue(Name.ToLower(), out value))
+            if (context.Variables.TryGetValue(Name, out value))
             {
                 return Task.FromResult(value);
             }
             else
             {
-                return Task.FromResult<IBifoqlObject>(new AsyncError(this.Location, $"Variable '${Name}' not found"));
+                return Task.FromResult<IBifoqlObject>(new AsyncError(this.Location, $"reference to undefined variable '${Name}'"));
             }
         }
 

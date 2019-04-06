@@ -5,6 +5,8 @@ using Bifoql.Extensions;
 using Bifoql.Adapters;
 using Bifoql.Expressions;
 using Bifoql.Types;
+using Bifoql.Visitors;
+using System.Linq;
 
 namespace Bifoql
 {
@@ -17,9 +19,16 @@ namespace Bifoql
             Expr = expr;
         }
 
-        public static Query Compile(string query, IReadOnlyDictionary<string, CustomFunction> customFunctions=null)
+        public static Query Compile(string query, string[] declaredVariables, IReadOnlyDictionary<string, CustomFunction> customFunctions=null)
         {
             var expr = QueryParser.Parse(query, customFunctions);
+
+            var undefinedVariableReferences = UndefinedVariableFinderVisitor.GetUndefinedVariableReferences(expr, declaredVariables);
+            var first = undefinedVariableReferences.FirstOrDefault();
+            if (first != null)
+            {
+                return new Query(first);
+            }
             var simplified = expr.Simplify(VariableScope.Empty);
 
             return new Query(simplified);
@@ -41,7 +50,7 @@ namespace Bifoql
             {
                 foreach (var pair in arguments)
                 {
-                    variables = variables.AddVariable(pair.Key.TrimStart('$').ToLower(), pair.Value.ToBifoqlObject());
+                    variables = variables.AddVariable(pair.Key.TrimStart('$'), pair.Value.ToBifoqlObject());
                 }
             }
 

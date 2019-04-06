@@ -10,13 +10,13 @@ namespace Bifoql.Expressions
     internal class AssignmentExpr : Expr
     {
         public string Name;
-        private readonly Expr _value;
+        public readonly Expr Value;
         private readonly Expr _pipedInto;
 
         public AssignmentExpr(Location location, string name, Expr value, Expr pipedInto) : base(location)
         {
             Name = name;
-            _value = value;
+            Value = value;
             _pipedInto = pipedInto;
         }
 
@@ -30,7 +30,7 @@ namespace Bifoql.Expressions
             else
             {
                 // Get the new value and add to the context as a variable, and replace the current object with that new value as well.
-                var variableValue = await _value.Apply(context);
+                var variableValue = await Value.Apply(context);
                 var newContext = context.AddVariable(Name, variableValue);
 
                 var simplified = _pipedInto.Simplify(newContext.Variables);
@@ -41,12 +41,12 @@ namespace Bifoql.Expressions
 
         public override string ToString()
         {
-            return $"${Name} = {_value.ToString()}; {_pipedInto.ToString()}";
+            return $"${Name} = {Value.ToString()}; {_pipedInto.ToString()}";
         }
 
         protected override Expr SimplifyChildren(VariableScope variables)
         {
-            var simplifiedValue = _value.Simplify(variables);
+            var simplifiedValue = Value.Simplify(variables);
             if (simplifiedValue is LiteralExpr)
             {
                 var newScope = variables.AddVariable(Name, ((LiteralExpr)simplifiedValue).Literal);
@@ -66,14 +66,14 @@ namespace Bifoql.Expressions
         internal override void Accept(ExprVisitor visitor)
         {
             visitor.Visit(this);
-            _value.Accept(visitor);
+            Value.Accept(visitor);
             _pipedInto.Accept(visitor);
         }
 
 
         public override bool NeedsAsync(VariableScope variables) => true;
 
-        public override bool ReferencesRootVariable => _value.ReferencesRootVariable || (_pipedInto?.ReferencesRootVariable ?? false);
+        public override bool ReferencesRootVariable => Value.ReferencesRootVariable || (_pipedInto?.ReferencesRootVariable ?? false);
 
     }
 }

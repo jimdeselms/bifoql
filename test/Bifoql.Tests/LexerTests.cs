@@ -119,7 +119,7 @@ namespace Bifoql.Tests
 
         [Theory]
         [InlineData("switch", "switch:1,1,1,7")]
-        [InlineData("SwitCH", "switch:1,1,1,7")]
+        [InlineData("SwitCH", "ID/SwitCH:1,1,1,7")]
         [InlineData("switchy", "ID/switchy:1,1,1,8")]
         public void CaseInsensitiveReservedWords(string text, string expected)
         {

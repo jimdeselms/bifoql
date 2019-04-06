@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Linq;
 
 namespace Bifoql.Tests
 {
@@ -55,7 +56,8 @@ namespace Bifoql.Tests
 
         protected static async Task<object> Query(object o, string query, IReadOnlyDictionary<string, object> arguments, IReadOnlyDictionary<string, CustomFunction> customFunctions)
         {
-            var queryObj = Bifoql.Query.Compile(query, customFunctions);
+            var variables = arguments?.Keys?.ToArray() ?? new string[0];
+            var queryObj = Bifoql.Query.Compile(query, variables, customFunctions);
             var asyncObj = o.ToBifoqlObject();
 
             return await queryObj.Run(asyncObj, arguments);

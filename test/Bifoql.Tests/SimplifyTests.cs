@@ -204,7 +204,7 @@ namespace Bifoql.Tests
 
         private static void RunTest(object expected, string input)
         {
-            var obj = Bifoql.Query.Compile(input);
+            var obj = Bifoql.Query.Compile(input, new string[0]);
 
             var literal = ((LiteralExpr)obj.Expr).Literal;
             var actualJson = JsonConvert.SerializeObject(literal.ToSimpleObject().Result);
@@ -216,7 +216,7 @@ namespace Bifoql.Tests
 
         private static void TestToString(string expected, string parsed)
         {
-            var obj = Bifoql.Query.Compile(parsed);
+            var obj = Bifoql.Query.Compile(parsed, new string[0]);
             var actual = obj.Expr.ToString();
 
             Assert.Equal(expected, actual);

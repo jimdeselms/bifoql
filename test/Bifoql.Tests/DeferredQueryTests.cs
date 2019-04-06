@@ -59,7 +59,7 @@ namespace Bifoql.Tests
                 remote = new DeferredQueryObject(remoteObject),
             }.ToBifoqlObject();
 
-            var compiledQuery = Query.Compile(query);
+            var compiledQuery = Query.Compile(query, new string[0]);
             var result = compiledQuery.Run(testObj).Result;
 
             var actualJson = JsonConvert.SerializeObject(result);
@@ -89,7 +89,7 @@ namespace Bifoql.Tests
                 // it gets compiled.
 
                 // If this were a real remote service, the compilation would happen on the other side.
-                var compiledQuery = Query.Compile(query);
+                var compiledQuery = Query.Compile(query, new string[0]);
                 return (await compiledQuery.Run(_remoteObject));
             }
 
