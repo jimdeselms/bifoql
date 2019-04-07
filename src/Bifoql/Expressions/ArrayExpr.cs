@@ -62,7 +62,7 @@ namespace Bifoql.Expressions
             return $"[{string.Join(",", _exprs.Select(e => e.ToString()))}]";
         }
 
-        public override bool NeedsAsync(VariableScope variables) => _exprs.Any(a => a.NeedsAsync(variables));
+        public override bool NeedsAsync(VariableScope variables) => NeedsAsyncVisitor.NeedsAsync(this, variables);
 
         internal override void Accept(ExprVisitor visitor)
         {
