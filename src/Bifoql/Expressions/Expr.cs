@@ -50,7 +50,6 @@ namespace Bifoql.Expressions
 
         // True if it can be simplified synchronously without having a context applied to it.
         public abstract bool NeedsAsync(VariableScope variables);
-        public virtual bool NeedsAsyncByItself => false;
         public virtual bool IsConstant => false;
         public virtual Expr Simplify(VariableScope scope)
         {

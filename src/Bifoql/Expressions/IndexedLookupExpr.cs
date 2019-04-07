@@ -69,7 +69,5 @@ namespace Bifoql.Expressions
         {
             return _leftHandSide.NeedsAsync(variables) || _arguments.Any(p => p.Value.NeedsAsync(variables));
         }
-
-        public override bool NeedsAsyncByItself => true;
     }
 }

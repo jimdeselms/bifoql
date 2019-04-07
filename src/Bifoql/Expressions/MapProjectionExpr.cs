@@ -154,6 +154,5 @@ namespace Bifoql.Expressions
         }
 
         public override bool NeedsAsync(VariableScope variables) => _projections.Any(a => a.NeedsAsync(variables));
-        public override bool NeedsAsyncByItself => true;    
     }
 }

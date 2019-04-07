@@ -114,9 +114,9 @@ namespace Bifoql.Expressions
             // Some things can't be simplified by themselves, but they can be in the
             // context of a chain. If this chain doesn't need to be asynchronous, then
             // the next key or index won't need it either.
-            if (_next.NeedsAsyncByItself) return false;
+            if (NeedsAsyncByItselfVisitor.NeedsAsyncByItself(_next)) return false;
 
-            return !_next.NeedsAsyncByItself && !_next.NeedsAsync(variables);
+            return !_next.NeedsAsync(variables);
         }
 
         internal override void Accept(ExprVisitor visitor)

@@ -11,21 +11,21 @@ namespace Bifoql.Expressions
     internal class KeyExpr : Expr
     {
         private readonly Location _location;
-        private readonly Expr _target;
+        internal readonly Expr Target;
         private readonly string _key;
 
         public KeyExpr(Location location, Expr target, string key) : base(location)
         {
             _location = location;
-            _target = target;
+            Target = target;
             _key = key;
         }
 
         protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
-            var target = _target == null
+            var target = Target == null
                 ? context.QueryTarget
-                : await _target.Apply(context, resolveDeferred: false);
+                : await Target.Apply(context, resolveDeferred: false);
 
             target = await target.GetDefaultValueFromIndex();
 
@@ -35,7 +35,7 @@ namespace Bifoql.Expressions
         internal override void Accept(ExprVisitor visitor)
         {
             visitor.Visit(this);
-            _target?.Accept(visitor);
+            Target?.Accept(visitor);
         }
 
 
@@ -89,9 +89,9 @@ namespace Bifoql.Expressions
 
         public override string ToString()
         {
-            var target = _target == null
+            var target = Target == null
                 ? ""
-                : $"{_target.ToString()}";
+                : $"{Target.ToString()}";
 
             var rhs = RightHandSideString();
 
@@ -110,14 +110,12 @@ namespace Bifoql.Expressions
 
         protected override Expr SimplifyChildren(VariableScope variables)
         {
-            return new KeyExpr(_location, _target?.Simplify(variables), _key);
+            return new KeyExpr(_location, Target?.Simplify(variables), _key);
         }
 
         public override bool NeedsAsync(VariableScope variables)
         {
-            return _target == null || _target.NeedsAsync(variables);
+            return Target == null || Target.NeedsAsync(variables);
         }
-
-        public override bool NeedsAsyncByItself => _target == null || _target.NeedsAsyncByItself == true;
     }
 }
