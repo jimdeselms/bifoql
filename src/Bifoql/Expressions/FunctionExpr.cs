@@ -31,6 +31,6 @@ namespace Bifoql.Expressions
             return $"{Name}({args})";
         }
 
-        public override bool NeedsAsync(VariableScope variables) => Arguments.Any(a => a.NeedsAsync(variables));
+        public override bool NeedsAsync(VariableScope variables) => NeedsAsyncVisitor.NeedsAsync(this, variables);
     }
 }

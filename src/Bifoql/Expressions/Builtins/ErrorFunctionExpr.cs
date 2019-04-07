@@ -39,8 +39,5 @@ namespace Bifoql.Expressions
             visitor.Visit(this);
             _message.Accept(visitor);
         }
-
-
-        public override bool NeedsAsync(VariableScope variables) => _message.NeedsAsync(variables);
     }
 }

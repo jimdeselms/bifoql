@@ -36,6 +36,6 @@ namespace Bifoql.Expressions
             InnerExpression.Accept(visitor);
         }
 
-        public override bool NeedsAsync(VariableScope variables) => InnerExpression.NeedsAsync(variables);
+        public override bool NeedsAsync(VariableScope variables) => NeedsAsyncVisitor.NeedsAsync(this, variables);
     }
 }

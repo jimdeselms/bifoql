@@ -17,25 +17,25 @@ namespace Bifoql.Expressions
 
     internal class ChainExpr : Expr
     {
-        private readonly Expr _first;
-        private readonly Expr _next;
+        internal readonly Expr First;
+        internal readonly Expr Next;
         private readonly ChainBehavior _chainBehavior;
 
         public ChainExpr(Expr first, Expr next, ChainBehavior chainBehavior) : base(first.Location)
         {
-            _first = first;
-            _next = next;
+            First = first;
+            Next = next;
             _chainBehavior = chainBehavior;
         }
 
         protected override Expr SimplifyChildren(VariableScope variables)
         {
-            return new ChainExpr(_first?.Simplify(variables), _next?.Simplify(variables), _chainBehavior);
+            return new ChainExpr(First?.Simplify(variables), Next?.Simplify(variables), _chainBehavior);
         }
 
         protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
-            var result = await _first.Apply(context, resolveDeferred: false);
+            var result = await First.Apply(context, resolveDeferred: false);
 
             result = await result.GetDefaultValue();
 
@@ -59,20 +59,20 @@ namespace Bifoql.Expressions
                 {
                     var entryValue = await entry();
                     var newContext = context.ReplaceTarget(entryValue);
-                    resultList.Add(() => _next.Apply(newContext));
+                    resultList.Add(() => Next.Apply(newContext));
                 }
 
                 return new AsyncArray(resultList);
             }
             else
             {
-                return _next == null ? result : await _next.Apply(context.ReplaceTarget(result));
+                return Next == null ? result : await Next.Apply(context.ReplaceTarget(result));
             }
         }
 
         public override string ToString()
         {
-            var result = _first.ToString();
+            var result = First.ToString();
 
             return $"{result}{RightHandSideString()}";
         }
@@ -81,16 +81,16 @@ namespace Bifoql.Expressions
         {
             var result = "";
 
-            if (_next != null)
+            if (Next != null)
             {
-                if (_next is KeyExpr)
+                if (Next is KeyExpr)
                 {
-                    var key = _next.ToString();
+                    var key = Next.ToString();
                     result += key.StartsWith("[") ? key : "." + key;
                 }
-                else if (_next is FilterExpr || _next is IndexedLookupExpr)
+                else if (Next is FilterExpr || Next is IndexedLookupExpr)
                 {
-                    result += _next.ToString();
+                    result += Next.ToString();
                 }
                 else
                 {
@@ -98,32 +98,20 @@ namespace Bifoql.Expressions
                         : _chainBehavior == ChainBehavior.OneToOne ? " | "
                         : " ";
 
-                    result += pipe + _next.ToString();
+                    result += pipe + Next.ToString();
                 }
             }
 
             return result;
         }
 
-        public override bool NeedsAsync(VariableScope variables) 
-        {
-            if (_first.NeedsAsync(variables)) return true;
-
-            if (ReferencesRootVariableVisitor.ReferencesRootVariable(this)) return true;
-
-            // Some things can't be simplified by themselves, but they can be in the
-            // context of a chain. If this chain doesn't need to be asynchronous, then
-            // the next key or index won't need it either.
-            if (NeedsAsyncByItselfVisitor.NeedsAsyncByItself(_next)) return false;
-
-            return !_next.NeedsAsync(variables);
-        }
+        public override bool NeedsAsync(VariableScope variables) => NeedsAsyncVisitor.NeedsAsync(this, variables);
 
         internal override void Accept(ExprVisitor visitor)
         {
             visitor.Visit(this);
-            _first.Accept(visitor);
-            _next.Accept(visitor);
+            First.Accept(visitor);
+            Next.Accept(visitor);
         }
     }
 }

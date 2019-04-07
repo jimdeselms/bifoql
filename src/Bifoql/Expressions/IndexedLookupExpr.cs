@@ -65,9 +65,6 @@ namespace Bifoql.Expressions
                 newArgs);
         }
 
-        public override bool NeedsAsync(VariableScope variables) 
-        {
-            return _leftHandSide.NeedsAsync(variables) || _arguments.Any(p => p.Value.NeedsAsync(variables));
-        }
+        public override bool NeedsAsync(VariableScope variables) => NeedsAsyncVisitor.NeedsAsync(this, variables);
     }
 }

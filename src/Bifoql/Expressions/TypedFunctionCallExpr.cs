@@ -8,7 +8,7 @@ namespace Bifoql.Expressions
 
     internal abstract class TypedFunctionCallExpr : Expr
     {
-        protected string Name { get; }
+        internal string Name { get; }
         protected IReadOnlyList<Expr> Arguments { get; }
         protected TypedFunctionCallExpr(Location location, string name, IReadOnlyList<Expr> arguments) : base(location)
         {
@@ -38,11 +38,7 @@ namespace Bifoql.Expressions
             return Name + args;
         }
 
-        public override bool NeedsAsync(VariableScope variables)
-        {
-            // Special case. If this is "eval", then we can't simplify this
-            return Name == "eval" || Arguments.Any(a => a.NeedsAsync(variables));
-        }
+        public override bool NeedsAsync(VariableScope variables) => NeedsAsyncVisitor.NeedsAsync(this, variables);
 
         internal override void Accept(ExprVisitor visitor)
         {

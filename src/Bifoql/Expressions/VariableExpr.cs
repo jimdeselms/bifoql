@@ -52,11 +52,7 @@ namespace Bifoql.Expressions
             return this;
         }
 
-        public override bool NeedsAsync(VariableScope scope)
-        {
-            // References to the root variable can't be simplified.
-            return Name == "" || !scope.ContainsKey(Name);
-        }
+        public override bool NeedsAsync(VariableScope variables) => NeedsAsyncVisitor.NeedsAsync(this, variables);
 
         internal override void Accept(ExprVisitor visitor)
         {

@@ -89,7 +89,7 @@ namespace Bifoql.Expressions
             return $"[? {Condition.ToString()}]";
         }
 
-        public override bool NeedsAsync(VariableScope variables) => true;
+        public override bool NeedsAsync(VariableScope variables) => NeedsAsyncVisitor.NeedsAsync(this, variables);
 
     }
 }

@@ -153,6 +153,6 @@ namespace Bifoql.Expressions
             return "{" + projections + "}";
         }
 
-        public override bool NeedsAsync(VariableScope variables) => _projections.Any(a => a.NeedsAsync(variables));
+        public override bool NeedsAsync(VariableScope variables) => NeedsAsyncVisitor.NeedsAsync(this, variables);
     }
 }

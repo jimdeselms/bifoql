@@ -11,28 +11,28 @@ namespace Bifoql.Expressions
     internal class IndexExpr : Expr
     {
         private readonly Location _location;
-        private readonly Expr _target;
+        internal readonly Expr Target;
         private readonly Expr _index;
 
         public IndexExpr(Location location, Expr target, Expr index) : base(location)
         {
             _location = location;
-            _target = target;
+            Target = target;
             _index = index;
         }
 
         internal override void Accept(ExprVisitor visitor)
         {
             visitor.Visit(this);
-            _target?.Accept(visitor);
+            Target?.Accept(visitor);
             _index.Accept(visitor);
         }
 
         protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
-            var target = _target == null
+            var target = Target == null
                 ? context.QueryTarget
-                : await _target.Apply(context, resolveDeferred: false);
+                : await Target.Apply(context, resolveDeferred: false);
 
             target = await target.GetDefaultValueFromIndex();
 
@@ -95,9 +95,9 @@ namespace Bifoql.Expressions
 
         public override string ToString()
         {
-            var target = _target == null
+            var target = Target == null
                 ? ""
-                : $"{_target.ToString()}";
+                : $"{Target.ToString()}";
 
             return $"{target}[{RightHandSideString()}]";
         }
@@ -111,13 +111,10 @@ namespace Bifoql.Expressions
         {
             return new IndexExpr(
                 _location, 
-                _target?.Simplify(variables),
+                Target?.Simplify(variables),
                 _index.Simplify(variables));
         }
 
-        public override bool NeedsAsync(VariableScope variables)
-        {
-            return _target?.NeedsAsync(variables) == true || _index.NeedsAsync(variables);
-        }
+        public override bool NeedsAsync(VariableScope variables) => NeedsAsyncVisitor.NeedsAsync(this, variables);
     }
 }

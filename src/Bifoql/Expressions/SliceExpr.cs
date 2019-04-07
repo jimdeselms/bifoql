@@ -9,14 +9,14 @@ namespace Bifoql.Expressions
     internal class SliceExpr : Expr
     {
         private readonly Location _location;
-        private readonly Expr _target;
+        internal readonly Expr Target;
         private readonly Expr _lowerBound;
         private readonly Expr _upperBound;
 
         public SliceExpr(Location location, Expr target, Expr lowerBound, Expr upperBound) : base(location)
         {
             _location = location;
-            _target = target;
+            Target = target;
 
             // Using the location for these expressions is wrong, but who cares.
             _lowerBound = lowerBound ?? new LiteralExpr(location, AsyncNull.Instance);
@@ -25,9 +25,9 @@ namespace Bifoql.Expressions
 
         protected override async Task<IBifoqlObject> DoApply(QueryContext context)
         {
-            var target = _target == null
+            var target = Target == null
                 ? context.QueryTarget
-                : await _target.Apply(context);
+                : await Target.Apply(context);
 
             var list = target as IBifoqlArrayInternal;
             if (list == null) return new AsyncError(this.Location, "Can't take slice of non-list");
@@ -79,8 +79,8 @@ namespace Bifoql.Expressions
 
        public override string ToString()
        {
-            var target = _target == null
-                ? _target.ToString()
+            var target = Target == null
+                ? Target.ToString()
                 : "";
             var lower = _lowerBound?.ToString() ?? "";
             var upper = _upperBound?.ToString() ?? "";
@@ -92,23 +92,17 @@ namespace Bifoql.Expressions
         {
             return new SliceExpr(
                 _location,
-                _target?.Simplify(variables),
+                Target?.Simplify(variables),
                 _lowerBound?.Simplify(variables),
                 _upperBound?.Simplify(variables));
         }
 
-        public override bool NeedsAsync(VariableScope variables)
-        {
-            return _target == null 
-                || _target.NeedsAsync(variables) 
-                || _lowerBound?.NeedsAsync(variables) == true
-                || _upperBound?.NeedsAsync(variables) == true;
-        }
+        public override bool NeedsAsync(VariableScope variables) => NeedsAsyncVisitor.NeedsAsync(this, variables);
 
         internal override void Accept(ExprVisitor visitor)
         {
             visitor.Visit(this);
-            _target?.Accept(visitor);
+            Target?.Accept(visitor);
             _upperBound?.Accept(visitor);
             _lowerBound?.Accept(visitor);
         }

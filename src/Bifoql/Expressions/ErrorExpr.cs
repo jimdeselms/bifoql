@@ -38,6 +38,6 @@ namespace Bifoql.Expressions
             visitor.Visit(this);
         }
 
-        public override bool NeedsAsync(VariableScope variables) => false;
+        public override bool NeedsAsync(VariableScope variables) => NeedsAsyncVisitor.NeedsAsync(this, variables);
     }
 }

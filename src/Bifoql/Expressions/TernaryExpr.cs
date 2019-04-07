@@ -49,10 +49,7 @@ namespace Bifoql.Expressions
             return $"{_condition.ToString()} ? {_ifTrue.ToString()} : {_ifFalse.ToString()}";
         }
 
-        public override bool NeedsAsync(VariableScope variables)
-        {
-            return _condition.NeedsAsync(variables) || _ifFalse.NeedsAsync(variables) || _ifTrue.NeedsAsync(variables);
-        }
+        public override bool NeedsAsync(VariableScope variables) => NeedsAsyncVisitor.NeedsAsync(this, variables);
 
         internal override void Accept(ExprVisitor visitor)
         {

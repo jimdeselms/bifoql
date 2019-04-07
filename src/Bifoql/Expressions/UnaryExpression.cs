@@ -80,7 +80,7 @@ namespace Bifoql.Expressions
             return $"{_operator}{_innerExpression.ToString()}";
         }
 
-        public override bool NeedsAsync(VariableScope scope) => _innerExpression.NeedsAsync(scope);
+        public override bool NeedsAsync(VariableScope variables) => NeedsAsyncVisitor.NeedsAsync(this, variables);
 
         internal override void Accept(ExprVisitor visitor)
         {
