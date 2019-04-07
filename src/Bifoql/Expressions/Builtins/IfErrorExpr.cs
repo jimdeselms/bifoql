@@ -52,6 +52,5 @@ namespace Bifoql.Expressions.Builtins
 
             return await _ifIsError.Apply(context);
         }
-        public override bool ReferencesRootVariable => _obj.ReferencesRootVariable || _ifIsError.ReferencesRootVariable;
     }
 }

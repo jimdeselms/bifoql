@@ -58,7 +58,5 @@ namespace Bifoql.Expressions
         {
             visitor.Visit(this);
         }
-
-        public override bool ReferencesRootVariable => false;
     }
 }

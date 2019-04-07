@@ -81,8 +81,6 @@ namespace Bifoql.Expressions
             }
         }
 
-        public abstract bool ReferencesRootVariable { get; }
-
         internal abstract void Accept(ExprVisitor visitor);
     }
 }

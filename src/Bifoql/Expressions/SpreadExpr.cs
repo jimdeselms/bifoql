@@ -37,7 +37,5 @@ namespace Bifoql.Expressions
             visitor.Visit(this);
             SpreadObject.Accept(visitor);
         }
-
-        public override bool ReferencesRootVariable => SpreadObject.ReferencesRootVariable;
     }
 }

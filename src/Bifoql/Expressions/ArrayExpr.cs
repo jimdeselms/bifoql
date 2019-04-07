@@ -72,8 +72,5 @@ namespace Bifoql.Expressions
                 expr.Accept(visitor);
             }
         }
-
-        public override bool ReferencesRootVariable => _exprs.Any(e => e.ReferencesRootVariable);
-
     }
 }

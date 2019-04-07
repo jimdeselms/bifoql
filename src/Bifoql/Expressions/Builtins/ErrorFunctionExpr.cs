@@ -42,6 +42,5 @@ namespace Bifoql.Expressions
 
 
         public override bool NeedsAsync(VariableScope variables) => _message.NeedsAsync(variables);
-        public override bool ReferencesRootVariable => _message.ReferencesRootVariable;
     }
 }

@@ -120,7 +120,5 @@ namespace Bifoql.Expressions
             return _target?.NeedsAsync(variables) == true || _index.NeedsAsync(variables);
         }
         public override bool NeedsAsyncByItself => true;
-        public override bool ReferencesRootVariable => _target?.ReferencesRootVariable == true;
-
     }
 }

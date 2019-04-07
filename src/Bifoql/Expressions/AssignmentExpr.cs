@@ -72,8 +72,5 @@ namespace Bifoql.Expressions
 
 
         public override bool NeedsAsync(VariableScope variables) => true;
-
-        public override bool ReferencesRootVariable => Value.ReferencesRootVariable || (_pipedInto?.ReferencesRootVariable ?? false);
-
     }
 }

@@ -37,7 +37,5 @@ namespace Bifoql.Expressions
         }
 
         public override bool NeedsAsync(VariableScope variables) => InnerExpression.NeedsAsync(variables);
-
-        public override bool ReferencesRootVariable => InnerExpression.ReferencesRootVariable;
     }
 }

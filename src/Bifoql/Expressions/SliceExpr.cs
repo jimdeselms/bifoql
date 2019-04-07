@@ -112,10 +112,5 @@ namespace Bifoql.Expressions
             _upperBound?.Accept(visitor);
             _lowerBound?.Accept(visitor);
         }
-
-        public override bool ReferencesRootVariable => 
-            _target?.ReferencesRootVariable == true
-            || _lowerBound?.ReferencesRootVariable == true
-            || _upperBound?.ReferencesRootVariable == true;
     }
 }

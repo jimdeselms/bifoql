@@ -87,7 +87,5 @@ namespace Bifoql.Expressions
             visitor.Visit(this);
             _innerExpression.Accept(visitor);
         }
-
-        public override bool ReferencesRootVariable => _innerExpression.ReferencesRootVariable;
     }
 }

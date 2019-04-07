@@ -61,7 +61,5 @@ namespace Bifoql.Expressions
             _ifTrue.Accept(visitor);
             _ifFalse.Accept(visitor);
         }
-
-        public override bool ReferencesRootVariable => _condition.ReferencesRootVariable || _ifTrue.ReferencesRootVariable || _ifFalse.ReferencesRootVariable;
     }
 }

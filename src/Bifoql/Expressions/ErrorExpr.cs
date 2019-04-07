@@ -39,6 +39,5 @@ namespace Bifoql.Expressions
         }
 
         public override bool NeedsAsync(VariableScope variables) => false;
-        public override bool ReferencesRootVariable => false;
     }
 }

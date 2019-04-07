@@ -71,6 +71,5 @@ namespace Bifoql.Expressions
         }
 
         public override bool NeedsAsyncByItself => true;
-        public override bool ReferencesRootVariable => _leftHandSide.ReferencesRootVariable || _arguments.Values.Any(a => a.ReferencesRootVariable);
     }
 }

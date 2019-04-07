@@ -316,7 +316,5 @@ namespace Bifoql.Expressions
 
 
         public override bool NeedsAsync(VariableScope variables) => LeftHandSide.NeedsAsync(variables) || RightHandSide.NeedsAsync(variables);
-
-        public override bool ReferencesRootVariable => LeftHandSide.ReferencesRootVariable || RightHandSide.ReferencesRootVariable;
     }
 }

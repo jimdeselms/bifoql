@@ -10,7 +10,7 @@ namespace Bifoql.Visitors
 
         public override void Visit(VariableExpr expr)
         {
-            if (expr.Name == "$")
+            if (expr.Name == "")
             {
                 _referencesRootVariable = true;
             }

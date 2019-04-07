@@ -109,7 +109,7 @@ namespace Bifoql.Expressions
         {
             if (_first.NeedsAsync(variables)) return true;
 
-            if (_first.ReferencesRootVariable || _next.ReferencesRootVariable) return true;
+            if (ReferencesRootVariableVisitor.ReferencesRootVariable(this)) return true;
 
             // Some things can't be simplified by themselves, but they can be in the
             // context of a chain. If this chain doesn't need to be asynchronous, then
@@ -125,7 +125,5 @@ namespace Bifoql.Expressions
             _first.Accept(visitor);
             _next.Accept(visitor);
         }
-
-        public override bool ReferencesRootVariable => _first.ReferencesRootVariable || _next.ReferencesRootVariable;
     }
 }

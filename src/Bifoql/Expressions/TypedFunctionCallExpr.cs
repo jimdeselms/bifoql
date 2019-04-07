@@ -52,8 +52,6 @@ namespace Bifoql.Expressions
                 arg.Accept(visitor);
             }
         }
-
-        public override bool ReferencesRootVariable => Arguments.Any(a => a.ReferencesRootVariable);
     }
 
     internal class TypedFunctionCallExpr<T1> : TypedFunctionCallExpr where T1 : IBifoqlObject
