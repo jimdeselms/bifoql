@@ -551,8 +551,10 @@ namespace Bifoql.Tests
         [Fact]
         public void VariableScopingWithArray()
         {
+            // At one point I had variable scoping.
+            // I'm taking it out. It's too much.
             RunTest(
-                expected: 30, 
+                expected: "<error: (1, 14) expected )>", 
                 query: "([1,2] |< ($x=@; $x*10)) | sum(@)");
         }
 
@@ -560,7 +562,7 @@ namespace Bifoql.Tests
         public void VariableScoping()
         {
             RunTest(
-                expected: 1, 
+                expected: "<error: (1, 8) expected )>", 
                 query: "1 | ($x=@; $x)");
         }
 

@@ -85,7 +85,7 @@ namespace Bifoql
         {
             try
             {
-                return ParseExpr();
+                return ParseAssignment();
             }
             catch (ParseException ex)
             {
@@ -95,11 +95,6 @@ namespace Bifoql
             {
                 return new ErrorExpr(new Location(0, 0), ex.Message);
             }
-        }
-
-        private Expr ParseExpr()
-        {
-            return ParseAssignment();
         }
 
         private Expr ParseAssignment()
@@ -114,15 +109,21 @@ namespace Bifoql
 
                 Match(";");
 
-                var pipedInto = ParseExpr();
+                var pipedInto = ParseAssignment();
 
                 return new AssignmentExpr(GetLocation(token), variable.Text, variableValue, pipedInto);
             }
             else
             {
-                return ParsePipe();
+                return ParseExpr();
             }
         }
+
+        private Expr ParseExpr()
+        {
+            return ParsePipe();
+        }
+
 
         private Expr ParsePipe()
         {
