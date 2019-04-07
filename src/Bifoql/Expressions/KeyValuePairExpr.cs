@@ -28,6 +28,7 @@ namespace Bifoql.Expressions
         internal override void Accept(ExprVisitor visitor)
         {
             visitor.Visit(this);
+            Value.Accept(visitor);
         }
 
        public override string ToString()
