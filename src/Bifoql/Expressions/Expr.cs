@@ -48,14 +48,12 @@ namespace Bifoql.Expressions
 
         protected abstract Task<IBifoqlObject> DoApply(QueryContext context);
 
-        // True if it can be simplified synchronously without having a context applied to it.
-        public abstract bool NeedsAsync(VariableScope variables);
         public virtual bool IsConstant => false;
         public virtual Expr Simplify(VariableScope scope)
         {
             if (IsConstant) return this;
             
-            if (NeedsAsync(scope))
+            if (NeedsAsyncVisitor.NeedsAsync(this, scope))
             {
                 return SimplifyChildren(scope);
             }
@@ -70,7 +68,7 @@ namespace Bifoql.Expressions
         // must override this method to return a new expression that has the simplified versions of their children.
         protected virtual Expr SimplifyChildren(VariableScope scope)
         {
-            if (NeedsAsync(scope))
+            if (NeedsAsyncVisitor.NeedsAsync(this, scope))
             {
                 throw new NotImplementedException("Must implement SimplifyChildren");
             }

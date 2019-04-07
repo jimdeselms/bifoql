@@ -30,8 +30,6 @@ namespace Bifoql.Expressions
             return new SpreadExpr(Location, SpreadObject.Simplify(variables));
         }
 
-        public override bool NeedsAsync(VariableScope variables) => SpreadObject.NeedsAsync(variables);
-
         internal override void Accept(ExprVisitor visitor)
         {
             visitor.Visit(this);

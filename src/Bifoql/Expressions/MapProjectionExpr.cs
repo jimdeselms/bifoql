@@ -152,7 +152,5 @@ namespace Bifoql.Expressions
             var projections = string.Join(", ", _projections.Select(p => p.ToString()));
             return "{" + projections + "}";
         }
-
-        public override bool NeedsAsync(VariableScope variables) => NeedsAsyncVisitor.NeedsAsync(this, variables);
     }
 }

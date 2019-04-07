@@ -40,7 +40,5 @@ namespace Bifoql.Expressions
         {
             return new KeyValuePairExpr(Location, Key, Value.Simplify(variables));
         }
-
-        public override bool NeedsAsync(VariableScope variables) => NeedsAsyncVisitor.NeedsAsync(this, variables);
     }
 }

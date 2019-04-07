@@ -114,7 +114,5 @@ namespace Bifoql.Expressions
                 Target?.Simplify(variables),
                 _index.Simplify(variables));
         }
-
-        public override bool NeedsAsync(VariableScope variables) => NeedsAsyncVisitor.NeedsAsync(this, variables);
     }
 }

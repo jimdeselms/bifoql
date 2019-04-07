@@ -30,7 +30,5 @@ namespace Bifoql.Expressions
             var args = string.Join(", ", Arguments.Select(a => a.ToString()));
             return $"{Name}({args})";
         }
-
-        public override bool NeedsAsync(VariableScope variables) => NeedsAsyncVisitor.NeedsAsync(this, variables);
     }
 }

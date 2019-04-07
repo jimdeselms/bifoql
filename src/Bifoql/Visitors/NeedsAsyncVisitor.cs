@@ -63,12 +63,6 @@ namespace Bifoql.Visitors
 
         public override void Visit(ChainExpr expr)
         {
-            if (expr.First.NeedsAsync(_variables))
-            {
-                _needsAsync = true;
-                return;
-            }
-
             if (ReferencesRootVariableVisitor.ReferencesRootVariable(expr))
             {
                 _needsAsync = true;

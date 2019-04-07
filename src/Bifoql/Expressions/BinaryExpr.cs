@@ -313,8 +313,5 @@ namespace Bifoql.Expressions
             LeftHandSide.Accept(visitor);
             RightHandSide.Accept(visitor);
         }
-
-
-        public override bool NeedsAsync(VariableScope variables) => NeedsAsyncVisitor.NeedsAsync(this, variables);
     }
 }

@@ -97,8 +97,6 @@ namespace Bifoql.Expressions
                 _upperBound?.Simplify(variables));
         }
 
-        public override bool NeedsAsync(VariableScope variables) => NeedsAsyncVisitor.NeedsAsync(this, variables);
-
         internal override void Accept(ExprVisitor visitor)
         {
             visitor.Visit(this);

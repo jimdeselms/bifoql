@@ -112,10 +112,5 @@ namespace Bifoql.Expressions
         {
             return new KeyExpr(_location, Target?.Simplify(variables), _key);
         }
-
-        public override bool NeedsAsync(VariableScope variables)
-        {
-            return Target == null || Target.NeedsAsync(variables);
-        }
     }
 }

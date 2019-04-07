@@ -30,7 +30,5 @@ namespace Bifoql.Expressions
             // This can't be simplified.
             return this;
         }
-
-        public override bool NeedsAsync(VariableScope variables) => NeedsAsyncVisitor.NeedsAsync(this, variables);
     }
 }
